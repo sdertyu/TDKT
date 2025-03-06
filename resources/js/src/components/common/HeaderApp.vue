@@ -7,10 +7,12 @@
                         <i class="bi bi-list"></i>
                     </a>
                 </li>
-                <li class="nav-item d-none d-md-block"><a href="/" class="nav-link">Home</a></li>
+                <!-- <li class="nav-item d-none d-md-block"><a href="/" class="nav-link">Home</a></li>
                 <li class="nav-item d-none d-md-block">
                     <a href="/about" class="nav-link">Contact</a>
-                </li>
+                </li> -->
+                <ButtonLink link="/" name="Home"/>
+                <ButtonLink link="/about" name="About"/>
             </ul>
 
             <ul class="navbar-nav ms-auto">
@@ -86,5 +88,7 @@
     </nav>
 </template>
 <script setup>
+
+import ButtonLink from '../sidebar/ButtonLink.vue';
 </script>
 
