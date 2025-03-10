@@ -48,21 +48,6 @@
                                         <div class="invalid-feedback">{{ passwordError }}</div>
                                     </div>
                                 </div>
-
-                                <!-- Remember Me & Forgot Password -->
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="remember"
-                                            v-model="rememberMe" />
-                                        <label class="form-check-label" for="remember">
-                                            Ghi nhớ đăng nhập
-                                        </label>
-                                    </div>
-                                    <a href="#" class="text-primary text-decoration-none">
-                                        <i class="fas fa-question-circle me-1"></i>Quên mật khẩu?
-                                    </a>
-                                </div>
-
                                 <!-- Login Button -->
                                 <div class="d-grid">
                                     <button type="submit" class="btn btn-primary btn-lg py-2" :disabled="isLoading">
@@ -78,7 +63,7 @@
 
                     <!-- System Info -->
                     <div class="text-center mt-3 text-muted small">
-                        <p>© 2025 Hệ thống quản lý | v4.0.1</p>
+                        <p>© 2025 Hệ thống quản lý Thi đua khen thưởng</p>
                     </div>
                 </div>
             </div>

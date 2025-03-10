@@ -8,7 +8,7 @@ export default defineConfig({
     },
     plugins: [
         laravel({
-            input: ["resources/js/app.js"],
+            input: ["resources/css/app.css", "resources/js/app.js"],
             refresh: true,
         }),
         vue({
@@ -21,9 +21,9 @@ export default defineConfig({
         }),
     ],
     server: {
-        host: "0.0.0.0", // Cho phép truy cập từ mọi địa chỉ IP
+        host: "localhost", // Cho phép truy cập từ mọi địa chỉ IP
         hmr: {
-            host: "tdkt.test",
+            host: "localhost",
         },
         cors: true,
     },
