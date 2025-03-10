@@ -5,35 +5,9 @@ import SidebarMenu from '../sidebar/SidebarMenu.vue';
 
 const sidebarMenuItems = ref([
     {
-        title: 'Dashboard',
-        icon: 'bi bi-speedometer',
-        isActive: true,
-        isOpen: true,
-        children: [
-            {
-                title: 'Dashboard v1',
-                icon: 'bi bi-circle',
-                link: '/dist/pages/',
-                isActive: true
-            },
-            {
-                title: 'Dashboard v2',
-                icon: 'bi bi-circle',
-                link: '/dist/pages/index2',
-                isActive: false
-            },
-            {
-                title: 'Dashboard v3',
-                icon: 'bi bi-circle',
-                link: '/dist/pages/index3',
-                isActive: false
-            }
-        ]
-    },
-    {
-        title: 'Theme Generate',
+        title: 'Quản lý tài khoản',
         icon: 'bi bi-palette',
-        link: '/dist/pages/generate/theme',
+        link: '/quanlytaikhoan',
         isActive: false
     },
     {
@@ -62,34 +36,6 @@ const sidebarMenuItems = ref([
             }
         ]
     },
-    {
-        title: 'Layout Options',
-        icon: 'bi bi-clipboard-fill',
-        isActive: false,
-        isOpen: false,
-        badge: '6',
-        children: [
-            {
-                title: 'Default Sidebar',
-                icon: 'bi bi-circle',
-                link: '/dist/pages/layout/unfixed-sidebar',
-                isActive: false
-            },
-            {
-                title: 'Fixed Sidebar',
-                icon: 'bi bi-circle',
-                link: '/dist/pages/layout/fixed-sidebar',
-                isActive: false
-            },
-            {
-                title: 'Layout <small>+ Custom Area </small>',
-                icon: 'bi bi-circle',
-                link: '/dist/pages/layout/layout-custom-area',
-                isActive: false
-            },
-            // Thêm các mục còn lại...
-        ]
-    }
 ]);
 </script>
 
@@ -107,9 +53,9 @@ const sidebarMenuItems = ref([
 
             <a class='brand-link' href='/dist/pages/'>
 
-                <img src="" alt="AdminLTE Logo" class="brand-image opacity-75 shadow" />
+                <img src="/images/logo_hou.png" alt="AdminLTE Logo" class="brand-image opacity-75 shadow" />
 
-                <span class="brand-text fw-light">AdminLTE 4</span>
+                <span class="brand-text fw-light">Thi đua khen thưởng</span>
 
             </a>
 
