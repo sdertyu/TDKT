@@ -22,7 +22,7 @@
                     <div class="card-header">
                         <h3 class="card-title">Danh sách tài khoản</h3>
                         <div class="card-tools">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-primary" @click="openAddModal" data-bs-toggle="modal"
                                 data-bs-target="#accountModal">
                                 <i class="fas fa-plus"></i> Thêm tài khoản
                             </button>
@@ -33,17 +33,17 @@
                             <table class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
-                                        <th style="width: 5%">STT</th>
-                                        <th style="width: 20%">Tên đăng nhập</th>
+                                        <th style="width: 5%; text-align: center;">STT</th>
+                                        <th style="width: 20%; text-align: center;">Tên đăng nhập</th>
                                         <!-- <th style="width: 30%">Mật khẩu</th> -->
                                         <!-- <th style="width: 15%">Vai trò</th> -->
-                                        <th style="width: 15%">Trạng thái</th>
-                                        <th style="width: 15%">Thao tác</th>
+                                        <th style="width: 15%; text-align: center;">Trạng thái</th>
+                                        <th style="width: 15%; text-align: center;">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="account in paginatedAccounts" :key="account.id">
-                                        <td>{{ account.id }}</td>
+                                        <td class="text-center">{{ account.id }}</td>
                                         <td>{{ account.username }}</td>
                                         <!-- <td>{{ account.email }}</td> -->
                                         <!-- <td>
@@ -51,12 +51,12 @@
                                                 account.role
                                                 }}</span>
                                         </td> -->
-                                        <td>
+                                        <td class="text-center">
                                             <span :class="getStatusBadgeClass(account.status)">{{
                                                 account.status ? "Hoạt động" : "Tạm ngưng"
-                                                }}</span>
+                                            }}</span>
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             <button class="btn btn-sm btn-info me-1" @click="openEditModal(account)"
                                                 data-bs-toggle="modal" data-bs-target="#accountModal">
                                                 <i class="fas fa-edit"></i> Sửa
@@ -94,7 +94,7 @@
                                         :class="['page-item', { active: currentPage === page }]">
                                         <a class="page-link" href="#" @click.prevent="changePage(page)">{{
                                             page
-                                            }}</a>
+                                        }}</a>
                                     </li>
 
                                     <li :class="['page-item', { disabled: currentPage === totalPages }]">
@@ -141,28 +141,35 @@
                     <div class="modal-body">
                         <form @submit.prevent="saveAccount">
                             <div class="mb-3">
-                                <label for="username" class="form-label">Tên người dùng</label>
+                                <label for="username" class="form-label tex">Tên đăng nhập</label>
                                 <input type="text" class="form-control" id="username" v-model="currentAccount.username"
                                     required />
                             </div>
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" class="form-control" id="email" v-model="currentAccount.email"
                                     required />
-                            </div>
+                            </div> -->
                             <div class="mb-3" v-if="!isEditMode">
                                 <label for="password" class="form-label">Mật khẩu</label>
-                                <input type="password" class="form-control" id="password"
-                                    v-model="currentAccount.password" required />
+                                <div class="input-group">
+                                    <input :type="isCheckPass ? 'text' : 'password'" class="form-control" id="password"
+                                        v-model="currentAccount.password" required />
+                                    <button @click="checkPass" class="input-group-text bg-light">
+                                        <i :class="isCheckPass ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label for="role" class="form-label">Vai trò</label>
                                 <select class="form-select" id="role" v-model="currentAccount.role" required>
-                                    <option value="Admin">Admin</option>
-                                    <option value="Quản lý">Quản lý</option>
-                                    <option value="Người dùng">Người dùng</option>
+                                    <!-- <option value="Admin"></option> -->
+                                    <option value="" disabled selected>Lựa chọn vai trò</option>
+                                    <option value="Cá nhân">Cá nhân</option>
+                                    <option value="Đơn vị">Đơn vị</option>
                                 </select>
                             </div>
+
                             <div class="mb-3">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="status"
@@ -172,6 +179,52 @@
                                     </label>
                                 </div>
                             </div>
+
+                            <div v-if="currentAccount.role == 'Cá nhân'">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label tex">Mã cá nhân</label>
+                                    <input type="text" class="form-control" id="maCaNhan"
+                                         required />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="username" class="form-label tex">Tên cá nhân</label>
+                                    <input type="text" class="form-control" id="fullName"
+                                         required />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="username" class="form-label tex">Email</label>
+                                    <input type="text" class="form-control" id="email"
+                                         required />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="username" class="form-label tex">Tên chức vụ</label>
+                                    <input type="text" class="form-control" id="tenChucVu"
+                                         required />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="username" class="form-label tex">Giới tính</label>
+                                    <div class="input-group">
+                                        <input type="radio" name="gioiTinh" id="nam" value="0">
+                                        <label for="nam" class="mx-2">Nam</label>
+                                        <input type="radio" name="gioiTinh" id="nu" value="1">
+                                        <label for="nu" class="mx-2">Nữ</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div v-if="currentAccount.role == 'Đơn vị'">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label text">Mã đơn vị</label>
+                                    <input type="text" class="form-control" id="maDonVi"
+                                         required />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="username" class="form-label tex">Tên đơn vị</label>
+                                    <input type="text" class="form-control" id="tenDonVi"
+                                         required />
+                                </div>
+                            </div>
+
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                     Hủy
@@ -215,6 +268,28 @@
 <script setup>
 import { ref, computed } from 'vue';
 
+let caNhanHtml = `
+    <div class="mb-3">
+        <label for="username" class="form-label tex">Tên đăng nhập</label>
+        <input type="text" class="form-control" id="username" v-model="currentAccount.username"
+            required />
+    </div>
+    `
+const isCheckPass = ref(false)
+const vaiTro = ref('')
+
+const checkPass = () => {
+    isCheckPass.value = !isCheckPass.value;
+}
+
+const caNhanSelect = () => {
+    // vaiTro.value = 
+}
+
+const donViSelect = () => {
+
+}
+
 // Data
 const accounts = ref([
     {
@@ -228,77 +303,77 @@ const accounts = ref([
         id: 2,
         username: "manager",
         email: "manager@example.com",
-        role: "Quản lý",
+        role: "Đơn vị",
         status: true,
     },
     {
         id: 3,
         username: "user1",
         email: "user1@example.com",
-        role: "Người dùng",
+        role: "Cá nhân",
         status: true,
     },
     {
         id: 4,
         username: "user2",
         email: "user2@example.com",
-        role: "Người dùng",
+        role: "Cá nhân",
         status: false,
     },
     {
         id: 5,
         username: "user3",
         email: "user3@example.com",
-        role: "Người dùng",
+        role: "Cá nhân",
         status: true,
     },
     {
         id: 6,
         username: "user4",
         email: "user4@example.com",
-        role: "Người dùng",
+        role: "Cá nhân",
         status: true,
     },
     {
         id: 7,
         username: "user5",
         email: "user5@example.com",
-        role: "Người dùng",
+        role: "Cá nhân",
         status: false,
     },
     {
         id: 8,
         username: "user6",
         email: "user6@example.com",
-        role: "Người dùng",
+        role: "Cá nhân",
         status: true,
     },
     {
         id: 9,
         username: "user7",
         email: "user7@example.com",
-        role: "Người dùng",
+        role: "Cá nhân",
         status: true,
     },
     {
         id: 10,
         username: "user8",
         email: "user8@example.com",
-        role: "Người dùng",
+        role: "Cá nhân",
         status: false,
     },
     {
         id: 11,
         username: "user9",
         email: "user9@example.com",
-        role: "Quản lý",
+        role: "Đơn vị",
         status: true,
     },
     {
         id: 12,
         username: "user10",
         email: "user10@example.com",
-        role: "Người dùng",
+        role: "Cá nhân",
         status: true,
     },
 ]);
@@ -308,13 +383,13 @@ const currentAccount = ref({
     username: "",
     email: "",
     password: "",
-    role: "Người dùng",
+    role: "",
     status: true,
 });
 
 const isEditMode = ref(false);
 const currentPage = ref(1);
-const itemsPerPage = ref(5);
+const itemsPerPage = ref(10);
 
 // Computed properties
 const totalPages = computed(() => Math.ceil(accounts.value.length / itemsPerPage.value));
@@ -356,17 +431,18 @@ const changePage = (page) => {
     }
 };
 
-// const openAddModal = () => {
-//     isEditMode.value = false;
-//     currentAccount.value = {
-//         id: null,
-//         username: "",
-//         email: "",
-//         password: "",
-//         role: "Người dùng",
-//         status: true,
-//     };
-// };
+const openAddModal = () => {
+    isEditMode.value = false;
+    currentAccount.value = {
+        id: null,
+        username: "",
+        email: "",
+        password: "",
+        role: "",
+        status: true,
+    };
+    vaiTro.value = ''
+};
 
 const openEditModal = (account) => {
     isEditMode.value = true;
