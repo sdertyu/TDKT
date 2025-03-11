@@ -27,6 +27,7 @@ Route::middleware('auth.api')->group(function () {
         Route::get('/account/{id}', [TaiKhoanController::class, 'layThongTinTaiKhoan']);
         Route::post('/add', [TaiKhoanController::class, 'themTaiKhoan']);
         Route::put('/update', [TaiKhoanController::class, 'capNhatTaiKhoan']);
+        Route::delete('/delete/{id}', [TaiKhoanController::class, 'xoaTaiKhoan']);
     });
     Route::prefix('donvi')->group(function () {
         Route::get('/list', [DonViController::class, 'index']);
