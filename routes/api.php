@@ -16,4 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/login', [AccountController::class, 'index']);
-Route::middleware('auth.api')->post('/logout', [AccountController::class, 'logOut']);
+Route::middleware('auth.api')->group(function () {
+    Route::post('/logout', [AccountController::class, 'logOut']);
+    Route::get('/info', [AccountController::class, 'info']);
+});

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Http\Middleware\Authenticate;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
@@ -25,11 +24,16 @@ class AccountModel extends Authenticatable implements JWTSubject
 
     public function getJWTIdentifier()
     {
-        return (string) $this->getKey();
+        return $this->getKey();
     }
 
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function roles()
+    {
+        return $this->belongsTo(QuyenModel::class);
     }
 }

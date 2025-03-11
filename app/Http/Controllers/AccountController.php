@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\AccountModel;
+use App\Models\QueryBuilder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -14,7 +14,11 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AccountController extends Controller
 {
-    public function __construct() {}
+    protected $queryBuilder;
+    public function __construct(QueryBuilder $queryBuilder)
+    {
+        $this->queryBuilder = $queryBuilder;
+    }
     public function index(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -43,6 +47,21 @@ class AccountController extends Controller
         return response()->json([
             'message' => 'success',
             'user' => $user
+        ]);
+    }
+
+    public function info()
+    {
+        $user = auth()->user();
+
+        $currentUserInfo = AccountModel::where('api_token', '=', $user->api_token)
+        ->with('roles')->get();
+
+        $data = $this->queryBuilder->getAccountInfo($user->PK_MaTaiKhoan, $user->FK_MaQuyen);
+
+        return response()->json([
+            'message' => 'success',
+            'user' => $data
         ]);
     }
 
