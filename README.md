@@ -47,7 +47,7 @@
 ```sh
   php artisan key:generate
 ```
-    - Chạy migrations cơ sở dữ liệu:
+- Chạy migrations cơ sở dữ liệu:
 ```sh
   php artisan migrate
 ```
