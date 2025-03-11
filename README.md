@@ -71,3 +71,4 @@
   1. dev/backend: Sử dụng để push code backend
   2. dev/frontend: Sử dụng để push code frontend
   3. main: Là branch chính để triển khai server
+  ### Branch Test: Lấy từ main về để test toàn bộ project
