@@ -27,4 +27,8 @@ class QueryBuilder extends Model
         }
         return $array;
     }
+
+    public function capNhatCaNhan(){
+        
+    }
 }

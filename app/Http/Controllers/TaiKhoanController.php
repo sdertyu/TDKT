@@ -24,7 +24,9 @@ class TaiKhoanController extends Controller
         'myemail.required' => 'Vui lòng nhập email',
         'myemail.email' => 'Email không hợp lệ',
         'tenchucvu.required' => 'Vui lòng nhập tên chức vụ',
-        'gioitinh.required' => 'Vui lòng chọn giới tính'
+        'gioitinh.required' => 'Vui lòng chọn giới tính',
+        'id.required' => 'Thiếu mã tài khoản',
+        'id.exists' => 'Không tìm thấy tài khoản',
     ];
     public function index()
     {
@@ -110,6 +112,60 @@ class TaiKhoanController extends Controller
         return response()->json([
             'message' => "success",
             'taikhoan' => $taiKhoanMoi
+        ]);
+    }
+
+    public function layThongTinTaiKhoan($id)
+    {
+        $taiKhoan = AccountModel::find($id);
+        return response()->json([
+            'message' => "success",
+            'taikhoan' => $taiKhoan
+        ]);
+    }
+
+    public function capNhatTaiKhoan(Request $request)
+    {
+        $rules = [
+            'id' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
+            'username' => 'required|exists:tbltaikhoan,sUsername|max:50',
+            'password' => 'required|min:6',
+            'role' => 'required|exists:tblQuyen,PK_MaQuyen',
+        ];
+        if ($request->role == 3) {
+            $rules['madonvi'] = 'required|exists:tbldonvi,PK_MaDonVi';
+            $rules['tendonvi'] = 'required';
+        } else if ($request->role == 4) {
+            $rules['madonvi'] = 'required|exists:tbldonvi,PK_MaDonVi';
+            $rules['tencanhan'] = 'required';
+            $rules['myemail'] = 'required|email';
+            $rules['tenchucvu'] = 'required';
+            $rules['gioitinh'] = 'required';
+        }
+
+        $validator = Validator::make($request->all(), $rules, $this->messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ]);
+        }
+
+        // if ($request->role == 3) {
+        //     AccountModel::updateOrCreate(
+        //         ['PK_MaTaiKhoan' => $request->id],
+        //         [
+        //             'sUsername' => $request->username,
+        //             'sPassword' => bcrypt($request->password),
+        //             'sTrangThai' => 1
+        //         ]
+        //     );
+
+        // }
+
+
+        return response()->json([
+            'success' => 'Cập nhật thành công'
         ]);
     }
 }
