@@ -65,3 +65,9 @@
   php artisan serve
 ```
 * Truy cập đường dẫn [http://127.0.0.1:8000]
+
+## Github branch
+- Có 3 branch trong repository:
+  1. dev/backend: Sử dụng để push code backend
+  2. dev/frontend: Sử dụng để push code frontend
+  3. main: Là branch chính để triển khai server
