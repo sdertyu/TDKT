@@ -4,18 +4,15 @@
             <div class="row justify-content-center">
                 <div class="col-lg-5">
                     <div class="card shadow-lg border-0 rounded-lg mt-5">
-                        <div
-                            class="card-header bg-primary text-white text-center py-4 d-flex align-items-center justify-center">
+                        <div class="card-header bg-primary text-white text-center py-4">
                             <img src="/images/logo_hou.png" style="height: 80px;" alt="">
-                            <h3 class="font-weight-bold mb-0">
-                                Hệ thống quản lý thi đua khen thưởng
-                            </h3>
+                            <h3 class="font-weight-bold mb-0">Hệ thống quản lý thi đua khen thưởng</h3>
                         </div>
                         <div class="card-body p-4">
                             <!-- Thông báo lỗi -->
                             <div v-if="errorMessage" class="alert alert-danger alert-dismissible fade show"
                                 role="alert">
-                                <i class="fas fa-exclamation-circle me-2"></i>{{ errorMessage }}
+                                {{ errorMessage }}
                                 <button type="button" class="btn-close" @click="errorMessage = ''"></button>
                             </div>
 
@@ -48,12 +45,12 @@
                                         <div class="invalid-feedback">{{ passwordError }}</div>
                                     </div>
                                 </div>
+
                                 <!-- Login Button -->
                                 <div class="d-grid">
                                     <button type="submit" class="btn btn-primary btn-lg py-2" :disabled="isLoading">
                                         <span v-if="isLoading" class="spinner-border spinner-border-sm me-2"
                                             role="status"></span>
-                                        <i v-else class="fas fa-sign-in-alt me-2"></i>
                                         {{ isLoading ? 'Đang đăng nhập...' : 'Đăng nhập' }}
                                     </button>
                                 </div>
@@ -72,19 +69,18 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import { ref } from 'vue';
 
-// Khai báo biến reactive
 const username = ref('');
 const password = ref('');
-const rememberMe = ref(false);
 const showPassword = ref(false);
 const isLoading = ref(false);
 const errorMessage = ref('');
 const usernameError = ref('');
 const passwordError = ref('');
 
-// Hàm để hiển thị/ẩn mật khẩu
+// Hiển thị/ẩn mật khẩu
 const togglePassword = () => {
     showPassword.value = !showPassword.value;
 };
@@ -92,18 +88,13 @@ const togglePassword = () => {
 // Kiểm tra tính hợp lệ của form
 const validateForm = () => {
     let isValid = true;
-
-    // Reset lỗi
     usernameError.value = '';
     passwordError.value = '';
 
-    // Kiểm tra username
     if (!username.value.trim()) {
         usernameError.value = 'Vui lòng nhập tên đăng nhập';
         isValid = false;
     }
-
-    // Kiểm tra password
     if (!password.value) {
         passwordError.value = 'Vui lòng nhập mật khẩu';
         isValid = false;
@@ -115,76 +106,42 @@ const validateForm = () => {
     return isValid;
 };
 
-const uploadImage = (event) => {
-    const file = event.target.files[0];
-    const formData = new FormData();
-    formData.append('image', file);
-
-    axios.post('/api/images/logo_hou.png', formData)
-        .then(response => {
-            this.imagePath = response.data.path; // Ví dụ: "/uploads/images/filename.jpg"
-        })
-        .catch(error => {
-            console.error('Error uploading image:', error);
-        });
-}
-
-// Hàm xử lý khi submit form
-const submitLogin = async () => {
+// Xử lý khi submit form
+const submitLogin = () => {
     if (!validateForm()) return;
 
-    // Giả lập đăng nhập
-    try {
-        isLoading.value = true;
-        errorMessage.value = '';
-
-        // Giả lập API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Kiểm tra demo (trong thực tế sẽ thay bằng API call)
-        if (username.value === 'admin' && password.value === 'password') {
-            console.log('Đăng nhập thành công', {
-                username: username.value,
-                rememberMe: rememberMe.value
-            });
-
-            // Chuyển hướng (trong thực tế)
-            // router.push('/dashboard');
-        } else {
-            // Thông báo lỗi đăng nhập
-            errorMessage.value = 'Tên đăng nhập hoặc mật khẩu không chính xác!';
-        }
-    } catch (error) {
-        console.error('Lỗi đăng nhập:', error);
-        errorMessage.value = 'Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại sau.';
-    } finally {
-        isLoading.value = false;
-    }
+    isLoading.value = true;
+    axios.post('/api/login', {
+        username: username.value,
+        password: password.value,
+    })
+        .then(response => {
+            if (response.data.message === 'success') {
+                console.log("object");
+                localStorage.setItem('api_token', response.data.user.api_token);
+                window.location.href = '/quanlytaikhoan';
+            } else {
+                errorMessage.value = response.data.message || 'Đăng nhập thất bại';
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi đăng nhập:', error);
+            errorMessage.value = 'Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại sau.';
+        })
+        .finally(() => {
+            isLoading.value = false;
+        });
 };
 </script>
 
 <style scoped>
-/* Tùy chỉnh thêm (ngoài các class của Bootstrap và AdminLTE) */
 .card {
     transition: all 0.3s ease;
 }
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
-}
-
-.btn-outline-primary {
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    line-height: 40px;
-    text-align: center;
-}
-
-.btn-outline-primary i {
-    line-height: 38px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
 .login-page {

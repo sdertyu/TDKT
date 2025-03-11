@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\DonViController;
 use App\Http\Controllers\TaiKhoanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,14 @@ Route::middleware('auth.api')->group(function () {
     Route::get('/info', [AccountController::class, 'info']);
 
     Route::prefix('taikhoan')->group(function () {
-        Route::get('/dstaikhoan', [TaiKhoanController::class, 'index']);
+        Route::get('/list', [TaiKhoanController::class, 'index']);
+        Route::get('/account/{id}', [TaiKhoanController::class, 'layThongTinTaiKhoan']);
+        Route::post('/add', [TaiKhoanController::class, 'themTaiKhoan']);
+        Route::put('/update', [TaiKhoanController::class, 'capNhatTaiKhoan']);
+        Route::delete('/delete/{id}', [TaiKhoanController::class, 'xoaTaiKhoan']);
+    });
+    Route::prefix('donvi')->group(function () {
+        Route::get('/list', [DonViController::class, 'index']);
+        Route::post('/add', [DonViController::class, 'themDonVi']);
     });
 });

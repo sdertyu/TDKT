@@ -14,6 +14,13 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AccountController extends Controller
 {
+    protected $messages = [
+        'username.required' => 'Vui lòng nhập tên đăng nhập.',
+        'username.unique' => 'Tên đăng nhập đã tồn tại.',
+        'username.max' => 'Tên đăng nhập không được vượt quá 50 ký tự.',
+        'password.required' => 'Vui lòng nhập mật khẩu.',
+        'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+    ];
     protected $queryBuilder;
     public function __construct(QueryBuilder $queryBuilder)
     {
@@ -24,18 +31,23 @@ class AccountController extends Controller
         $validator = Validator::make($request->all(), [
             'username' => 'required|exists:tblTaiKhoan,sUsername',
             'password' => 'required',
-        ]);
+        ], $this->messages);
         if ($validator->fails()) {
             return response()->json([
                 'error' => $validator->errors()
-            ]);
+            ], 422);
         }
 
-        $user = AccountModel::where('sUsername', '=', $request->username)->first();
+        $user = AccountModel::where('sUsername', 'like', $request->username)->first();
 
-        if (!$user || Hash::check($request->password, $user->sPassword)) {
+        if (!$user) {
             return response()->json([
-                'message' => 'Tài khoản hoặc mật khẩu không chính xác'
+                'message' => 'Không tìm thấy tài khoản'
+            ]);
+        }
+        if (!Hash::check($request->password, $user->sPassword)) {
+            return response()->json([
+                'message' => 'Mật khẩu không chính xác'
             ]);
         }
         $user->makeHidden(['sPassword']);
@@ -46,8 +58,8 @@ class AccountController extends Controller
 
         return response()->json([
             'message' => 'success',
-            'user' => $user
-        ]);
+            'user' => $user,
+        ], 200);
     }
 
     public function info()
@@ -55,7 +67,7 @@ class AccountController extends Controller
         $user = auth()->user();
 
         $currentUserInfo = AccountModel::where('api_token', '=', $user->api_token)
-        ->with('roles')->get();
+            ->with('roles')->get();
 
         $data = $this->queryBuilder->getAccountInfo($user->PK_MaTaiKhoan, $user->FK_MaQuyen);
 
