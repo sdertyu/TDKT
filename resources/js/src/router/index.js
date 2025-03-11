@@ -3,6 +3,8 @@ import AccountView from "../views/AccountView.vue";
 import LoginView from "../views/LoginView.vue";
 import HomeView from "../views/HomeView.vue";
 
+import authMiddleware from "../middleware/auth";
+
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -11,6 +13,7 @@ const router = createRouter({
             name: "home",
             component: () => import("../layouts/LayoutView.vue"),
             redirect: "/home",
+            beforeEnter: authMiddleware,
             children: [
                 {
                     path: "/home",
