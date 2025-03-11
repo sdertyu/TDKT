@@ -14,9 +14,14 @@ class AccountModel extends Authenticatable implements JWTSubject
 
     protected $table = 'tbltaikhoan';
 
-    protected $hidden = ['password'];
+    protected $primaryKey = 'PK_MaTaiKhoan';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
-    protected $fillable = ['sUsername', 'sPassword'];
+    protected $hidden = ['sPassword'];
+
+    public $timestamps = false;
+    protected $fillable = ['sUsername', 'sPassword', 'api_token'];
 
     public function getJWTIdentifier()
     {

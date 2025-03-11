@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -30,17 +31,32 @@ class AccountController extends Controller
 
         if (!$user || Hash::check($request->password, $user->sPassword)) {
             return response()->json([
-                'message' => 'Cant find account'
+                'message' => 'Tài khoản hoặc mật khẩu không chính xác'
             ]);
         }
         $user->makeHidden(['sPassword']);
+        $user->api_token = Str::random(60);
+        $user->save();
 
-        $token = JWTAuth::fromUser($user);
+        Auth::login($user);
 
         return response()->json([
             'message' => 'success',
-            'token' => $token,
             'user' => $user
+        ]);
+    }
+
+    public function logOut(Request $request)
+    {
+        $user = auth()->user();
+
+        $logOutAccount = AccountModel::where('api_token', '=', $user->api_token)->first();
+
+        $logOutAccount->api_token = null;
+        $logOutAccount->save();
+
+        return response()->json([
+            'message' => 'Đăng xuất thành công',
         ]);
     }
 }
