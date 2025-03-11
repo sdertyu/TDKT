@@ -6,15 +6,15 @@
 
 ## Hướng Dẫn Cài Đặt
 
-### Điều Kiện Tiền Quyết
+### Điều Kiện Tiên Quyết
 
 Để bắt đầu, bạn cần đảm bảo có các công cụ sau:
-
 -   PHP: Phiên bản 8.1 hoặc cao hơn, phù hợp với yêu cầu của Laravel 10. [Download](https://laragon.org/download/)
 -   Node.js: Phiên bản 14 hoặc cao hơn, cần cho các dependencies frontend [Download](https://nodejs.org/en/download).
 -   Git: Để clone dự án từ GitHub [Download](https://git-scm.com/downloads).
 -   Cơ sở dữ liệu: MySQL (Laragon), nếu dự án sử dụng cơ sở dữ liệu.
 -   Trình soạn thảo mã: Như Visual Studio Code hoặc IDE khác để viết và quản lý mã.
+* <b>Lưu ý: </b> Truy cập file <mark>composer.json</mark> và <mark>package.json</mark> để kiểm tra phiên bản dependencies project đang chạy.
 
 ## Cấu hình cho project
 
@@ -30,11 +30,11 @@
 ```sh
   composer install
 ```
-- Sao chép tệp .evn
+- Sao chép tệp <mark>.evn</mark>
 ```sh
   cp .env.example .env
 ```
-- Mở file .env và thiết lập kết nối cơ sở dữ liệu:
+- Mở file <mark>.evn</mark> và thiết lập kết nối cơ sở dữ liệu:
 ```sh
     DB_CONNECTION=mysql  # hoặc postgres
     DB_HOST=127.0.0.1
@@ -43,7 +43,7 @@
     DB_USERNAME=ten-nguoi-dung
     DB_PASSWORD=mat-khau
 ```
-- Tạo app key cho .evn
+- Tạo app key cho <mark>.evn</mark>
 ```sh
   php artisan key:generate
 ```
