@@ -59,7 +59,7 @@ class AccountController extends Controller
         return response()->json([
             'message' => 'success',
             'user' => $user,
-        ]);
+        ], 200);
     }
 
     public function info()

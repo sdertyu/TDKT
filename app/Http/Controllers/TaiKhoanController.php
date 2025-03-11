@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\AccountModel;
 use App\Models\CaNhanModel;
 use App\Models\DonViModel;
+use Exception;
 use Illuminate\Support\Facades\Validator;
 
 class TaiKhoanController extends Controller
@@ -27,6 +28,7 @@ class TaiKhoanController extends Controller
         'gioitinh.required' => 'Vui lòng chọn giới tính',
         'id.required' => 'Thiếu mã tài khoản',
         'id.exists' => 'Không tìm thấy tài khoản',
+        'macanhan.exists' => 'Không tìm thấy mã cá nhân',
     ];
     public function index()
     {
@@ -127,20 +129,22 @@ class TaiKhoanController extends Controller
     public function capNhatTaiKhoan(Request $request)
     {
         $rules = [
-            'id' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
             'username' => 'required|exists:tbltaikhoan,sUsername|max:50',
             'password' => 'required|min:6',
             'role' => 'required|exists:tblQuyen,PK_MaQuyen',
         ];
         if ($request->role == 3) {
+            $rules['id'] = 'required|exists:tbltaikhoan,PK_MaTaiKhoan|exists:tbldonvi,FK_MaTaiKhoan';
             $rules['madonvi'] = 'required|exists:tbldonvi,PK_MaDonVi';
             $rules['tendonvi'] = 'required';
         } else if ($request->role == 4) {
+            $rules['id'] = 'required|exists:tbltaikhoan,PK_MaTaiKhoan|exists:tblcanhan,FK_MaTaiKhoan';
             $rules['madonvi'] = 'required|exists:tbldonvi,PK_MaDonVi';
+            $rules['macanhan'] = 'required|exists:tblcanhan,PK_MaCaNhan';
             $rules['tencanhan'] = 'required';
             $rules['myemail'] = 'required|email';
             $rules['tenchucvu'] = 'required';
-            $rules['gioitinh'] = 'required';
+            $rules['gioitinh'] = 'required|integer';
         }
 
         $validator = Validator::make($request->all(), $rules, $this->messages);
@@ -151,21 +155,76 @@ class TaiKhoanController extends Controller
             ]);
         }
 
-        // if ($request->role == 3) {
-        //     AccountModel::updateOrCreate(
-        //         ['PK_MaTaiKhoan' => $request->id],
-        //         [
-        //             'sUsername' => $request->username,
-        //             'sPassword' => bcrypt($request->password),
-        //             'sTrangThai' => 1
-        //         ]
-        //     );
+        if ($request->role == 3) {
+            $donViUpt = DonViModel::where('PK_MaDonVi', '=', $request->madonvi)->first();
+            if ($donViUpt) {
+                $donViUpt->update([
+                    'sTenDonVi' => $request->tendonvi,
+                ]);
+                $donViUpt->save();
 
-        // }
+                $taiKhoanUpt = AccountModel::where('PK_MaTaiKhoan', '=', $donViUpt->FK_MaTaiKhoan)->first();
+                if ($taiKhoanUpt) {
+                    $taiKhoanUpt->update([
+                        'sPassword' => bcrypt($request->password),
+                    ]);
+                    $taiKhoanUpt->save();
+                }
+            }
+        }
+        if ($request->role == 4) {
+            $caNhanUpt = CaNhanModel::where('PK_MaCaNhan', '=', $request->macanhan)->first();
+            if ($caNhanUpt) {
+                $caNhanUpt->update([
+                    'sTenCaNhan' => $request->tencanhan,
+                    'sEmail' => $request->myemail,
+                    'sTenChucVu' => $request->tenchucvu,
+                    'bGioiTinh' => $request->gioitinh,
+                ]);
+                $caNhanUpt->save();
 
+                $taiKhoanUpt = AccountModel::where('PK_MaTaiKhoan', '=', $caNhanUpt->FK_MaTaiKhoan)->first();
+                if ($taiKhoanUpt) {
+                    $taiKhoanUpt->update([
+                        'sPassword' => bcrypt($request->password),
+                    ]);
+                    $taiKhoanUpt->save();
+                }
+            }
+        }
 
         return response()->json([
-            'success' => 'Cập nhật thành công'
-        ]);
+            'success' => 'Cập nhật thành công',
+        ], 200);
+    }
+
+    public function xoaTaiKhoan($id)
+    {
+        $taiKhoanXoa = AccountModel::where('PK_MaTaiKhoan', '=', $id)->first();
+
+
+        if (!$taiKhoanXoa) {
+            return response()->json([
+                'message' => 'Không tìm thấy tài khoản'
+            ]);
+        } else {
+            if ($taiKhoanXoa->FK_MaQuyen == 3) {
+                $donViXoa = DonViModel::where('FK_MaTaiKhoan', '=', $taiKhoanXoa->PK_MaTaiKhoan)->first();
+                if ($donViXoa) {
+                    $donViXoa->delete();
+                }
+                $taiKhoanXoa->delete();
+            } else if ($taiKhoanXoa->FK_MaQuyen == 4) {
+                $caNhanXoa = CaNhanModel::where('FK_MaTaiKhoan', '=', $taiKhoanXoa->PK_MaTaiKhoan)->first();
+                if ($caNhanXoa) {
+                    $caNhanXoa->delete();
+                }
+                $taiKhoanXoa->delete();
+            }
+        }
+
+        return response()->json([
+            'message' => 'Xóa tài khoản thành công',
+        ], 200);
     }
 }
