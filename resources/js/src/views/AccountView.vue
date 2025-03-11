@@ -266,7 +266,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import axios from 'axios';
+import { ref, computed, onMounted } from 'vue';
 
 let caNhanHtml = `
     <div class="mb-3">
@@ -490,4 +491,14 @@ const getRoleBadgeClass = (role) => {
 const getStatusBadgeClass = (status) => {
     return status ? "badge bg-success" : "badge bg-secondary";
 };
+
+onMounted(() => {
+    axios.get('http://127.0.0.1:8000/api/taikhoan/list')
+        .then(response => {
+            console.log(response);
+        })
+        .catch(error => {
+            console.error('Error fetching accounts:', error);
+        });
+});
 </script>

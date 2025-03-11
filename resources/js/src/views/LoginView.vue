@@ -72,6 +72,8 @@
 </template>
 
 <script setup>
+import axios from 'axios';
+// import api from '../services/api';
 import { ref } from 'vue';
 
 // Khai báo biến reactive
@@ -115,45 +117,22 @@ const validateForm = () => {
     return isValid;
 };
 
-const uploadImage = (event) => {
-    const file = event.target.files[0];
-    const formData = new FormData();
-    formData.append('image', file);
-
-    axios.post('/api/images/logo_hou.png', formData)
-        .then(response => {
-            this.imagePath = response.data.path; // Ví dụ: "/uploads/images/filename.jpg"
-        })
-        .catch(error => {
-            console.error('Error uploading image:', error);
-        });
-}
-
 // Hàm xử lý khi submit form
 const submitLogin = async () => {
     if (!validateForm()) return;
 
     // Giả lập đăng nhập
     try {
-        isLoading.value = true;
-        errorMessage.value = '';
-
-        // Giả lập API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Kiểm tra demo (trong thực tế sẽ thay bằng API call)
-        if (username.value === 'admin' && password.value === 'password') {
-            console.log('Đăng nhập thành công', {
-                username: username.value,
-                rememberMe: rememberMe.value
-            });
-
-            // Chuyển hướng (trong thực tế)
-            // router.push('/dashboard');
-        } else {
-            // Thông báo lỗi đăng nhập
-            errorMessage.value = 'Tên đăng nhập hoặc mật khẩu không chính xác!';
-        }
+        axios.post('/api/login', {
+            username: username.value,
+            password: password.value,
+        }).then(response => {
+            console.log(response);
+        }).catch(error => {
+            console.error('Error fetching accounts:', error);
+        })
+        
+        
     } catch (error) {
         console.error('Lỗi đăng nhập:', error);
         errorMessage.value = 'Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại sau.';
