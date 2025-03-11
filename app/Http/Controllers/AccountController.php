@@ -31,18 +31,23 @@ class AccountController extends Controller
         $validator = Validator::make($request->all(), [
             'username' => 'required|exists:tblTaiKhoan,sUsername',
             'password' => 'required',
-        ],$this->messages);
+        ], $this->messages);
         if ($validator->fails()) {
             return response()->json([
                 'error' => $validator->errors()
-            ]);
+            ], 422);
         }
 
-        $user = AccountModel::where('sUsername', '=', $request->username)->first();
+        $user = AccountModel::where('sUsername', 'like', $request->username)->first();
 
-        if (!$user || Hash::check($request->password, $user->sPassword)) {
+        if (!$user) {
             return response()->json([
-                'message' => 'Tài khoản hoặc mật khẩu không chính xác'
+                'message' => 'Không tìm thấy tài khoản'
+            ]);
+        }
+        if (!Hash::check($request->password, $user->sPassword)) {
+            return response()->json([
+                'message' => 'Mật khẩu không chính xác'
             ]);
         }
         $user->makeHidden(['sPassword']);
@@ -53,7 +58,7 @@ class AccountController extends Controller
 
         return response()->json([
             'message' => 'success',
-            'user' => $user
+            'user' => $user,
         ]);
     }
 
@@ -62,7 +67,7 @@ class AccountController extends Controller
         $user = auth()->user();
 
         $currentUserInfo = AccountModel::where('api_token', '=', $user->api_token)
-        ->with('roles')->get();
+            ->with('roles')->get();
 
         $data = $this->queryBuilder->getAccountInfo($user->PK_MaTaiKhoan, $user->FK_MaQuyen);
 

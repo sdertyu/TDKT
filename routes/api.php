@@ -24,7 +24,9 @@ Route::middleware('auth.api')->group(function () {
 
     Route::prefix('taikhoan')->group(function () {
         Route::get('/list', [TaiKhoanController::class, 'index']);
+        Route::get('/account/{id}', [TaiKhoanController::class, 'layThongTinTaiKhoan']);
         Route::post('/add', [TaiKhoanController::class, 'themTaiKhoan']);
+        Route::put('/update', [TaiKhoanController::class, 'capNhatTaiKhoan']);
     });
     Route::prefix('donvi')->group(function () {
         Route::get('/list', [DonViController::class, 'index']);
