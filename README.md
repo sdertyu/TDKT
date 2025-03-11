@@ -26,20 +26,15 @@
 
 2. Mở dự án lên trong Visual Studio Code
 3. Cài đặt dependencies backend:
-    - Cài composer:
-
+- Cài composer:
 ```sh
   composer install
 ```
-
-    - Sao chép tệp .evn
-
+- Sao chép tệp .evn
 ```sh
   cp .env.example .env
 ```
-
-    - Mở file .env và thiết lập kết nối cơ sở dữ liệu:
-
+- Mở file .env và thiết lập kết nối cơ sở dữ liệu:
 ```sh
     DB_CONNECTION=mysql  # hoặc postgres
     DB_HOST=127.0.0.1
@@ -48,9 +43,7 @@
     DB_USERNAME=ten-nguoi-dung
     DB_PASSWORD=mat-khau
 ```
-
-    - Tạo app key cho .evn
-
+- Tạo app key cho .evn
 ```sh
   php artisan key:generate
 ```
@@ -58,7 +51,7 @@
 ```sh
   php artisan migrate
 ```
-    - Cài đặt dependencies frontend:
+- Cài đặt dependencies frontend:
 ```sh
   npm install
 ```
