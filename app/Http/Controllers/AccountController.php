@@ -14,6 +14,13 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AccountController extends Controller
 {
+    protected $messages = [
+        'username.required' => 'Vui lòng nhập tên đăng nhập.',
+        'username.unique' => 'Tên đăng nhập đã tồn tại.',
+        'username.max' => 'Tên đăng nhập không được vượt quá 50 ký tự.',
+        'password.required' => 'Vui lòng nhập mật khẩu.',
+        'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+    ];
     protected $queryBuilder;
     public function __construct(QueryBuilder $queryBuilder)
     {
@@ -24,7 +31,7 @@ class AccountController extends Controller
         $validator = Validator::make($request->all(), [
             'username' => 'required|exists:tblTaiKhoan,sUsername',
             'password' => 'required',
-        ]);
+        ],$this->messages);
         if ($validator->fails()) {
             return response()->json([
                 'error' => $validator->errors()
