@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\DonViController;
+use App\Http\Controllers\DotTDKTController;
 use App\Http\Controllers\TaiKhoanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,8 +31,9 @@ Route::middleware('auth.api')->group(function () {
         Route::put('/update', [TaiKhoanController::class, 'capNhatTaiKhoan']);
         Route::delete('/delete/{id}', [TaiKhoanController::class, 'xoaTaiKhoan']);
     });
-    Route::prefix('donvi')->group(function () {
-        Route::get('/list', [DonViController::class, 'index']);
-        Route::post('/add', [DonViController::class, 'themDonVi']);
+    Route::prefix('dotthiduakhenthuong')->group(function () {
+        Route::get('/list', [DotTDKTController::class, 'index']);
+        Route::post('/add', [DotTDKTController::class, 'themDotTDKT']);
+        Route::post('/update-trang-thai', [DotTDKTController::class, 'suaTrangThaiDot']);
     });
 });
