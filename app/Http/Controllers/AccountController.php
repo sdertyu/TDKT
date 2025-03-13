@@ -77,6 +77,43 @@ class AccountController extends Controller
         ]);
     }
 
+    public function changePassword(Request $request)
+    {
+        $user = auth()->user();
+
+        if ($user) {
+            $taiKhoanUpdate = AccountModel::where('api_token', '=', $user->api_token)->first();
+
+            $validator = Validator::make($request->all(), [
+                'username' => 'required|exists:tblTaiKhoan,sUsername',
+                'old_password' => 'required',
+                'new_password' => 'required|min:6',
+            ], $this->messages);
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => $validator->errors()
+                ], 422);
+            }
+            if (Hash::check($request->old_password, $taiKhoanUpdate->sPassword)) {
+                $taiKhoanUpdate->sPassword = bcrypt($request->new_password);
+                $taiKhoanUpdate->save();
+            } else {
+                return response()->json([
+                    'message' => 'Mật khẩu không chính xác'
+                ], 422);
+            }
+        } else {
+            return response()->json([
+                'message' => 'Bạn chưa đăng nhập'
+            ], 401);
+        }
+
+
+        return response()->json([
+            'message' => 'Cập nhật thành công',
+        ], 200);
+    }
+
     public function logOut(Request $request)
     {
         $user = auth()->user();

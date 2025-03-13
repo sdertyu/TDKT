@@ -21,6 +21,7 @@ Route::post('/login', [AccountController::class, 'index']);
 Route::middleware('auth.api')->group(function () {
     Route::post('/logout', [AccountController::class, 'logOut']);
     Route::get('/info', [AccountController::class, 'info']);
+    Route::put('/doi-mat-khau', [AccountController::class, 'changePassword']);
 
     Route::prefix('taikhoan')->group(function () {
         Route::get('/list', [TaiKhoanController::class, 'index']);
