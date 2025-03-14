@@ -119,11 +119,20 @@ class TaiKhoanController extends Controller
 
     public function layThongTinTaiKhoan($id)
     {
-        $taiKhoan = AccountModel::find($id);
+        $taiKhoan = AccountModel::where('PK_MaTaiKhoan', $id)->first();
+
+        if ($taiKhoan) {
+            $detailTaiKhoan = $taiKhoan->FK_MaQuyen == 4 ? AccountModel::where('PK_MaTaiKhoan', $id)->with('caNhan')->first() : AccountModel::where('PK_MaTaiKhoan', $id)->with('donVi')->first();
+        } else {
+            return response()->json([
+                'message' => "Không tìm thấy thông tin tài khoản này"
+            ], 404);
+        }
+
         return response()->json([
             'message' => "success",
-            'taikhoan' => $taiKhoan
-        ]);
+            'taikhoan' => $detailTaiKhoan
+        ], 200);
     }
 
     public function capNhatTaiKhoan(Request $request)
