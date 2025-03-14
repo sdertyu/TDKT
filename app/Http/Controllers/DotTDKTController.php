@@ -24,15 +24,15 @@ class DotTDKTController extends Controller
     }
     public function themDotTDKT(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'ngaytao' => 'required|date|after_or_equal:today',
-        ], $this->messages);
+        // $validator = Validator::make($request->all(), [
+        //     'ngaytao' => 'required|date|after_or_equal:today',
+        // ], $this->messages);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => $validator->errors()
-            ], 422);
-        }
+        // if ($validator->fails()) {
+        //     return response()->json([
+        //         'error' => $validator->errors()
+        //     ], 422);
+        // }
 
         $ngayTao = $request->ngaytao;
 
