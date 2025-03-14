@@ -1,8 +1,17 @@
 export default function authMiddleware(to, from, next) {
-    const apiToken = localStorage.getItem('api_token');
+    const apiToken = localStorage.getItem("api_token");
+
     if (!apiToken) {
-        // Nếu không có token thì chuyển về trang đăng nhập
-        return next('/login');
+        return next("/login"); // Nếu không có token, chuyển hướng login
     }
-    next(); // Nếu có token thì cho phép truy cập trang đó
+
+    // Lấy role từ localStorage và ép kiểu thành số
+    const userRole = Number(localStorage.getItem("role")) || 0; // Mặc định role = 0 nếu không có
+
+    // Kiểm tra quyền truy cập nếu route có yêu cầu quyền cụ thể
+    if (to.meta.roles && !to.meta.roles.includes(userRole)) {
+        return next("/403"); // Không có quyền → Chuyển hướng 403
+    }
+
+    next(); // Nếu hợp lệ, cho phép truy cập
 }

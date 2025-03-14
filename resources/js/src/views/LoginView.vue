@@ -9,12 +9,6 @@
                             <h3 class="font-weight-bold mb-0">Hệ thống quản lý thi đua khen thưởng</h3>
                         </div>
                         <div class="card-body p-4">
-                            <!-- Thông báo lỗi -->
-                            <div v-if="errorMessage" class="alert alert-danger alert-dismissible fade show"
-                                role="alert">
-                                {{ errorMessage }}
-                                <button type="button" class="btn-close" @click="errorMessage = ''"></button>
-                            </div>
 
                             <form @submit.prevent="submitLogin">
                                 <!-- Username -->
@@ -46,6 +40,13 @@
                                     </div>
                                 </div>
 
+                                <!-- Thông báo lỗi -->
+                                <div v-if="errorMessage" class="alert alert-danger alert-dismissible fade show"
+                                    role="alert">
+                                    {{ errorMessage }}
+                                    <button type="button" class="btn-close" @click="errorMessage = ''"></button>
+                                </div>
+
                                 <!-- Login Button -->
                                 <div class="d-grid">
                                     <button type="submit" class="btn btn-primary btn-lg py-2" :disabled="isLoading">
@@ -69,8 +70,13 @@
 </template>
 
 <script setup>
-import axios from 'axios';
+// import axios from 'axios';
 import { ref } from 'vue';
+import { useRoute } from 'vue-router';
+import router from '../router';
+// import { useRouter } from 'vue-router';
+// const router = useRouter();
+
 
 const username = ref('');
 const password = ref('');
@@ -117,9 +123,12 @@ const submitLogin = () => {
     })
         .then(response => {
             if (response.data.message === 'success') {
-                console.log("object");
+                console.log(response.data);
                 localStorage.setItem('api_token', response.data.user.api_token);
-                window.location.href = '/quanlytaikhoan';
+                localStorage.setItem('role', response.data.user.FK_MaQuyen);
+                localStorage.setItem('user_name', response.data.user.sUsername);
+                router.push('/');
+
             } else {
                 errorMessage.value = response.data.message || 'Đăng nhập thất bại';
             }
