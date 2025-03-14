@@ -22,6 +22,16 @@ class AccountModel extends Authenticatable implements JWTSubject
     public $timestamps = false;
     protected $fillable = ['sUsername', 'sPassword', 'api_token'];
 
+    public function donVi()
+    {
+        return $this->hasMany(DonViModel::class, 'FK_MaTaiKhoan', 'PK_MaTaiKhoan');
+    }
+
+    public function caNhan()
+    {
+        return $this->hasMany(CaNhanModel::class, 'FK_MaTaiKhoan', 'PK_MaTaiKhoan');
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
