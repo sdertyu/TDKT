@@ -3,40 +3,53 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
 import { ref } from 'vue';
 import SidebarMenu from '../sidebar/SidebarMenu.vue';
 
-const sidebarMenuItems = ref([
-    {
-        title: 'Quản lý tài khoản',
-        icon: 'bi bi-palette',
-        link: '/quanlytaikhoan',
-        isActive: false
-    },
-    {
-        title: 'Widgets',
-        icon: 'bi bi-box-seam-fill',
-        isActive: false,
-        isOpen: false,
-        children: [
+const role = ref(localStorage.getItem('role'));
+const sidebarMenuItems = ref([]);
+
+switch (role.value) {
+    case '1':
+        break;
+    case '2':
+        sidebarMenuItems.value = [
             {
-                title: 'Small Box',
-                icon: 'bi bi-circle',
-                link: '/dist/pages/widgets/small-box',
+                title: 'Quản lý tài khoản',
+                icon: 'bi bi-palette',
+                link: '/quanlytaikhoan',
                 isActive: false
             },
             {
-                title: 'info Box',
-                icon: 'bi bi-circle',
-                link: '/dist/pages/widgets/info-box',
-                isActive: false
+                title: 'Widgets',
+                icon: 'bi bi-box-seam-fill',
+                isActive: false,
+                isOpen: false,
+                children: [
+                    {
+                        title: 'Small Box',
+                        icon: 'bi bi-circle',
+                        link: '',
+                        isActive: false
+                    },
+                    {
+                        title: 'info Box',
+                        icon: 'bi bi-circle',
+                        link: '',
+                        isActive: false
+                    },
+                    {
+                        title: 'Cards',
+                        icon: 'bi bi-circle',
+                        link: '',
+                        isActive: false
+                    }
+                ]
             },
-            {
-                title: 'Cards',
-                icon: 'bi bi-circle',
-                link: '/dist/pages/widgets/cards',
-                isActive: false
-            }
-        ]
-    },
-]);
+        ];
+        break;
+    default:
+        break;
+}
+
+
 </script>
 
 <style scoped>
@@ -51,7 +64,7 @@ const sidebarMenuItems = ref([
 
         <div class="sidebar-brand">
 
-            <a class='brand-link' href='/dist/pages/'>
+            <a class='brand-link' href='/'>
 
                 <img src="/images/logo_hou.png" alt="AdminLTE Logo" class="brand-image opacity-75 shadow" />
 

@@ -42,9 +42,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="account in paginatedAccounts" :key="account.id">
-                                        <td class="text-center">{{ account.id }}</td>
-                                        <td>{{ account.username }}</td>
+                                    <tr v-for="(account, index) in paginatedAccounts" :key="index">
+                                        <td class="text-center">{{ ++index }}</td>
+                                        <td>{{ account.sUsername }}</td>
                                         <!-- <td>{{ account.email }}</td> -->
                                         <!-- <td>
                                             <span :class="getRoleBadgeClass(account.role)">{{
@@ -52,8 +52,8 @@
                                                 }}</span>
                                         </td> -->
                                         <td class="text-center">
-                                            <span :class="getStatusBadgeClass(account.status)">{{
-                                                account.status ? "Hoạt động" : "Tạm ngưng"
+                                            <span :class="getStatusBadgeClass(account.sTrangThai)">{{
+                                                account.sTrangThai == 1 ? "Hoạt động" : "Tạm ngưng"
                                             }}</span>
                                         </td>
                                         <td class="text-center">
@@ -142,7 +142,7 @@
                         <form @submit.prevent="saveAccount">
                             <div class="mb-3">
                                 <label for="username" class="form-label tex">Tên đăng nhập</label>
-                                <input type="text" class="form-control" id="username" v-model="currentAccount.username"
+                                <input type="text" class="form-control" id="username" v-model="currentAccount.sUsername"
                                     required />
                             </div>
                             <!-- <div class="mb-3">
@@ -162,11 +162,11 @@
                             </div>
                             <div class="mb-3">
                                 <label for="role" class="form-label">Vai trò</label>
-                                <select class="form-select" id="role" v-model="currentAccount.role" required>
+                                <select class="form-select" id="role" v-model="currentAccount.FK_MaQuyen" required>
                                     <!-- <option value="Admin"></option> -->
                                     <option value="" disabled selected>Lựa chọn vai trò</option>
-                                    <option value="Cá nhân">Cá nhân</option>
-                                    <option value="Đơn vị">Đơn vị</option>
+                                    <option value="4">Cá nhân</option>
+                                    <option value="3">Đơn vị</option>
                                 </select>
                             </div>
 
@@ -180,48 +180,48 @@
                                 </div>
                             </div>
 
-                            <div v-if="currentAccount.role == 'Cá nhân'">
+                            <div v-if="currentAccount.FK_MaQuyen == '4'">
                                 <div class="mb-3">
                                     <label for="username" class="form-label tex">Mã cá nhân</label>
                                     <input type="text" class="form-control" id="maCaNhan"
-                                         required />
+                                        v-model="currentAccount.macanhan" required />
                                 </div>
                                 <div class="mb-3">
                                     <label for="username" class="form-label tex">Tên cá nhân</label>
                                     <input type="text" class="form-control" id="fullName"
-                                         required />
+                                        v-model="currentAccount.tencanhan" required />
                                 </div>
                                 <div class="mb-3">
                                     <label for="username" class="form-label tex">Email</label>
-                                    <input type="text" class="form-control" id="email"
-                                         required />
+                                    <input type="text" class="form-control" id="email" v-model="currentAccount.email"
+                                        required />
                                 </div>
                                 <div class="mb-3">
                                     <label for="username" class="form-label tex">Tên chức vụ</label>
                                     <input type="text" class="form-control" id="tenChucVu"
-                                         required />
+                                        v-model="currentAccount.tenchucvu" required />
                                 </div>
                                 <div class="mb-3">
                                     <label for="username" class="form-label tex">Giới tính</label>
                                     <div class="input-group">
-                                        <input type="radio" name="gioiTinh" id="nam" value="0">
-                                        <label for="nam" class="mx-2">Nam</label>
-                                        <input type="radio" name="gioiTinh" id="nu" value="1">
+                                        <input type="radio" name="gioiTinh"  v-model="currentAccount.gioitinh" id="nam" value="0">
+                                        <label for="nam" class="mx-2" >Nam</label>
+                                        <input type="radio" name="gioiTinh" id="nu" value="1"  v-model="currentAccount.gioitinh">
                                         <label for="nu" class="mx-2">Nữ</label>
                                     </div>
                                 </div>
                             </div>
 
-                            <div v-if="currentAccount.role == 'Đơn vị'">
+                            <div v-if="currentAccount.FK_MaQuyen == '3'">
                                 <div class="mb-3">
                                     <label for="username" class="form-label text">Mã đơn vị</label>
                                     <input type="text" class="form-control" id="maDonVi"
-                                         required />
+                                        v-model="currentAccount.maDonVi" required />
                                 </div>
                                 <div class="mb-3">
                                     <label for="username" class="form-label tex">Tên đơn vị</label>
                                     <input type="text" class="form-control" id="tenDonVi"
-                                         required />
+                                        v-model="currentAccount.tenDonVi" required />
                                 </div>
                             </div>
 
@@ -249,7 +249,7 @@
                     </div>
                     <div class="modal-body">
                         Bạn có chắc chắn muốn xóa tài khoản
-                        <strong>{{ currentAccount.username }}</strong>?
+                        <strong>{{ currentAccount.sUsername }}</strong>?
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -266,16 +266,13 @@
 </template>
 
 <script setup>
+// import axios from 'axios';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 import { ref, computed, onMounted } from 'vue';
 
-let caNhanHtml = `
-    <div class="mb-3">
-        <label for="username" class="form-label tex">Tên đăng nhập</label>
-        <input type="text" class="form-control" id="username" v-model="currentAccount.username"
-            required />
-    </div>
-    `
+const accounts = ref([]);
+
 const isCheckPass = ref(false)
 const vaiTro = ref('')
 
@@ -283,109 +280,20 @@ const checkPass = () => {
     isCheckPass.value = !isCheckPass.value;
 }
 
-const caNhanSelect = () => {
-    // vaiTro.value = 
-}
-
-const donViSelect = () => {
-
-}
-
-// Data
-const accounts = ref([
-    {
-        id: 1,
-        username: "admin",
-        email: "admin@example.com",
-        role: "Admin",
-        status: true,
-    },
-    {
-        id: 2,
-        username: "manager",
-        email: "manager@example.com",
-        role: "Đơn vị",
-        status: true,
-    },
-    {
-        id: 3,
-        username: "user1",
-        email: "user1@example.com",
-        role: "Cá nhân",
-        status: true,
-    },
-    {
-        id: 4,
-        username: "user2",
-        email: "user2@example.com",
-        role: "Cá nhân",
-        status: false,
-    },
-    {
-        id: 5,
-        username: "user3",
-        email: "user3@example.com",
-        role: "Cá nhân",
-        status: true,
-    },
-    {
-        id: 6,
-        username: "user4",
-        email: "user4@example.com",
-        role: "Cá nhân",
-        status: true,
-    },
-    {
-        id: 7,
-        username: "user5",
-        email: "user5@example.com",
-        role: "Cá nhân",
-        status: false,
-    },
-    {
-        id: 8,
-        username: "user6",
-        email: "user6@example.com",
-        role: "Cá nhân",
-        status: true,
-    },
-    {
-        id: 9,
-        username: "user7",
-        email: "user7@example.com",
-        role: "Cá nhân",
-        status: true,
-    },
-    {
-        id: 10,
-        username: "user8",
-        email: "user8@example.com",
-        role: "Cá nhân",
-        status: false,
-    },
-    {
-        id: 11,
-        username: "user9",
-        email: "user9@example.com",
-        role: "Đơn vị",
-        status: true,
-    },
-    {
-        id: 12,
-        username: "user10",
-        email: "user10@example.com",
-        role: "Cá nhân",
-        status: true,
-    },
-]);
 
 const currentAccount = ref({
     id: null,
-    username: "",
+    sUsername: "",
     email: "",
     password: "",
-    role: "",
+    FK_MaQuyen: "",
     status: true,
+    maDonVi: "",
+    tenDonVi: "",
+    macanhan: "",
+    tencanhan: "",
+    tenchucvu: "",
+    gioitinh: ""
 });
 
 const isEditMode = ref(false);
@@ -436,10 +344,10 @@ const openAddModal = () => {
     isEditMode.value = false;
     currentAccount.value = {
         id: null,
-        username: "",
+        sUsername: "",
         email: "",
         password: "",
-        role: "",
+        FK_MaQuyen: "",
         status: true,
     };
     vaiTro.value = ''
@@ -448,6 +356,26 @@ const openAddModal = () => {
 const openEditModal = (account) => {
     isEditMode.value = true;
     currentAccount.value = { ...account };
+    axios.get('/api/taikhoan/account/' + account.PK_MaTaiKhoan, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    }).then(response => {
+        if (response.status == 200) {
+            currentAccount.value = response.data
+            console.log(response.data);
+        }
+    }).catch(error => {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            icon: 'error',
+            text: 'Lỗi khi lấy thông tin tài khoản',
+            timerProgressBar: true,
+        })
+    });
 };
 
 const confirmDelete = (account) => {
@@ -456,16 +384,74 @@ const confirmDelete = (account) => {
 
 const saveAccount = () => {
     if (isEditMode.value) {
-        const index = accounts.value.findIndex((a) => a.id === currentAccount.value.id);
-        if (index !== -1) {
-            accounts.value[index] = { ...currentAccount.value };
-        }
+        axios.post('/api/taikhoan/update',
+            {
+                username: currentAccount.value.sUsername,
+                password: currentAccount.value.password,
+                role: currentAccount.value.FK_MaQuyen,
+                madonvi: currentAccount.value.maDonVi, // Fix typo từ `maDonVij`
+                tendonvi: currentAccount.value.tenDonVi
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                }
+            }
+        )
+            .then(response => {
+                if (response.status == 200) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        icon: 'success',
+                        text: 'Cập nhật thành công',
+                        timerProgressBar: true,
+                    });
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
     } else {
-        const newId = Math.max(...accounts.value.map((a) => a.id), 0) + 1;
-        accounts.value.push({
-            ...currentAccount.value,
-            id: newId,
-        });
+        // const newId = Math.max(...accounts.value.map((a) => a.id), 0) + 1;
+        // accounts.value.push({
+        //     ...currentAccount.value,
+        //     id: newId,
+        // });
+        axios.post('/api/taikhoan/add',
+            {
+                username: currentAccount.value.sUsername,
+                password: currentAccount.value.password,
+                role: currentAccount.value.FK_MaQuyen,
+                madonvi: currentAccount.value.maDonVi, // Fix typo từ `maDonVij`
+                tendonvi: currentAccount.value.tenDonVi
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                }
+            }
+        )
+            .then(response => {
+                if (response.status == 200) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        icon: 'success',
+                        text: 'Thêm thành công',
+                        timerProgressBar: true,
+                    });
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+
     }
     document.getElementById("accountModal").querySelector(".btn-close").click();
 };
@@ -493,12 +479,27 @@ const getStatusBadgeClass = (status) => {
 };
 
 onMounted(() => {
-    axios.get('http://127.0.0.1:8000/api/taikhoan/list')
+    const token = localStorage.getItem('api_token');
+    axios.get('/api/taikhoan/list', {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
         .then(response => {
-            console.log(response);
+            
+
+            // Kiểm tra nếu response.data có chứa danh sách tài khoản bên trong
+            if (response.data && Array.isArray(response.data.data)) {
+                accounts.value = response.data.data; // Gán danh sách tài khoản từ API
+            } else {
+                accounts.value = []; // Nếu không có dữ liệu hợp lệ, gán mảng rỗng để tránh lỗi
+            }
         })
         .catch(error => {
-            console.error('Error fetching accounts:', error);
+            console.error("Lỗi khi lấy danh sách tài khoản:", error);
+            accounts.value = []; // Xử lý lỗi bằng cách gán mảng rỗng để tránh lỗi .slice()
         });
+
 });
+
 </script>

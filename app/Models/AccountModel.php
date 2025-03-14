@@ -36,4 +36,9 @@ class AccountModel extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(QuyenModel::class);
     }
+
+    public function nameLogin()
+    {
+        return $this->hasOne(DonViModel::class, 'user_id', 'id');
+    }
 }

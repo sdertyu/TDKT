@@ -52,6 +52,7 @@ class AccountController extends Controller
         }
         $user->makeHidden(['sPassword']);
         $user->api_token = Str::random(60);
+        // $user->ten = 
         $user->save();
 
         Auth::login($user);

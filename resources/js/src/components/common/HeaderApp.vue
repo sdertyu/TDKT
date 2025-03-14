@@ -21,13 +21,36 @@
                         <i class="bi bi-search"></i>
                     </a>
                 </li>
-              
+
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <!-- <img src="" class="user-image rounded-circle shadow"
+                            alt="User Image" /> -->
+                        <span class="d-none d-md-inline">Alexander Pierce</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-">
+                        <li class="dropdown-item" @click="goTo('/profile')" type="button"><i class="fa-solid fa-gear"></i> Tài khoản của tôi</li>
+                        <li class="dropdown-item" type="button" @click="logout"><i
+                                class="fa-solid fa-right-from-bracket"></i> Đăng xuất</li>
+                    </ul>
+                </li>
+
             </ul>
         </div>
     </nav>
 </template>
 <script setup>
+import { useRouter } from 'vue-router';
+const router = useRouter();
+const logout = () => {
+    localStorage.removeItem('api_token');
+    localStorage.removeItem('hasShownLoginAlert');
+    // this.$router.push('/login');
+    router.push('/login');
+}
 
-import ButtonLink from '../sidebar/ButtonLink.vue';
+const goTo = (link) => {
+    router.push(link);
+}
+
 </script>
-
