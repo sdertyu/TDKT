@@ -4,6 +4,7 @@ import LoginView from "../views/LoginView.vue";
 import HomeView from "../views/HomeView.vue";
 import ForbiddenView from "../views/ForbiddenView.vue"; // Trang lỗi 403
 import ChangePassView from "../views/ChangePassView.vue"; // Trang lỗi 403
+import QuanLyDotTDKT from "../views/QuanLyDotTDKT.vue";
 
 import authMiddleware from "../middleware/auth";
 
@@ -25,6 +26,10 @@ const router = createRouter({
                     path: "quanlytaikhoan",
                     component: AccountView,
                     meta: { roles: [2] } // Chỉ role 2 được vào
+                },
+                {
+                    path: "quanlydottdkt",
+                    component: QuanLyDotTDKT,
                 },
                 {
                     path: "profile",

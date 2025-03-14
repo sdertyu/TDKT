@@ -13,36 +13,42 @@ switch (role.value) {
         sidebarMenuItems.value = [
             {
                 title: 'Quản lý tài khoản',
-                icon: 'bi bi-palette',
+                icon: 'bi bi-person-exclamation',
                 link: '/quanlytaikhoan',
                 isActive: false
             },
             {
-                title: 'Widgets',
-                icon: 'bi bi-box-seam-fill',
-                isActive: false,
-                isOpen: false,
-                children: [
-                    {
-                        title: 'Small Box',
-                        icon: 'bi bi-circle',
-                        link: '',
-                        isActive: false
-                    },
-                    {
-                        title: 'info Box',
-                        icon: 'bi bi-circle',
-                        link: '',
-                        isActive: false
-                    },
-                    {
-                        title: 'Cards',
-                        icon: 'bi bi-circle',
-                        link: '',
-                        isActive: false
-                    }
-                ]
+                title: 'Quản lý đợt TĐKT',
+                icon: 'bi bi-calendar',
+                link: '/quanlydottdkt',
+                isActive: false
             },
+            // {
+            //     title: 'Widgets',
+            //     icon: 'bi bi-box-seam-fill',
+            //     isActive: false,
+            //     isOpen: false,
+            //     children: [
+            //         {
+            //             title: 'Small Box',
+            //             icon: 'bi bi-circle',
+            //             link: '',
+            //             isActive: false
+            //         },
+            //         {
+            //             title: 'info Box',
+            //             icon: 'bi bi-circle',
+            //             link: '',
+            //             isActive: false
+            //         },
+            //         {
+            //             title: 'Cards',
+            //             icon: 'bi bi-circle',
+            //             link: '',
+            //             isActive: false
+            //         }
+            //     ]
+            // },
         ];
         break;
     default:
