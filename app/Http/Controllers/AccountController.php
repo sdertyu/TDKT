@@ -50,6 +50,7 @@ class AccountController extends Controller
                 'message' => 'Mật khẩu không chính xác'
             ]);
         }
+        $user = $user->FK_MaQuyen == 4 ? AccountModel::where('PK_MaTaiKhoan', $user->PK_MaTaiKhoan)->with('caNhan')->first() : AccountModel::where('PK_MaTaiKhoan', $user->PK_MaTaiKhoan)->with('donVi')->first();
         $user->makeHidden(['sPassword']);
         $user->api_token = Str::random(60);
         // $user->ten = 
