@@ -30,6 +30,7 @@ Route::middleware('auth.api')->group(function () {
         Route::post('/add', [TaiKhoanController::class, 'themTaiKhoan']);
         Route::put('/update', [TaiKhoanController::class, 'capNhatTaiKhoan']);
         Route::delete('/delete/{id}', [TaiKhoanController::class, 'xoaTaiKhoan']);
+        Route::get('/donvi', [TaiKhoanController::class, 'layDanhSachDonVi']);
     });
     Route::prefix('dotthiduakhenthuong')->group(function () {
         Route::get('/list', [DotTDKTController::class, 'index']);

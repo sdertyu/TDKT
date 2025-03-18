@@ -26,7 +26,7 @@
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                         <!-- <img src="" class="user-image rounded-circle shadow"
                             alt="User Image" /> -->
-                        <span class="d-none d-md-inline">Alexander Pierce</span>
+                        <span class="d-none d-md-inline">{{ ten }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-">
                         <li class="dropdown-item" @click="goTo('/profile')" type="button"><i class="fa-solid fa-gear"></i> Tài khoản của tôi</li>
@@ -41,6 +41,9 @@
 </template>
 <script setup>
 import { useRouter } from 'vue-router';
+
+
+const ten = localStorage.getItem('ten') ? localStorage.getItem('ten') : "Phòng TCHC";
 const router = useRouter();
 const logout = () => {
     localStorage.removeItem('api_token');

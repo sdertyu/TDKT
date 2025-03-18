@@ -46,11 +46,17 @@ class TaiKhoanController extends Controller
             $rules = [
                 'username' => 'required|unique:tbltaikhoan,sUsername|max:50',
                 'password' => 'required|min:6',
+                'role'      => 'required|exists:tblQuyen,PK_MaQuyen|unique:tbltaikhoan,FK_MaQuyen',
+            ];
+        } else if ($request->role == 4) {
+            $rules = [
+                'username' => 'required|unique:tbltaikhoan,sUsername|max:50',
+                'password' => 'required|min:6',
                 'role' => 'required|exists:tblQuyen,PK_MaQuyen',
                 'madonvi' => 'required|unique:tbldonvi,PK_MaDonVi',
                 'tendonvi' => 'required',
             ];
-        } else if ($request->role == 4) {
+        } else if ($request->role == 5) {
             $rules = [
                 'username' => 'required|unique:tbltaikhoan,sUsername|max:50',
                 'password' => 'required|min:6',
@@ -67,10 +73,20 @@ class TaiKhoanController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'errors' => $validator->errors()
+                'icon' => 'error',
+                'message' => $validator->errors()->all() ? implode(', ', $validator->errors()->all()) : ''
             ]);
         }
         if ($request->role == 3) {
+            $tongTaiKhoan = count(AccountModel::all());
+            $taiKhoanMoi = new AccountModel();
+            $taiKhoanMoi->PK_MaTaiKhoan = 'user' . $tongTaiKhoan + 1;
+            $taiKhoanMoi->sUsername = $request->username;
+            $taiKhoanMoi->sPassword = bcrypt($request->password);
+            $taiKhoanMoi->FK_MaQuyen = $request->role;
+            $taiKhoanMoi->sTrangThai = 1;
+            $taiKhoanMoi->save();
+        } else if ($request->role == 4) {
             $tongTaiKhoan = count(AccountModel::all());
             $taiKhoanMoi = new AccountModel();
             $taiKhoanMoi->PK_MaTaiKhoan = 'user' . $tongTaiKhoan + 1;
@@ -88,7 +104,7 @@ class TaiKhoanController extends Controller
 
             $taiKhoanMoi->save();
             $donViMoi->save();
-        } else if ($request->role == 4) {
+        } else if ($request->role == 5) {
             $tongTaiKhoan = count(AccountModel::all());
             $taiKhoanMoi = new AccountModel();
             $taiKhoanMoi->PK_MaTaiKhoan = 'user' . $tongTaiKhoan + 1;
@@ -112,7 +128,8 @@ class TaiKhoanController extends Controller
             $caNhanMoi->save();
         }
         return response()->json([
-            'message' => "success",
+            'icon' => "success",
+            'message' => "Thêm thành công",
             'taikhoan' => $taiKhoanMoi
         ]);
     }
@@ -122,7 +139,7 @@ class TaiKhoanController extends Controller
         $taiKhoan = AccountModel::where('PK_MaTaiKhoan', $id)->first();
 
         if ($taiKhoan) {
-            $detailTaiKhoan = $taiKhoan->FK_MaQuyen == 4 ? AccountModel::where('PK_MaTaiKhoan', $id)->with('caNhan')->first() : AccountModel::where('PK_MaTaiKhoan', $id)->with('donVi')->first();
+            $detailTaiKhoan = $taiKhoan->FK_MaQuyen == 5 ? AccountModel::where('PK_MaTaiKhoan', $id)->with('caNhan')->first() : AccountModel::where('PK_MaTaiKhoan', $id)->with('donVi')->first();
         } else {
             return response()->json([
                 'message' => "Không tìm thấy thông tin tài khoản này"
@@ -139,14 +156,20 @@ class TaiKhoanController extends Controller
     {
         $rules = [
             'username' => 'required|exists:tbltaikhoan,sUsername|max:50',
-            'password' => 'required|min:6',
+            'password' => 'nullable|min:6', // mật khẩu không bắt buộc trừ khi tích ô "Đổi mật khẩu"
             'role' => 'required|exists:tblQuyen,PK_MaQuyen',
         ];
-        if ($request->role == 3) {
+        
+        // Kiểm tra nếu có yêu cầu "Đổi mật khẩu", thì mật khẩu sẽ là bắt buộc
+        if ($request->changePass == true) {
+            $rules['password'] = 'required|min:6'; // Bắt buộc nếu chọn đổi mật khẩu
+        }
+        
+        if ($request->role == 4) {
             $rules['id'] = 'required|exists:tbltaikhoan,PK_MaTaiKhoan|exists:tbldonvi,FK_MaTaiKhoan';
             $rules['madonvi'] = 'required|exists:tbldonvi,PK_MaDonVi';
             $rules['tendonvi'] = 'required';
-        } else if ($request->role == 4) {
+        } else if ($request->role == 5) {
             $rules['id'] = 'required|exists:tbltaikhoan,PK_MaTaiKhoan|exists:tblcanhan,FK_MaTaiKhoan';
             $rules['madonvi'] = 'required|exists:tbldonvi,PK_MaDonVi';
             $rules['macanhan'] = 'required|exists:tblcanhan,PK_MaCaNhan';
@@ -164,7 +187,7 @@ class TaiKhoanController extends Controller
             ]);
         }
 
-        if ($request->role == 3) {
+        if ($request->role == 4) {
             $donViUpt = DonViModel::where('PK_MaDonVi', '=', $request->madonvi)->first();
             if ($donViUpt) {
                 $donViUpt->update([
@@ -181,7 +204,7 @@ class TaiKhoanController extends Controller
                 }
             }
         }
-        if ($request->role == 4) {
+        if ($request->role == 5) {
             $caNhanUpt = CaNhanModel::where('PK_MaCaNhan', '=', $request->macanhan)->first();
             if ($caNhanUpt) {
                 $caNhanUpt->update([
@@ -234,6 +257,15 @@ class TaiKhoanController extends Controller
 
         return response()->json([
             'message' => 'Xóa tài khoản thành công',
+        ], 200);
+    }
+
+    public function layDanhSachDonVi()
+    {
+        $danhSachDonVi = DonViModel::all();
+        return response()->json([
+            'message' => 'success',
+            'danhSachDonVi' => $danhSachDonVi
         ], 200);
     }
 }
