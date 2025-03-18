@@ -150,23 +150,36 @@
                                 <input type="email" class="form-control" id="email" v-model="currentAccount.email"
                                     required />
                             </div> -->
-                            <div class="mb-3" v-if="!isEditMode">
+                            <div class="mb-3" v-if="isEditMode && changePass">
                                 <label for="password" class="form-label">Mật khẩu</label>
                                 <div class="input-group">
                                     <input :type="isCheckPass ? 'text' : 'password'" class="form-control" id="password"
-                                        v-model="currentAccount.password" required />
+                                        v-model="currentAccount.sPassword" required />
                                     <button @click="checkPass" class="input-group-text bg-light">
                                         <i :class="isCheckPass ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
                                     </button>
                                 </div>
                             </div>
+
+                            <div class="mb-3" v-if="isEditMode">
+                                <!-- <label for="password" class="form-label">Đổi mật khẩu</label> -->
+                                <div class="input-group">
+                                    <input type="checkbox" class="form-check-input" id="changePass"
+                                        style="transform: scale(1.25); margin-right: 10px; border-radius: 50%;"
+                                        v-model="changePass">
+                                    <label for="changePass" class="form-check-label" style="font-size: 18px;">Đổi mật
+                                        khẩu</label>
+                                </div>
+
+                            </div>
                             <div class="mb-3">
                                 <label for="role" class="form-label">Vai trò</label>
                                 <select class="form-select" id="role" v-model="currentAccount.FK_MaQuyen" required>
                                     <!-- <option value="Admin"></option> -->
-                                    <option value="" disabled selected>Lựa chọn vai trò</option>
-                                    <option value="4">Cá nhân</option>
-                                    <option value="3">Đơn vị</option>
+                                    <option value="" disabled selected>-- Lựa chọn vai trò --</option>
+                                    <option value="3">Hội đồng thi đua khen thưởng</option>
+                                    <option value="4">Đơn vị</option>
+                                    <option value="5">Cá nhân</option>
                                 </select>
                             </div>
 
@@ -180,16 +193,29 @@
                                 </div>
                             </div>
 
-                            <div v-if="currentAccount.FK_MaQuyen == '4'">
-                                <div class="mb-3">
+                            <div v-if="currentAccount.FK_MaQuyen == '5'">
+                                <!-- <div class="mb-3">
                                     <label for="username" class="form-label tex">Mã cá nhân</label>
                                     <input type="text" class="form-control" id="maCaNhan"
                                         v-model="currentAccount.macanhan" required />
-                                </div>
+                                </div> -->
                                 <div class="mb-3">
                                     <label for="username" class="form-label tex">Tên cá nhân</label>
                                     <input type="text" class="form-control" id="fullName"
                                         v-model="currentAccount.tencanhan" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="maDonVi" class="form-label">Thuộc đơn vị</label>
+                                    <select class="form-select" id="maDonVi" v-model="currentAccount.PK_MaDonVi"
+                                        required>
+                                        <option value="" disabled selected>-- Lựa chọn đơn vị --
+                                        </option>
+                                        <option v-for="item in listDonVi" :key="item.PK_MaDonVi"
+                                            :value="item.PK_MaDonVi">
+                                            {{ item.sTenDonVi }}
+                                        </option>
+                                    </select>
+
                                 </div>
                                 <div class="mb-3">
                                     <label for="username" class="form-label tex">Email</label>
@@ -204,24 +230,26 @@
                                 <div class="mb-3">
                                     <label for="username" class="form-label tex">Giới tính</label>
                                     <div class="input-group">
-                                        <input type="radio" name="gioiTinh"  v-model="currentAccount.gioitinh" id="nam" value="0">
-                                        <label for="nam" class="mx-2" >Nam</label>
-                                        <input type="radio" name="gioiTinh" id="nu" value="1"  v-model="currentAccount.gioitinh">
+                                        <input type="radio" name="gioiTinh" v-model="currentAccount.gioitinh" id="nam"
+                                            value="0">
+                                        <label for="nam" class="mx-2">Nam</label>
+                                        <input type="radio" name="gioiTinh" id="nu" value="1"
+                                            v-model="currentAccount.gioitinh">
                                         <label for="nu" class="mx-2">Nữ</label>
                                     </div>
                                 </div>
                             </div>
 
-                            <div v-if="currentAccount.FK_MaQuyen == '3'">
+                            <div v-if="currentAccount.FK_MaQuyen == '4'">
                                 <div class="mb-3">
                                     <label for="username" class="form-label text">Mã đơn vị</label>
                                     <input type="text" class="form-control" id="maDonVi"
-                                        v-model="currentAccount.maDonVi" required />
+                                        v-model="currentAccount.PK_MaDonVi" required />
                                 </div>
                                 <div class="mb-3">
                                     <label for="username" class="form-label tex">Tên đơn vị</label>
                                     <input type="text" class="form-control" id="tenDonVi"
-                                        v-model="currentAccount.tenDonVi" required />
+                                        v-model="currentAccount.sTenDonVi" required />
                                 </div>
                             </div>
 
@@ -268,10 +296,13 @@
 <script setup>
 // import axios from 'axios';
 import axios from 'axios';
+import { data } from 'jquery';
 import Swal from 'sweetalert2';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 
 const accounts = ref([]);
+const listDonVi = ref([]);
+const changePass = ref(false);
 
 const isCheckPass = ref(false)
 const vaiTro = ref('')
@@ -280,16 +311,24 @@ const checkPass = () => {
     isCheckPass.value = !isCheckPass.value;
 }
 
+watch(changePass, (newValue) => {
+    // Chỉ thay đổi giá trị nếu nó khác với giá trị hiện tại
+    if (newValue !== changePass.value) {
+        changePass.value = !newValue;  // Lật giá trị của `changePass`
+    }
+    console.log(changePass.value); // In giá trị mới của `changePass`
+});
+
 
 const currentAccount = ref({
     id: null,
     sUsername: "",
     email: "",
-    password: "",
+    sPassword: "",
     FK_MaQuyen: "",
     status: true,
-    maDonVi: "",
-    tenDonVi: "",
+    PK_MaDonVi: "",
+    sTenDonVi: "",
     macanhan: "",
     tencanhan: "",
     tenchucvu: "",
@@ -346,24 +385,48 @@ const openAddModal = () => {
         id: null,
         sUsername: "",
         email: "",
-        password: "",
+        sPassword: "",
         FK_MaQuyen: "",
         status: true,
+        PK_MaDonVi: "",
+        sTenDonVi: "",
+        macanhan: "",
+        tencanhan: "",
+        tenchucvu: "",
+        gioitinh: ""
     };
+    changePass.value = false
     vaiTro.value = ''
 };
 
 const openEditModal = (account) => {
     isEditMode.value = true;
-    currentAccount.value = { ...account };
+    // currentAccount.value = { ...account };
     axios.get('/api/taikhoan/account/' + account.PK_MaTaiKhoan, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('api_token')}`
         }
     }).then(response => {
         if (response.status == 200) {
-            currentAccount.value = response.data
-            console.log(response.data);
+            let data = response.data.taikhoan;
+            currentAccount.value.sUsername = data.sUsername;
+            currentAccount.value.id = data.PK_MaTaiKhoan;
+            currentAccount.value.sPassword = data.sPassword;
+            currentAccount.value.FK_MaQuyen = data.FK_MaQuyen;
+            if (data.FK_MaQuyen == 4) {
+                currentAccount.value.PK_MaDonVi = data.don_vi[0].PK_MaDonVi;
+                currentAccount.value.sTenDonVi = data.don_vi[0].sTenDonVi;
+            }
+            else if (data.FK_MaQuyen == 5) {
+                currentAccount.value.macanhan = data.ca_nhan[0].PK_MaCaNhan;
+                currentAccount.value.tencanhan = data.ca_nhan[0].sTenCaNhan;
+                currentAccount.value.tenchucvu = data.ca_nhan[0].sTenChucVu;
+                currentAccount.value.email = data.ca_nhan[0].sEmail;
+                currentAccount.value.gioitinh = data.ca_nhan[0].bGioiTinh;
+                currentAccount.value.PK_MaDonVi = data.ca_nhan[0].FK_MaDonVi;
+                console.log(currentAccount.value.PK_MaDonVi);
+            }
+            // 
         }
     }).catch(error => {
         Swal.fire({
@@ -372,7 +435,7 @@ const openEditModal = (account) => {
             showConfirmButton: false,
             timer: 3000,
             icon: 'error',
-            text: 'Lỗi khi lấy thông tin tài khoản',
+            text: error.message,
             timerProgressBar: true,
         })
     });
@@ -384,14 +447,39 @@ const confirmDelete = (account) => {
 
 const saveAccount = () => {
     if (isEditMode.value) {
-        axios.post('/api/taikhoan/update',
-            {
+        let data = {};
+
+        if (currentAccount.value.FK_MaQuyen == '3') {
+            data = {
                 username: currentAccount.value.sUsername,
-                password: currentAccount.value.password,
                 role: currentAccount.value.FK_MaQuyen,
-                madonvi: currentAccount.value.maDonVi, // Fix typo từ `maDonVij`
-                tendonvi: currentAccount.value.tenDonVi
-            },
+            }
+        }
+        else if (currentAccount.value.FK_MaQuyen == '4') {
+            data = {
+                username: currentAccount.value.sUsername,
+                role: currentAccount.value.FK_MaQuyen,
+                madonvi: currentAccount.value.PK_MaDonVi,
+                tendonvi: currentAccount.value.sTenDonVi
+            };
+        } else if (currentAccount.value.FK_MaQuyen == '5') {
+            data = {
+                id: currentAccount.value.id,
+                username: currentAccount.value.sUsername,
+                role: currentAccount.value.FK_MaQuyen,
+                madonvi: currentAccount.value.PK_MaDonVi,
+                tencanhan: currentAccount.value.tencanhan,
+                myemail: currentAccount.value.email,
+                tenchucvu: currentAccount.value.tenchucvu,
+                gioitinh: currentAccount.value.gioitinh,
+                macanhan: currentAccount.value.macanhan
+            };
+        }
+        if (changePass.value) {
+            data.password = currentAccount.value.sPassword
+        }
+        data.changePass = changePass.value
+        axios.put('/api/taikhoan/update', data,
             {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('api_token')}`
@@ -406,7 +494,7 @@ const saveAccount = () => {
                         showConfirmButton: false,
                         timer: 3000,
                         icon: 'success',
-                        text: 'Cập nhật thành công',
+                        text: 'fff',
                         timerProgressBar: true,
                     });
                 }
@@ -415,19 +503,37 @@ const saveAccount = () => {
                 console.error(error);
             });
     } else {
-        // const newId = Math.max(...accounts.value.map((a) => a.id), 0) + 1;
-        // accounts.value.push({
-        //     ...currentAccount.value,
-        //     id: newId,
-        // });
-        axios.post('/api/taikhoan/add',
-            {
+        let data = {};
+
+        if (currentAccount.value.FK_MaQuyen == '3') {
+            data = {
                 username: currentAccount.value.sUsername,
-                password: currentAccount.value.password,
+                password: currentAccount.value.sPassword,
                 role: currentAccount.value.FK_MaQuyen,
-                madonvi: currentAccount.value.maDonVi, // Fix typo từ `maDonVij`
-                tendonvi: currentAccount.value.tenDonVi
-            },
+            }
+        }
+        else if (currentAccount.value.FK_MaQuyen == '4') {
+            data = {
+                username: currentAccount.value.sUsername,
+                password: currentAccount.value.sPassword,
+                role: currentAccount.value.FK_MaQuyen,
+                madonvi: currentAccount.value.PK_MaDonVi,
+                tendonvi: currentAccount.value.sTenDonVi
+            };
+        } else if (currentAccount.value.FK_MaQuyen == '5') {
+            data = {
+                username: currentAccount.value.sUsername,
+                password: currentAccount.value.sPassword,
+                role: currentAccount.value.FK_MaQuyen,
+                madonvi: currentAccount.value.PK_MaDonVi,
+                tencanhan: currentAccount.value.tencanhan,
+                myemail: currentAccount.value.email,
+                tenchucvu: currentAccount.value.tenchucvu,
+                gioitinh: currentAccount.value.gioitinh
+            };
+        }
+
+        axios.post('/api/taikhoan/add', data,
             {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('api_token')}`
@@ -441,8 +547,8 @@ const saveAccount = () => {
                         position: 'top-end',
                         showConfirmButton: false,
                         timer: 3000,
-                        icon: 'success',
-                        text: 'Thêm thành công',
+                        icon: response.data.icon,
+                        text: response.data.message,
                         timerProgressBar: true,
                     });
                 }
@@ -478,6 +584,24 @@ const getStatusBadgeClass = (status) => {
     return status ? "badge bg-success" : "badge bg-secondary";
 };
 
+const fetchDonViList = async () => {
+    try {
+        const response = await axios.get('/api/taikhoan/donvi', {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            }
+        });
+
+        if (response.status === 200) {
+            listDonVi.value = response.data.danhSachDonVi; // Giả sử API trả về danh sách trong `data`
+            // console.log(response.data);
+        }
+    } catch (error) {
+        console.error("Lỗi khi lấy danh sách đơn vị:", error);
+        listDonVi.value = [];
+    }
+};
+
 onMounted(() => {
     const token = localStorage.getItem('api_token');
     axios.get('/api/taikhoan/list', {
@@ -486,7 +610,7 @@ onMounted(() => {
         }
     })
         .then(response => {
-            
+
 
             // Kiểm tra nếu response.data có chứa danh sách tài khoản bên trong
             if (response.data && Array.isArray(response.data.data)) {
@@ -499,6 +623,8 @@ onMounted(() => {
             console.error("Lỗi khi lấy danh sách tài khoản:", error);
             accounts.value = []; // Xử lý lỗi bằng cách gán mảng rỗng để tránh lỗi .slice()
         });
+
+    fetchDonViList();
 
 });
 

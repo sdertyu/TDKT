@@ -127,6 +127,23 @@ const submitLogin = () => {
                 localStorage.setItem('api_token', response.data.user.api_token);
                 localStorage.setItem('role', response.data.user.FK_MaQuyen);
                 localStorage.setItem('user_name', response.data.user.sUsername);
+                switch (response.data.user.FK_MaQuyen) {
+                    case 1:
+                        localStorage.setItem('ten', "Phòng TCHC");
+                        break;
+                    case 2:
+                        localStorage.setItem('ten', "Hội đồng TĐKT");
+                        break;
+                    case 3:
+                        localStorage.setItem('ten', response.data.user.don_vi[0].sTenDonVi);
+                        break;
+                    case 4:
+                        localStorage.setItem('ten', response.data.user.ca_nhan[0].sTenCaNhan);
+                        break;
+                    default:
+                        localStorage.setItem('ten', 'Unknown');
+                        break;
+                }
                 router.push('/');
 
             } else {
