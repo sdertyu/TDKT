@@ -1,10 +1,45 @@
 <script setup>
 import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import SidebarMenu from '../sidebar/SidebarMenu.vue';
+import { useRoute } from 'vue-router';
 
+const route = useRoute();
 const role = ref(localStorage.getItem('role'));
 const sidebarMenuItems = ref([]);
+
+// Hàm để thiết lập trạng thái active dựa trên URL hiện tại
+const setActiveMenuItem = () => {
+    const currentPath = route.path;
+    
+    sidebarMenuItems.value.forEach(item => {
+        // Kiểm tra item chính
+        if (item.link === currentPath) {
+            item.isActive = true;
+        } else {
+            item.isActive = false;
+        }
+        
+        // Kiểm tra các item con nếu có
+        if (item.children && item.children.length > 0) {
+            const hasActiveChild = item.children.some(child => {
+                if (child.link === currentPath) {
+                    child.isActive = true;
+                    return true;
+                } else {
+                    child.isActive = false;
+                    return false;
+                }
+            });
+            
+            // Nếu có item con active, mở rộng menu cha
+            if (hasActiveChild) {
+                item.isOpen = true;
+                item.isActive = true;
+            }
+        }
+    });
+};
 
 switch (role.value) {
     case '1':
@@ -21,6 +56,12 @@ switch (role.value) {
                 title: 'Quản lý đợt TĐKT',
                 icon: 'bi bi-calendar',
                 link: '/quanlydottdkt',
+                isActive: false
+            },
+            {
+                title: 'Quản lý danh hiệu',
+                icon: 'bi bi-award',
+                link: '/quanlydanhhieu',
                 isActive: false
             },
             // {
@@ -51,10 +92,82 @@ switch (role.value) {
             // },
         ];
         break;
+    case '3':
+        sidebarMenuItems.value = [
+            {
+                title: 'Quản lý tài khoản',
+                icon: 'bi bi-person-exclamation',
+                link: '/quanlytaikhoan',
+                isActive: false
+            },
+        ];
+        break;
+    case '4':
+        sidebarMenuItems.value = [
+            {
+                title: 'Quản lý bình bầu',
+                icon: 'bi bi-box-seam-fill',
+                isActive: false,
+                isOpen: false,
+                children: [
+                    {
+                        title: 'Khen thưởng theo đợt',
+                        icon: 'bi bi-award',
+                        link: '/khenthuongdot',
+                        isActive: false
+                    },
+                    {
+                        title: 'Khen thưởng đột xuất',
+                        icon: 'bi bi-circle',
+                        link: '/khenthuongdotxuat',
+                        isActive: false
+                    },
+                ]
+            },
+            {
+                title: 'Quản lý đề xuất',
+                icon: 'bi bi-file-earmark-text',
+                isActive: false,
+                isOpen: false,
+                children: [
+                    {
+                        title: 'Đề xuất theo đợt',
+                        icon: 'bi bi-award',
+                        link: '/dexuattheodot',
+                        isActive: false
+                    },
+                    {
+                        title: 'Đề xuất đột xuất',
+                        icon: 'bi bi-circle',
+                        link: '/dexuatdotxuat',
+                        isActive: false
+                    }
+                ]
+            }
+        ];
+        break;
+    case '5':
+        sidebarMenuItems.value = [
+            {
+                title: 'Quản lý tài khoản',
+                icon: 'bi bi-person-exclamation',
+                link: '/quanlytaikhoan',
+                isActive: false
+            },
+        ];
+        break;
     default:
         break;
 }
 
+// Theo dõi thay đổi route để cập nhật trạng thái active
+watch(() => route.path, () => {
+    setActiveMenuItem();
+}, { immediate: true });
+
+onMounted(() => {
+    setActiveMenuItem();
+});
 
 </script>
 
