@@ -1,41 +1,100 @@
+# version: '3.8'
+
+# services:
+#   laravel:
+#     image: laravel-app
+#     build:
+#       context: .
+#       dockerfile: Dockerfile-laravel
+#     volumes:
+#       - .:/var/www/html
+#     depends_on:
+#       - db
+#     networks:
+#       - app-network
+
+#   nginx:
+#     image: nginx:latest
+#     ports:
+#       - "80:80"
+#     volumes:
+#       - ./nginx.conf:/etc/nginx/nginx.conf
+#       - ./resources/dist:/usr/share/nginx/html
+#     depends_on:
+#       - laravel
+#     networks:
+#       - app-network
+
+#   db:
+#     image: mysql:8.0
+#     environment:
+#       MYSQL_ROOT_PASSWORD: root
+#       MYSQL_DATABASE: laravel
+#       MYSQL_USER: laravel_user
+#       MYSQL_PASSWORD: laravel_password
+#     volumes:
+#       - db-data:/var/lib/mysql
+#     networks:
+#       - app-network
+
+# networks:
+#   app-network:
+#     driver: bridge
+
+# volumes:
+#   db-data:
+
+
 version: '3.8'
 
 services:
-  app:
-    build:
-      context: ./app
-      dockerfile: Dockerfile
-    image: my-laravel-vue-app
-    container_name: laravel-vue
-    ports:
-      - "9000:9000"
-    volumes:
-      - ./app:/var/www/html
-    environment:
-      - APP_ENV=local
-      - APP_DEBUG=true
-      - APP_KEY=base64:your_app_key_here
-      - DB_CONNECTION=mysql
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_DATABASE=your_db
-      - DB_USERNAME=your_user
-      - DB_PASSWORD=your_pass
-    depends_on:
-      - db
-
-  db:
-    image: mysql:8.0
+  # MySQL service
+  mysql:
     container_name: mysql
+    image: mysql:8.0
+    restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "3309:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: your_db
-      MYSQL_USER: your_user
-      MYSQL_PASSWORD: your_pass
+      MYSQL_DATABASE: tdkt
+      MYSQL_ROOT_PASSWORD: your_root_password_here  # Đặt mật khẩu cho root user
+    networks:
+      - laravel
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql  # Lưu dữ liệu tránh mất khi container bị xoá
 
+
+  # Laravel service (Giả sử bạn có Dockerfile cho Laravel)
+  laravel:
+    build:
+      context: .
+      dockerfile: Dockerfile-laravel
+    image: laravel-app
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - mysql
+    networks:
+      - laravel
+
+  # Nginx service (Giả sử bạn có file cấu hình nginx.conf)
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./resources/dist:/usr/share/nginx/html
+    depends_on:
+      - laravel
+    networks:
+      - laravel
+
+# Định nghĩa mạng
+networks:
+  laravel:
+    driver: bridge
+
+# Định nghĩa volume lưu trữ dữ liệu MySQL
 volumes:
   mysql_data:

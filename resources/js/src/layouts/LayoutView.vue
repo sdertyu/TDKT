@@ -19,5 +19,4 @@ onMounted(async () => {
   const adminlte = await import('admin-lte/dist/js/adminlte.min.js');
 });
 
-
 </script>

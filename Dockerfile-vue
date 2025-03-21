@@ -1,0 +1,19 @@
+# Use an official Node runtime as the base image
+FROM node:18-alpine
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY resources/package*.json ./
+
+# Install project dependencies
+RUN npm install
+
+# Copy the Vue.js application code
+COPY resources/ .
+
+# Build the Vue.js application
+RUN npm run build
+
+# No CMD needed since Nginx will serve the static files
