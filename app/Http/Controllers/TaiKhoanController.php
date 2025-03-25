@@ -242,12 +242,12 @@ class TaiKhoanController extends Controller
             ], 404);
         }
 
-        $taiKhoanKhoa->update([
-            'sTrangThai' => 0
-        ]);
+        $taiKhoanKhoa->sTrangThai = 0;
+        $taiKhoanKhoa->save();
 
         return response()->json([
-            'message' => 'Đã khóa tài khoản'
+            'message' => 'Đã khóa tài khoản',
+            'taikhoan' => $taiKhoanKhoa
         ], 200);
     }
 
