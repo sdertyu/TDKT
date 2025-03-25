@@ -98,6 +98,16 @@ class DotTDKTController extends Controller
         ]);
     }
 
+    public function layDotActive()
+    {
+        $dotTDKT = DotTDKTModel::where('bTrangThai', '=', 1)->with('vanbandinhkem')->first();
+
+        return response()->json([
+            'message' => 'Thành công',
+            'data' => $dotTDKT
+        ]);
+    }
+
     public function themVanBanDinhKem(Request $request)
     {
         $validator = Validator::make($request->all(), [

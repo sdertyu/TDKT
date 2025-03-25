@@ -39,6 +39,7 @@ Route::middleware('auth.api')->group(function () {
         Route::post('/add', [DotTDKTController::class, 'themDotTDKT']);
         Route::put('/update-trang-thai', [DotTDKTController::class, 'suaTrangThaiDot']);
         Route::get('/thong-tin-dot/{id}', [DotTDKTController::class, 'layThongTinDot']);
+        Route::get('/dot-active', [DotTDKTController::class, 'layDotActive']);
         Route::post('/them-van-ban', [DotTDKTController::class, 'themVanBanDinhKem']);
     });
     Route::prefix('hoidong')->group(function () {
