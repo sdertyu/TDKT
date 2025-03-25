@@ -21,6 +21,8 @@ class TaiKhoanController extends Controller
         'role.exists' => 'Vai trò không hợp lệ.',
         'madonvi.exists' => 'Không tìm thấy mã đơn vị',
         'tendonvi.required' => "Vui lòng nhập tên đơn vị",
+        'macanhan.required' => 'Vui lòng nhập mã cá nhân',
+        'macanhan.exists' => 'Đã tồn tại cá nhân này',
         'tencanhan.required' => 'Vui lòng nhập tên cá nhân',
         'myemail.required' => 'Vui lòng nhập email',
         'myemail.email' => 'Email không hợp lệ',
@@ -28,7 +30,6 @@ class TaiKhoanController extends Controller
         'gioitinh.required' => 'Vui lòng chọn giới tính',
         'id.required' => 'Thiếu mã tài khoản',
         'id.exists' => 'Không tìm thấy tài khoản',
-        'macanhan.exists' => 'Không tìm thấy mã cá nhân',
     ];
     public function index()
     {
@@ -62,6 +63,7 @@ class TaiKhoanController extends Controller
                 'password' => 'required|min:6',
                 'role' => 'required|exists:tblQuyen,PK_MaQuyen',
                 'madonvi' => 'required|exists:tbldonvi,PK_MaDonVi',
+                'macanhan' => 'required|unique:tblcanhan,PK_MaCaNhan',
                 'tencanhan' => 'required',
                 'myemail' => 'required|email',
                 'tenchucvu' => 'required',
@@ -116,7 +118,7 @@ class TaiKhoanController extends Controller
             $tongCaNhan = count(CaNhanModel::all());
             $caNhanMoi = new CaNhanModel();
 
-            $caNhanMoi->PK_MaCaNhan = 'cn_' . $tongCaNhan + 1;
+            $caNhanMoi->PK_MaCaNhan = $request->macanhan;
             $caNhanMoi->FK_MaDonVi = $request->madonvi;
             $caNhanMoi->sTenCaNhan = $request->tencanhan;
             $caNhanMoi->sEmail = $request->myemail;
@@ -227,6 +229,25 @@ class TaiKhoanController extends Controller
 
         return response()->json([
             'success' => 'Cập nhật thành công',
+        ], 200);
+    }
+
+    public function khoaTaiKhoan($id)
+    {
+        $taiKhoanKhoa = AccountModel::where('PK_MaTaiKhoan', '=', $id)->first();
+
+        if (!$taiKhoanKhoa) {
+            return response()->json([
+                'message' => 'Tài khoản không tồn tại'
+            ], 404);
+        }
+
+        $taiKhoanKhoa->update([
+            'sTrangThai' => 0
+        ]);
+
+        return response()->json([
+            'message' => 'Đã khóa tài khoản'
         ], 200);
     }
 
