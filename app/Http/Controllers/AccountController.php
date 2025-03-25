@@ -29,7 +29,7 @@ class AccountController extends Controller
     public function index(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'username' => 'required|exists:tblTaiKhoan,sUsername',
+            'username' => 'required|exists:tbltaikhoan,sUsername',
             'password' => 'required',
         ], $this->messages);
         if ($validator->fails()) {
@@ -97,7 +97,7 @@ class AccountController extends Controller
             $taiKhoanUpdate = AccountModel::where('api_token', '=', $user->api_token)->first();
 
             $validator = Validator::make($request->all(), [
-                'username' => 'required|exists:tblTaiKhoan,sUsername',
+                'username' => 'required|exists:tbltaikhoan,sUsername',
                 'old_password' => 'required',
                 'new_password' => 'required|min:6',
             ], $this->messages);

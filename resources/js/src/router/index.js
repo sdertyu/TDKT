@@ -6,6 +6,9 @@ import ForbiddenView from "../views/ForbiddenView.vue"; // Trang lỗi 403
 import ChangePassView from "../views/ChangePassView.vue"; // Trang lỗi 403
 import QuanLyDotTDKT from "../views/TCHC/QuanLyDotTDKT.vue";
 import QuanLyDanhHieu from "../views/TCHC/QuanLyDanhHieu.vue";
+import ThongKeDanhHieu from "../views/TCHC/ThongKeDanhHieu.vue";
+import ThongKeCaNhan from "../views/TCHC/ThongKeCaNhan.vue";
+import ThongKeDonVi from "../views/TCHC/ThongKeDonVi.vue";
 
 //đơn vị
 import KhenThuongTheoDot from "../views/DonVi/KhenThuongTheoDot.vue";
@@ -48,6 +51,21 @@ const router = createRouter({
                     component: QuanLyDanhHieu,
                     meta: { roles: [2] },
                 },
+                {
+                    path: "thongkedanhhieu",
+                    component: ThongKeDanhHieu,
+                    meta: { roles: [2] },
+                },
+                {
+                    path: "thongkecanhan",
+                    component: ThongKeCaNhan,
+                    meta: { roles: [2] },
+                },
+                {
+                    path: "thongkedonvi",
+                    component: ThongKeDonVi,
+                    meta: { roles: [2] },
+                },
 
                 //đơn vị
                 {
@@ -56,13 +74,13 @@ const router = createRouter({
                     meta: { roles: [4] },
                 },
                 {
-                    path: "khenthuongdotxuat",
-                    component: KhenThuongDotXuat,
+                    path: "dexuattheodot",
+                    component: DeXuatTheoDot,
                     meta: { roles: [4] },
                 },
                 {
-                    path: "dexuattheodot",
-                    component: DeXuatTheoDot,
+                    path: "khenthuongdotxuat",
+                    component: KhenThuongDotXuat,
                     meta: { roles: [4] },
                 },
                 {

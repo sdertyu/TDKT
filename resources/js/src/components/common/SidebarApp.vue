@@ -22,18 +22,18 @@ const setActiveMenuItem = () => {
         
         // Kiểm tra các item con nếu có
         if (item.children && item.children.length > 0) {
+            let hasPath = false;
             const hasActiveChild = item.children.some(child => {
-                if (child.link === currentPath) {
-                    child.isActive = true;
-                    return true;
-                } else {
+                if (child.link !== currentPath) {
                     child.isActive = false;
                     return false;
                 }
+                child.isActive = true;
+                hasPath = true;
             });
             
             // Nếu có item con active, mở rộng menu cha
-            if (hasActiveChild) {
+            if (hasPath) {
                 item.isOpen = true;
                 item.isActive = true;
             }
@@ -64,6 +64,32 @@ switch (role.value) {
                 link: '/quanlydanhhieu',
                 isActive: false
             },
+            {
+                title: 'Báo cáo thống kê',
+                icon: 'bi bi-file-earmark-text',
+                isActive: false,
+                isOpen: false,
+                children: [
+                    {
+                        title: 'Danh hiệu',
+                        icon: 'bi bi-award',
+                        link: '/thongkedanhhieu',
+                        isActive: false
+                    },
+                    {
+                        title: 'Cá nhân',
+                        icon: 'bi bi-file-earmark-text',
+                        link: '/thongkecanhan',
+                        isActive: false
+                    },
+                    {
+                        title: 'Đơn vị',
+                        icon: 'bi bi-file-earmark-text',
+                        link: '/thongkedonvi',
+                        isActive: false
+                    }
+                ]
+            }
             // {
             //     title: 'Widgets',
             //     icon: 'bi bi-box-seam-fill',
