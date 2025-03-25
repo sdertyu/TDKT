@@ -17,11 +17,11 @@
             
 
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link" data-widget="navbar-search" href="#" role="button">
                         <i class="bi bi-search"></i>
                     </a>
-                </li>
+                </li> -->
 
                 <li class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
@@ -41,16 +41,22 @@
     </nav>
 </template>
 <script setup>
+import axios from 'axios';
 import { useRouter } from 'vue-router';
 
 
 const ten = localStorage.getItem('ten') ? localStorage.getItem('ten') : "Phòng TCHC";
 const router = useRouter();
 const logout = () => {
-    localStorage.removeItem('api_token');
-    localStorage.removeItem('hasShownLoginAlert');
-    // this.$router.push('/login');
-    router.push('/login');
+    axios.post('/api/logout', {}, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    }).then(response => {
+        localStorage.removeItem('api_token');
+        localStorage.removeItem('hasShownLoginAlert');
+        router.push('/login');
+    });F
 }
 
 const goTo = (link) => {
