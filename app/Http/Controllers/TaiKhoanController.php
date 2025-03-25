@@ -37,7 +37,7 @@ class TaiKhoanController extends Controller
         return response()->json([
             'message' => "success",
             'data' => $dsTaiKhoan
-        ]);
+        ], 200);
     }
     public function themTaiKhoan(Request $request)
     {
@@ -75,7 +75,7 @@ class TaiKhoanController extends Controller
             return response()->json([
                 'icon' => 'error',
                 'message' => $validator->errors()->all() ? implode(', ', $validator->errors()->all()) : ''
-            ]);
+            ], 422);
         }
         if ($request->role == 3) {
             $tongTaiKhoan = count(AccountModel::all());
@@ -131,7 +131,7 @@ class TaiKhoanController extends Controller
             'icon' => "success",
             'message' => "Thêm thành công",
             'taikhoan' => $taiKhoanMoi
-        ]);
+        ], 200);
     }
 
     public function layThongTinTaiKhoan($id)
@@ -159,12 +159,12 @@ class TaiKhoanController extends Controller
             'password' => 'nullable|min:6', // mật khẩu không bắt buộc trừ khi tích ô "Đổi mật khẩu"
             'role' => 'required|exists:tblQuyen,PK_MaQuyen',
         ];
-        
+
         // Kiểm tra nếu có yêu cầu "Đổi mật khẩu", thì mật khẩu sẽ là bắt buộc
         if ($request->changePass == true) {
             $rules['password'] = 'required|min:6'; // Bắt buộc nếu chọn đổi mật khẩu
         }
-        
+
         if ($request->role == 4) {
             $rules['id'] = 'required|exists:tbltaikhoan,PK_MaTaiKhoan|exists:tbldonvi,FK_MaTaiKhoan';
             $rules['madonvi'] = 'required|exists:tbldonvi,PK_MaDonVi';
@@ -184,7 +184,7 @@ class TaiKhoanController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'errors' => $validator->errors()
-            ]);
+            ], 422);
         }
 
         if ($request->role == 4) {
@@ -238,7 +238,7 @@ class TaiKhoanController extends Controller
         if (!$taiKhoanXoa) {
             return response()->json([
                 'message' => 'Không tìm thấy tài khoản'
-            ]);
+            ], 404);
         } else {
             if ($taiKhoanXoa->FK_MaQuyen == 3) {
                 $donViXoa = DonViModel::where('FK_MaTaiKhoan', '=', $taiKhoanXoa->PK_MaTaiKhoan)->first();

@@ -34,7 +34,8 @@ class AccountController extends Controller
         ], $this->messages);
         if ($validator->fails()) {
             return response()->json([
-                'error' => $validator->errors()
+                'error' => $validator->errors(),
+                'message' => 'Nhập thông tin hợp lệ'
             ], 422);
         }
 
@@ -43,17 +44,17 @@ class AccountController extends Controller
         if (!$user) {
             return response()->json([
                 'message' => 'Không tìm thấy tài khoản'
-            ]);
+            ], 404);
         }
         if ($user->sTrangThai == 0) {
             return response()->json([
                 'message' => 'Tài khoản đã bị vô hiệu hóa'
-            ]);
+            ], 403);
         }
         if (!Hash::check($request->password, $user->sPassword)) {
             return response()->json([
                 'message' => 'Mật khẩu không chính xác'
-            ]);
+            ], 401);
         }
         if ($user->FK_MaQuyen == 4) {
             $user = AccountModel::where('PK_MaTaiKhoan', $user->PK_MaTaiKhoan)->with('donVi')->first();
@@ -86,7 +87,7 @@ class AccountController extends Controller
         return response()->json([
             'message' => 'success',
             'user' => $data
-        ]);
+        ], 200);
     }
 
     public function changePassword(Request $request)
@@ -103,7 +104,8 @@ class AccountController extends Controller
             ], $this->messages);
             if ($validator->fails()) {
                 return response()->json([
-                    'error' => $validator->errors()
+                    'error' => $validator->errors(),
+                    'message' => 'Nhập thông tin hợp lệ'
                 ], 422);
             }
             if (Hash::check($request->old_password, $taiKhoanUpdate->sPassword)) {
@@ -112,7 +114,7 @@ class AccountController extends Controller
             } else {
                 return response()->json([
                     'message' => 'Mật khẩu không chính xác'
-                ], 422);
+                ], 401);
             }
         } else {
             return response()->json([
