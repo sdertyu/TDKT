@@ -58,12 +58,15 @@
                                         </td>
                                         <td class="text-center">
                                             <button class="btn btn-sm btn-info me-1" @click="openEditModal(account)"
-                                                data-bs-toggle="modal" data-bs-target="#accountModal">
-                                                <i class="fas fa-edit"></i> Sửa
+                                                data-bs-toggle="modal" data-bs-target="#accountModal" title="Sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-warning me-1" @click="toggleAccountStatus(account)" title="Khóa/Mở khóa">
+                                                <i :class="account.sTrangThai == 1 ? 'fas fa-lock' : 'fas fa-unlock'"></i>
                                             </button>
                                             <button class="btn btn-sm btn-danger" @click="confirmDelete(account)"
-                                                data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                                <i class="fas fa-trash"></i> Xóa
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal" title="Xóa">
+                                                <i class="fas fa-trash"></i>
                                             </button>
                                         </td>
                                     </tr>
@@ -150,7 +153,7 @@
                                 <input type="email" class="form-control" id="email" v-model="currentAccount.email"
                                     required />
                             </div> -->
-                            <div class="mb-3" v-if="isEditMode && changePass">
+                            <div class="mb-3" v-if="!isEditMode || changePass">
                                 <label for="password" class="form-label">Mật khẩu</label>
                                 <div class="input-group">
                                     <input :type="isCheckPass ? 'text' : 'password'" class="form-control" id="password"

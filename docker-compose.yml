@@ -1,100 +1,40 @@
-# version: '3.8'
-
-# services:
-#   laravel:
-#     image: laravel-app
-#     build:
-#       context: .
-#       dockerfile: Dockerfile-laravel
-#     volumes:
-#       - .:/var/www/html
-#     depends_on:
-#       - db
-#     networks:
-#       - app-network
-
-#   nginx:
-#     image: nginx:latest
-#     ports:
-#       - "80:80"
-#     volumes:
-#       - ./nginx.conf:/etc/nginx/nginx.conf
-#       - ./resources/dist:/usr/share/nginx/html
-#     depends_on:
-#       - laravel
-#     networks:
-#       - app-network
-
-#   db:
-#     image: mysql:8.0
-#     environment:
-#       MYSQL_ROOT_PASSWORD: root
-#       MYSQL_DATABASE: laravel
-#       MYSQL_USER: laravel_user
-#       MYSQL_PASSWORD: laravel_password
-#     volumes:
-#       - db-data:/var/lib/mysql
-#     networks:
-#       - app-network
-
-# networks:
-#   app-network:
-#     driver: bridge
-
-# volumes:
-#   db-data:
-
-
 version: '3.8'
 
 services:
-  # MySQL service
-  mysql:
-    container_name: mysql
-    image: mysql:8.0
-    restart: unless-stopped
-    ports:
-      - "3309:3306"
-    environment:
-      MYSQL_DATABASE: tdkt
-      MYSQL_ROOT_PASSWORD: your_root_password_here  # Đặt mật khẩu cho root user
-    networks:
-      - laravel
-    volumes:
-      - mysql_data:/var/lib/mysql  # Lưu dữ liệu tránh mất khi container bị xoá
-
-
-  # Laravel service (Giả sử bạn có Dockerfile cho Laravel)
-  laravel:
+  app:
     build:
       context: .
       dockerfile: Dockerfile-laravel
-    image: laravel-app
+    container_name: laravel-app
     volumes:
-      - .:/var/www/html
+      - .:/var/www
     depends_on:
-      - mysql
-    networks:
-      - laravel
+      - db
 
-  # Nginx service (Giả sử bạn có file cấu hình nginx.conf)
-  nginx:
-    image: nginx:latest
+  web:
+    image: nginx:stable-alpine
+    container_name: nginx
     ports:
-      - "80:80"
+      - "8000:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./resources/dist:/usr/share/nginx/html
+      - .:/var/www
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - laravel
-    networks:
-      - laravel
+      - app
 
-# Định nghĩa mạng
-networks:
-  laravel:
-    driver: bridge
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: nick  
+      MYSQL_PASSWORD: 123
+      MYSQL_ROOT_PASSWORD: 123
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
 
-# Định nghĩa volume lưu trữ dữ liệu MySQL
 volumes:
-  mysql_data:
+  dbdata:
