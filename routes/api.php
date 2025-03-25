@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\DonViController;
 use App\Http\Controllers\DotTDKTController;
+use App\Http\Controllers\HoiDongController;
 use App\Http\Controllers\TaiKhoanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -36,6 +37,14 @@ Route::middleware('auth.api')->group(function () {
     Route::prefix('dotthiduakhenthuong')->group(function () {
         Route::get('/list', [DotTDKTController::class, 'index']);
         Route::post('/add', [DotTDKTController::class, 'themDotTDKT']);
-        Route::post('/update-trang-thai', [DotTDKTController::class, 'suaTrangThaiDot']);
+        Route::put('/update-trang-thai', [DotTDKTController::class, 'suaTrangThaiDot']);
+        Route::get('/thong-tin-dot/{id}', [DotTDKTController::class, 'layThongTinDot']);
+        Route::post('/them-van-ban', [DotTDKTController::class, 'themVanBanDinhKem']);
+    });
+    Route::prefix('hoidong')->group(function () {
+        Route::get('/list', [HoiDongController::class, 'index']);
+        Route::post('/add', [HoiDongController::class, 'themHoiDong']);
+        Route::get('/list-hinh-thuc', [HoiDongController::class, 'layDanhSachHinhThucHD']);
+        Route::get('/list-loai-hoi-dong', [HoiDongController::class, 'layDanhSachLoaiHD']);
     });
 });

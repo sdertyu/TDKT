@@ -24,16 +24,6 @@ class DotTDKTController extends Controller
     }
     public function themDotTDKT(Request $request)
     {
-        // $validator = Validator::make($request->all(), [
-        //     'ngaytao' => 'required|date|after_or_equal:today',
-        // ], $this->messages);
-
-        // if ($validator->fails()) {
-        //     return response()->json([
-        //         'error' => $validator->errors()
-        //     ], 422);
-        // }
-
         $ngayTao = $request->ngaytao;
 
         $year = Carbon::parse($ngayTao)->year;
@@ -85,11 +75,51 @@ class DotTDKTController extends Controller
         } else {
             return response()->json([
                 'message' => 'Không tìm thấy đợt thi đua'
-            ], 204);
+            ], 404);
         }
 
         return response()->json([
             'message' => 'Đã cập nhật trạng thái',
+        ], 200);
+    }
+
+    public function layThongTinDot($id)
+    {
+        $dotTDKT = DotTDKTModel::where('PK_MaDot', '=', $id)->with('vanbandinhkem')->first();
+        if (!$dotTDKT) {
+            return response()->json([
+                'message' => 'Không tìm thấy đợt thi đua tương ứng'
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Cập nhật thông tin đợt thành công',
+            'data' => $dotTDKT
+        ]);
+    }
+
+    public function themVanBanDinhKem(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'madot' => 'required|exists:tbldotthiduakhenthuong,PK_MaDot',
+            'file' => 'required',
+        ]);
+
+        if (!$request->hasFile('files') || !$request->file('file') == null) {
+            return response()->json([
+                'message' => 'Không tìm thấy file tải lên'
+            ], 404);
+        }
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors(),
+            ], 422);
+        }
+
+        return response()->json([
+            'message' => 'Thêm thành công',
+            'data' => $request->input('file')
         ]);
     }
 }

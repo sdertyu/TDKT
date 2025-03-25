@@ -17,7 +17,10 @@ class DotTDKTModel extends Model
 
 
     public $timestamps = false;
-    protected $fillable = ['dNgayTao', 'bTrangThai', 'iNamBatDau','iNamKetThuc'];
+    protected $fillable = ['dNgayTao', 'bTrangThai', 'iNamBatDau', 'iNamKetThuc'];
 
-    
+    public function vanbandinhkem()
+    {
+        return $this->hasMany(VBDKModel::class, 'FK_MaDot', 'PK_MaDot');
+    }
 }

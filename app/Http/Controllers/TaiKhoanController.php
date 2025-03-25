@@ -43,11 +43,18 @@ class TaiKhoanController extends Controller
     public function themTaiKhoan(Request $request)
     {
         $rules = [];
-        if ($request->role == 3) {
+        if ($request->role == 2) {
             $rules = [
                 'username' => 'required|unique:tbltaikhoan,sUsername|max:50',
                 'password' => 'required|min:6',
-                'role'      => 'required|exists:tblQuyen,PK_MaQuyen|unique:tbltaikhoan,FK_MaQuyen',
+                'role'      => 'required|exists:tblQuyen,PK_MaQuyen',
+            ];
+        }
+        else if ($request->role == 3) {
+            $rules = [
+                'username' => 'required|unique:tbltaikhoan,sUsername|max:50',
+                'password' => 'required|min:6',
+                'role'      => 'required|exists:tblQuyen,PK_MaQuyen',
             ];
         } else if ($request->role == 4) {
             $rules = [
@@ -79,7 +86,17 @@ class TaiKhoanController extends Controller
                 'message' => $validator->errors()->all() ? implode(', ', $validator->errors()->all()) : ''
             ], 422);
         }
-        if ($request->role == 3) {
+        if ($request->role == 2) {
+            $tongTaiKhoan = count(AccountModel::all());
+            $taiKhoanMoi = new AccountModel();
+            $taiKhoanMoi->PK_MaTaiKhoan = 'user' . $tongTaiKhoan + 1;
+            $taiKhoanMoi->sUsername = $request->username;
+            $taiKhoanMoi->sPassword = bcrypt($request->password);
+            $taiKhoanMoi->FK_MaQuyen = $request->role;
+            $taiKhoanMoi->sTrangThai = 1;
+            $taiKhoanMoi->save();
+        }
+        else if ($request->role == 3) {
             $tongTaiKhoan = count(AccountModel::all());
             $taiKhoanMoi = new AccountModel();
             $taiKhoanMoi->PK_MaTaiKhoan = 'user' . $tongTaiKhoan + 1;
