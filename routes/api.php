@@ -41,11 +41,13 @@ Route::middleware('auth.api')->group(function () {
         Route::get('/thong-tin-dot/{id}', [DotTDKTController::class, 'layThongTinDot']);
         Route::get('/dot-active', [DotTDKTController::class, 'layDotActive']);
         Route::post('/them-van-ban', [DotTDKTController::class, 'themVanBanDinhKem']);
+        Route::get('/list-van-ban/{id}', [DotTDKTController::class, 'layDanhSachVanBanDinhKem']);
     });
     Route::prefix('hoidong')->group(function () {
         Route::get('/list', [HoiDongController::class, 'index']);
         Route::post('/add', [HoiDongController::class, 'themHoiDong']);
         Route::get('/list-hinh-thuc', [HoiDongController::class, 'layDanhSachHinhThucHD']);
         Route::get('/list-loai-hoi-dong', [HoiDongController::class, 'layDanhSachLoaiHD']);
+        Route::post('/cap-nhat-hoi-dong', [HoiDongController::class, 'capNhatHoiDong']);
     });
 });
