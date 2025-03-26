@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,9 +18,13 @@ class DotTDKTModel extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+    protected $casts = [
+        'dNgayTao' => 'datetime:H:i:s d-m-Y'
+    ];
+
 
     public $timestamps = false;
-    protected $fillable = ['dNgayTao', 'bTrangThai', 'iNamBatDau', 'iNamKetThuc'];
+    protected $fillable = ['PK_MaDot', 'dNgayTao', 'bTrangThai', 'iNamBatDau', 'iNamKetThuc'];
 
     public function vanbandinhkem()
     {
