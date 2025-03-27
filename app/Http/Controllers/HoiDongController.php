@@ -7,6 +7,7 @@ use App\Models\HinhThucHDModel;
 use App\Models\HoiDongModel;
 use App\Models\LoaiHDModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 
@@ -94,7 +95,7 @@ class HoiDongController extends Controller
             $hoiDong->sDuongDan = $filePath;
             $hoiDong->sTenFile = $fileName;
             $hoiDong->sSoHD = $request->sohd;
-            $hoiDong->sGhiChu = $request->sGhiChu;
+            $hoiDong->sGhiChu = $request->ghichu;
             $hoiDong->save();
         }
 
@@ -105,6 +106,16 @@ class HoiDongController extends Controller
 
     public function capNhatHoiDong(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+            'mahoidong' => 'required|exists:tblhoidong,PK_MaHoiDong',
+            'diadiem' => 'required',
+            'songuoithamdu' => 'required|integer',
+            'sothanhvien' => 'required|integer',
+            'bienban' => 'required|file',
+            'sohd' => 'required'
+        ]);
+
         $hoiDong = HoiDongModel::where('PK_MaHoiDong', '=', $request->mahoidong)->first();
 
         if (!$hoiDong) {
@@ -113,11 +124,26 @@ class HoiDongController extends Controller
             ], 404);
         }
 
-        
+        File::delete(public_path($hoiDong->sDuongDan));
+
+        $file = $request->file('bienban');
+        $file->move(public_path('bienban/donvi/'), $file->getClientOriginalName());
+
+        $filePath = 'bienban/donvi/' . $file->getClientOriginalName();
+        $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+
+        $hoiDong->update([
+            'sDiaChi' => $request->diadiem,
+            'iSoNguoiThamDu' => $request->songuoithamdu,
+            'iSoThanhVien' => $request->sothanhvien,
+            'sDuongDan' => $filePath,
+            'sTenFile' => $fileName,
+            'sSoHD' => $request->sohd,
+            'sGhiChu' => $request->ghichu
+        ]);
 
         return response()->json([
             'message' => 'Cập nhật hội đồng thành công',
-            'data' => $request->all()
         ]);
     }
 
