@@ -19,4 +19,9 @@ class CaNhanModel extends Model
 
     public $timestamps = false;
     protected $fillable = ['sTenCaNhan', 'sEmail', 'sTenChucVu', 'bGioiTinh'];
+
+    public function donvi()
+    {
+        return $this->belongsTo(DonViModel::class, 'FK_MaDonVi', 'PK_MaDonVi');
+    }
 }
