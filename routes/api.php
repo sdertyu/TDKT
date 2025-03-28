@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\DanhHieuController;
 use App\Http\Controllers\DonViController;
 use App\Http\Controllers\DotTDKTController;
 use App\Http\Controllers\HoiDongController;
@@ -41,11 +42,20 @@ Route::middleware('auth.api')->group(function () {
         Route::get('/thong-tin-dot/{id}', [DotTDKTController::class, 'layThongTinDot']);
         Route::get('/dot-active', [DotTDKTController::class, 'layDotActive']);
         Route::post('/them-van-ban', [DotTDKTController::class, 'themVanBanDinhKem']);
+        Route::get('/list-van-ban/{id}', [DotTDKTController::class, 'layDanhSachVanBanDinhKem']);
     });
     Route::prefix('hoidong')->group(function () {
         Route::get('/list', [HoiDongController::class, 'index']);
         Route::post('/add', [HoiDongController::class, 'themHoiDong']);
         Route::get('/list-hinh-thuc', [HoiDongController::class, 'layDanhSachHinhThucHD']);
         Route::get('/list-loai-hoi-dong', [HoiDongController::class, 'layDanhSachLoaiHD']);
+        Route::post('/cap-nhat-hoi-dong', [HoiDongController::class, 'capNhatHoiDong']);
+    });
+    Route::prefix('donvi')->group(function () {
+        Route::get('/list-ca-nhan/{id}', [DonViController::class, 'layDanhSachCaNhan']);
+    });
+    Route::prefix('danhhieu')->group(function () {
+        Route::get('/list', [DanhHieuController::class, 'index']);
+        Route::post('/add',[DanhHieuController::class, 'themDanhHieu']);
     });
 });

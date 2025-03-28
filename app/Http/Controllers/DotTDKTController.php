@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\DotTDKTModel;
+use App\Models\VBDKModel;
 use Carbon\Carbon;
-use Dotenv\Dotenv;
+use Illuminate\Contracts\Cache\Store;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class DotTDKTController extends Controller
@@ -105,7 +107,7 @@ class DotTDKTController extends Controller
         return response()->json([
             'message' => 'Cập nhật thông tin đợt thành công',
             'data' => $dotTDKT
-        ]);
+        ], 200);
     }
 
     public function layDotActive()
@@ -115,21 +117,23 @@ class DotTDKTController extends Controller
         return response()->json([
             'message' => 'Thành công',
             'data' => $dotTDKT
-        ]);
+        ], 200);
     }
 
     public function themVanBanDinhKem(Request $request)
     {
+        $this->messages = [
+            'file.required' => 'Bạn chưa chọn file',
+            'file.file' => 'Vui lòng nhập đúng file',
+            'file.mimes' => 'Định dạng file không hợp lệ.',
+            'tenvanban.required' => 'Vui lòng nhập tên văn bản'
+        ];
+
         $validator = Validator::make($request->all(), [
             'madot' => 'required|exists:tbldotthiduakhenthuong,PK_MaDot',
+            'tenvanban' => 'required',
             'file' => 'required',
-        ]);
-
-        if (!$request->hasFile('files') || !$request->file('file') == null) {
-            return response()->json([
-                'message' => 'Không tìm thấy file tải lên'
-            ], 404);
-        }
+        ], $this->messages);
 
         if ($validator->fails()) {
             return response()->json([
@@ -137,9 +141,51 @@ class DotTDKTController extends Controller
             ], 422);
         }
 
+        if (!$request->hasFile('file')) {
+            return response()->json([
+                'message' => 'Không tìm thấy file tải lên'
+            ], 404);
+        }
+
+        $filePaths = [];
+        $dotTDKT = DotTDKTModel::where('PK_MaDot', '=', $request->madot)->first();
+        $folderDot = $dotTDKT->iNamBatDau . '-' . $dotTDKT->iNamKetThuc;
+
+        foreach ($request->file('file') as $file) {
+            $filePath = $file->move('vanbandinhkem/' . $folderDot, $file->getClientOriginalName());
+
+            $filePaths[] = [
+                'path' => 'vanbandinhkem/' . $folderDot . '/' . $file->getClientOriginalName(),
+                'name' => pathinfo($filePath)['filename']
+            ];
+        }
+
+        foreach ($filePaths as $file) {
+            $vanBanDinhKem = new VBDKModel();
+            $vanBanDinhKem->FK_MaDot = $request->madot;
+            $vanBanDinhKem->sTenVanBan = $request->tenvanban;
+            $vanBanDinhKem->sTenFile = $file['name'];
+            $vanBanDinhKem->dNgayTao = now();
+            $vanBanDinhKem->sDuongDan = $file['path'];
+            $vanBanDinhKem->save();
+        }
+
         return response()->json([
             'message' => 'Thêm thành công',
-            'data' => $request->input('file')
+        ], 200);
+    }
+
+    public function layDanhSachVanBanDinhKem($id)
+    {
+        $listVanBanDinhKem = VBDKModel::where('FK_MaDot', '=', $id)->get();
+
+        foreach ($listVanBanDinhKem as $item) {
+            $item->sDuongDan = asset($item->sDuongDan);
+        }
+
+        return response()->json([
+            'message' => 'Thành công',
+            'data' => $listVanBanDinhKem
         ]);
     }
 }
