@@ -56,7 +56,7 @@ const logout = () => {
         localStorage.removeItem('api_token');
         localStorage.removeItem('hasShownLoginAlert');
         router.push('/login');
-    });F
+    });
 }
 
 const goTo = (link) => {

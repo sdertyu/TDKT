@@ -35,13 +35,18 @@
                         <td class="text-center">
                             <button class="btn btn-warning btn-sm me-2" @click="showEditModal(item)"
                                 data-bs-toggle="modal" data-bs-target="#dotModal">
-                                <i class="fas fa-edit"></i> Sửa
+                                <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-secondary btn-sm me-2" :class="item.bTrangThai == 1 ? 'bg-blend-color' : 'bg-success'" @click="trangThaiDot(item)">
+                            <button class="btn btn-warning btn-sm me-2" @click="showModal = true" data-bs-toggle="modal" data-bs-target="#themFileModal">
+                                <i class="fas fa-file"></i>
+                            </button>
+                            <button class="btn btn-secondary btn-sm me-2"
+                                :class="item.bTrangThai == 1 ? 'bg-blend-color' : 'bg-success'"
+                                @click="trangThaiDot(item)">
                                 <i :class="item.bTrangThai == 0 ? 'fas fa-lock-open' : 'fas fa-lock'"></i>
                             </button>
                             <button class="btn btn-danger btn-sm" @click="confirmDelete(item)">
-                                <i class="fas fa-trash"></i> Xóa
+                                <i class="fas fa-trash"></i>
                             </button>
                         </td>
                     </tr>
@@ -81,6 +86,36 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="themFileModal" tabindex="-1" v-if="showModal">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Văn bản đính kèm</h5>
+                        <button type="button" class="btn-close" @click="showModal = false"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div v-for="(block, index) in blocks" :key="index" class="file-description-block row mb-3">
+                            <div class="form-group col-6">
+                                <label for="">Mô tả văn bản</label>
+                                <input type="text" class="form-control">
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="">Văn bản đính kèm</label>
+                                <input type="file" class="form-control">
+                            </div>
+                        </div>
+
+                            <button type="button" class="btn btn-primary" @click="addBlock">Thêm</button>
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="showModal = false">Đóng</button>
+                        <button type="button" class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -89,9 +124,16 @@ import axios from 'axios';
 import { computed, onMounted, reactive, ref, warn } from 'vue';
 import Swal from 'sweetalert2';
 
+const showModal = ref(false); // Biến điều khiển hiển thị modal
+const blocks = ref([{}]); // Danh sách các khối input file và mô tả
+
+// Hàm để thêm một khối mới
+const addBlock = () => {
+    blocks.value.push({}); // Thêm một khối mới vào mảng
+};
+
 const listDot = ref([]);
 const currentDot = reactive({
-    id: null,
     iNamBatDau: '',
     iNamKetThuc: '',
     bTrangThai: 0,
@@ -155,17 +197,13 @@ const showEditModal = (dot) => {
 const saveDot = () => {
 
     if (isEditing.value) {
-        // Cập nhật đợt
-        // Tạm thời xử lý locally
-        const index = listDot.value.findIndex(d => d.id === currentDot.id);
-        if (index !== -1) {
-            listDot.value[index] = { ...currentDot };
-        }
-        // await axios.put(`/api/dotthiduakhenthuong/${currentDot.id}`, currentDot, {
-        //     headers: {
-        //         Authorization: `Bearer ${localStorage.getItem('api_token')}`
-        //     }
-        // });
+        const update = axios.put(`/api/dotthiduakhenthuong/${currentDot.id}`, currentDot,
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                }
+            })
+
     } else {
         // Thêm đợt mới
         const add = axios.post('/api/dotthiduakhenthuong/add', currentDot,
@@ -177,6 +215,7 @@ const saveDot = () => {
 
         add.then(response => {
             if (response.status === 200) {
+                listDot.value.push(response.data.data);
                 Swal.fire({
                     position: 'top-end',
                     toast: true,
@@ -224,7 +263,8 @@ const saveDot = () => {
 
 const trangThaiDot = (item) => {
     let trangThai = item.bTrangThai == 0 ? "mở khóa" : "khóa";
-    item.bTrangThai = item.bTrangThai == 0 ? 1 : 0;
+    let data = { ...item };
+    data.bTrangThai = item.bTrangThai == 0 ? 1 : 0;
     Swal.fire({
         icon: 'warning',
         title: 'Bạn có chắc muốn thực hiện ' + trangThai + " đợt " + item.PK_MaDot,
@@ -234,7 +274,7 @@ const trangThaiDot = (item) => {
 
     }).then((result) => {
         if (result.isConfirmed) {
-            const thayDoiTrangThai = axios.put(`/api/dotthiduakhenthuong/update-trang-thai`, item, {
+            const thayDoiTrangThai = axios.put(`/api/dotthiduakhenthuong/update-trang-thai`, data, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('api_token')}`
                 }
@@ -242,6 +282,12 @@ const trangThaiDot = (item) => {
 
             thayDoiTrangThai.then(response => {
                 if (response.status === 200) {
+                    item.bTrangThai = data.bTrangThai;
+                    listDot.value.forEach(dot => {
+                        if (dot.PK_MaDot !== item.PK_MaDot) {
+                            dot.bTrangThai = 0
+                        }
+                    })
                     Swal.fire({
                         position: 'top-end',
                         toast: true,
