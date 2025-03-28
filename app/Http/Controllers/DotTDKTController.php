@@ -19,7 +19,7 @@ class DotTDKTController extends Controller
     ];
     public function index()
     {
-        $listDotTDKT = DotTDKTModel::all();
+        $listDotTDKT = DotTDKTModel::orderBy("PK_MaDot", "DESC")->get();
         return response()->json([
             'status' => 'success',
             'data' => $listDotTDKT
@@ -27,41 +27,43 @@ class DotTDKTController extends Controller
     }
     public function themDotTDKT(Request $request)
     {
-        $ngayTao = $request->ngaytao;
+        $validator = Validator::make($request->all(), [
+            'iNamBatDau' => 'required|numeric|min:1933|unique:tbldotthiduakhenthuong,iNamBatDau|max:' . Carbon::now()->year,
+        ], $this->messages);
 
-        $year = Carbon::parse($ngayTao)->year;
-        $month = Carbon::parse($ngayTao)->month;
-        $namBatDau = $month < 5 ? ($year - 1) : $year;
-        $namKetThuc = $month < 5 ? $year : $year + 1;
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()
+            ], 422);
+        }
 
-        $maDot = 'dot_' . $namBatDau . '_' . $namKetThuc . '_cq';
-
-        $dotTDKT = DotTDKTModel::where('PK_MaDot', '=', $maDot)->first();
+        $carbon = Carbon::now();  // Tạo đối tượng Carbon với thời gian hiện tại
+        $carbon->setTimezone('Asia/Ho_Chi_Minh');  // Đặt múi giờ là múi giờ Việt Nam
+        $dotTDKT = DotTDKTModel::create([
+            'PK_MaDot' => $request->iNamBatDau . '-' . ($request->iNamBatDau + 1),
+            'iNamBatDau' => $request->iNamBatDau,
+            'iNamKetThuc' => $request->iNamBatDau + 1,
+            'bTrangThai' => 0,
+            'dNgayTao' => $carbon->format('Y-m-d H:i:s')
+        ]);
 
         if ($dotTDKT) {
             return response()->json([
-                'message' => 'Đã tồn tại đợt thi đua này'
-            ]);
+                'message' => 'Thêm đợt thị đua',
+                'data' => $dotTDKT
+            ], 200);
         } else {
-            $dotTDKT = new DotTDKTModel();
-            $dotTDKT->PK_MaDot = $maDot;
-            $dotTDKT->dNgayTao = $ngayTao;
-            $dotTDKT->bTrangThai = 1;
-            $dotTDKT->iNamBatDau = $namBatDau;
-            $dotTDKT->iNamKetThuc = $namKetThuc;
-            $dotTDKT->save();
+            return response()->json([
+                'message' => 'Không thêm đợt thị đua'
+            ], 404);
         }
-
-        return response()->json([
-            'message' => 'Tạo đợt thi đua thành công',
-        ], 200);
     }
 
     public function suaTrangThaiDot(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'madot' => 'required',
-            'trangthai' => 'required|integer',
+            'PK_MaDot' => 'required',
+            'bTrangThai' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
@@ -70,10 +72,17 @@ class DotTDKTController extends Controller
             ], 422);
         }
 
-        $updateDotTDKT = DotTDKTModel::where('PK_MaDot', '=', $request->madot)->first();
+        $updateDotTDKT = DotTDKTModel::where('PK_MaDot', '=', $request->PK_MaDot)->first();
+        if ($request->bTrangThai == 1) {
+            $currentActive = DotTDKTModel::where('bTrangThai', '=', 1)->first();
+            if ($currentActive) {
+                $currentActive->bTrangThai = 0;
+                $currentActive->save();
+            }
+        }
 
         if ($updateDotTDKT) {
-            $updateDotTDKT->bTrangThai = $request->trangthai;
+            $updateDotTDKT->bTrangThai = $request->bTrangThai;
             $updateDotTDKT->save();
         } else {
             return response()->json([

@@ -64,7 +64,8 @@
 
                             <div class="mb-3">
                                 <label for="ghiChu">Ghi chú:</label>
-                                <textarea class="form-control" id="ghiChu" v-model="formData.ghiChu" rows="3"></textarea>
+                                <textarea class="form-control" id="ghiChu" v-model="formData.ghiChu"
+                                    rows="3"></textarea>
                             </div>
 
                             <div class="row mb-3">
@@ -109,99 +110,31 @@
                                 </div>
                                 <div class="card-body">
                                     <!-- Lao động tiên tiến -->
-                                    <div class="mb-4">
-                                        <h5 class="border-bottom pb-2">Danh hiệu Lao động tiên tiến</h5>
-                                        <div v-for="(person, index) in formData.caNhan.laoDongTienTien" :key="index"
-                                            class="row mb-2 align-items-center">
-                                            <div class="col-md-6">
-                                                <select class="form-select" v-model="person.id">
-                                                    <option value="" disabled selected>Chọn cá nhân</option>
-                                                    <option v-for="p in danhSachCaNhan" :key="p.id" :value="p.id">{{
-                                                        p.ten }}</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="input-group">
-                                                    <input type="number" class="form-control" v-model="person.soPhieu"
-                                                        min="0" placeholder="Số phiếu bầu">
-                                                    <span class="input-group-text">phiếu</span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <button type="button" class="btn btn-danger"
-                                                    @click="xoaCaNhan('laoDongTienTien', index)">
-                                                    Xóa
-                                                </button>
-                                            </div>
+                                    <div class="mb-4" v-for="(award, index) in individualAwards" :key="index">
+                                        <h5 class="border-bottom pb-2 fst-italic text-danger">Danh hiệu {{ award.name }}
+                                        </h5>
+                                        <div class="mb-2 align-items-center">
+                                            <multiselect :model-value="selectedIndividuals[award.id]"
+                                                :options="individuals" :multiple="true" track-by="id"
+                                                label="displayName" placeholder="Chọn cá nhân"
+                                                @update:modelValue="val => handleSelectedIndividualsChange(val, award.id)">
+                                            </multiselect>
                                         </div>
-                                        <button type="button" class="btn btn-secondary mt-2"
-                                            @click="themCaNhan('laoDongTienTien')">
-                                            Thêm cá nhân
-                                        </button>
-                                    </div>
 
-                                    <!-- Chiến sĩ thi đua cơ sở -->
-                                    <div class="mb-4">
-                                        <h5 class="border-bottom pb-2">Danh hiệu Chiến sĩ thi đua cơ sở</h5>
-                                        <div v-for="(person, index) in formData.caNhan.chienSiThiDua" :key="index"
-                                            class="row mb-2 align-items-center">
-                                            <div class="col-md-6">
-                                                <select class="form-select" v-model="person.id">
-                                                    <option value="" disabled selected>Chọn cá nhân</option>
-                                                    <option v-for="p in danhSachCaNhan" :key="p.id" :value="p.id">{{
-                                                        p.ten }}</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="input-group">
-                                                    <input type="number" class="form-control" v-model="person.soPhieu"
-                                                        min="0" placeholder="Số phiếu bầu">
-                                                    <span class="input-group-text">phiếu</span>
+                                        <div class="row">
+                                            <div v-for="(individual, keyAward) in selectedIndividuals[award.id]"
+                                                :key="keyAward" class="col-md-6 mb-3">
+                                                <div class="row align-items-center">
+                                                    <label :for="individual.id" class="col-4 col-form-label mb-0">
+                                                        {{ individual.name }}
+                                                    </label>
+                                                    <div class="col-8">
+                                                        <input type="number" :id="individual.id" class="form-control"
+                                                            placeholder="Số phiếu bầu" v-model="individual.soPhieu">
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-2">
-                                                <button type="button" class="btn btn-danger"
-                                                    @click="xoaCaNhan('chienSiThiDua', index)">
-                                                    Xóa
-                                                </button>
-                                            </div>
                                         </div>
-                                        <button type="button" class="btn btn-secondary mt-2"
-                                            @click="themCaNhan('chienSiThiDua')">
-                                            Thêm cá nhân
-                                        </button>
-                                    </div>
-
-                                    <!-- Giấy khen của hiệu trưởng -->
-                                    <div class="mb-4">
-                                        <h5 class="border-bottom pb-2">Giấy khen của hiệu trưởng</h5>
-                                        <div v-for="(person, index) in formData.caNhan.giayKhen" :key="index"
-                                            class="row mb-2 align-items-center">
-                                            <div class="col-md-6">
-                                                <select class="form-select" v-model="person.id">
-                                                    <option value="" disabled selected>Chọn cá nhân</option>
-                                                    <option v-for="p in danhSachCaNhan" :key="p.id" :value="p.id">{{
-                                                        p.ten }}</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="input-group">
-                                                    <input type="number" class="form-control" v-model="person.soPhieu"
-                                                        min="0" placeholder="Số phiếu bầu">
-                                                    <span class="input-group-text">phiếu</span>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <button type="button" class="btn btn-danger"
-                                                    @click="xoaCaNhan('giayKhen', index)">
-                                                    Xóa
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <button type="button" class="btn btn-secondary mt-2"
-                                            @click="themCaNhan('giayKhen')">
-                                            Thêm cá nhân
-                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -221,9 +154,11 @@
                                                     <label>Danh hiệu đề xuất:</label>
                                                     <select class="form-select" v-model="formData.tapThe.danhHieu">
                                                         <option value="" disabled selected>Chọn danh hiệu</option>
-                                                        <option value="Tập thể lao động tiên tiến">Tập thể lao động tiên
+                                                        <option value="Tập thể lao động tiên tiến">Tập thể lao động
+                                                            tiên
                                                             tiến</option>
-                                                        <option value="Tập thể lao động xuất sắc">Tập thể lao động xuất
+                                                        <option value="Tập thể lao động xuất sắc">Tập thể lao động
+                                                            xuất
                                                             sắc</option>
                                                     </select>
                                                 </div>
@@ -260,9 +195,19 @@
                                 </div>
                             </div>
 
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h4 class="mb-0">Biên bản bình xét</h4>
+                                </div>
+                                <div class="card-body">
+                                    <input type="file" class="form-control" name="" value="">
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary">Lưu biên bản</button>
-                                <button type="button" class="btn btn-secondary ms-2" @click="resetForm">Làm mới</button>
+                                <button type="button" class="btn btn-secondary ms-2" @click="resetForm">Làm
+                                    mới</button>
                             </div>
                         </form>
                     </div>
@@ -273,9 +218,32 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, reactive } from 'vue';
 import axios from 'axios';
 import { watch } from 'vue';
+import Multiselect from 'vue-multiselect';
+
+const individuals = ref([
+    { id: 1, code: 'NV001', name: 'Nguyễn Văn A', displayName: 'NV001 - Nguyễn Văn A' },
+    { id: 2, code: 'NV002', name: 'Trần Thị B', displayName: 'NV002 - Trần Thị B' },
+    { id: 3, code: 'NV003', name: 'Lê Văn C', displayName: 'NV003 - Lê Văn C' },
+    { id: 4, code: 'NV004', name: 'Phạm Thị D', displayName: 'NV004 - Phạm Thị D' },
+    { id: 5, code: 'NV005', name: 'Hoàng Văn E', displayName: 'NV005 - Hoàng Văn E' },
+    { id: 6, code: 'NV006', name: 'Nguyễn Văn A', displayName: 'NV006 - Nguyễn Văn A' } // Trùng tên với NV001
+]);
+
+const unitAwards = ref([
+    { id: 'tap_the_lao_dong_xuat_sac', name: 'Tập thể lao động xuất sắc' },
+    { id: 'co_thi_dua', name: 'Cờ thi đua' },
+    { id: 'bang_khen', name: 'Bằng khen' }
+]);
+
+const individualAwards = ref([
+    { id: 'chien_si_thi_dua', name: 'Chiến sĩ thi đua' },
+    { id: 'lao_dong_tien_tien', name: 'Lao động tiên tiến' },
+    { id: 'bang_khen', name: 'Bằng khen' }
+]);
+const selectedIndividuals = reactive({});
 
 // Dữ liệu form
 const formData = ref({
@@ -304,6 +272,7 @@ const formData = ref({
     }
 });
 
+const selectedAwardsObjects = ref([]);
 // Tính số người vắng
 const soVang = computed(() => {
     return formData.value.soTrieuTap - formData.value.soCoMat;
@@ -412,6 +381,41 @@ onMounted(() => {
     fetchDanhSachCaNhan();
     setupWatchers();
 });
+
+const handleSelectedIndividualsChange = (val, awardId) => {
+    // Kiểm tra nếu các cá nhân trong 'val' đã được chọn ở danh hiệu khác
+    const awardsToCheck = ['chien_si_thi_dua', 'lao_dong_tien_tien'];
+
+    if (awardsToCheck.includes(awardId)) {
+        const selectedInOtherAwards = awardsToCheck
+            .filter(key => key !== awardId)  // Loại bỏ danh hiệu hiện tại
+            .some((key) => {
+                // Kiểm tra nếu cá nhân trong 'val' đã có trong danh hiệu khác
+                return val.some(individual => {
+                    // Kiểm tra nếu cá nhân đã có trong danh hiệu khác
+                    return selectedIndividuals[key]?.some(selected => selected.id === individual.id);
+                });
+            });
+
+        // Nếu có cá nhân trùng, alert và không thay đổi dữ liệu
+        if (selectedInOtherAwards) {
+            alert("Cá nhân này đã được chọn ở danh hiệu khác!");
+            return; // Dừng hàm, không cho phép thêm cá nhân vào danh hiệu này
+        }
+    }
+
+
+    // Nếu không trùng, thì cập nhật danh sách cá nhân cho danh hiệu này
+    selectedIndividuals[awardId] = val.map(individual => ({
+        ...individual,
+        soPhieu: individual.soPhieu || 0
+    }));
+
+    // Debug log để kiểm tra
+    console.log('updated selectedIndividuals', selectedIndividuals);
+};
+
+
 </script>
 
 <style scoped>
@@ -435,3 +439,5 @@ label {
     display: block;
 }
 </style>
+
+<style src="vue-multiselect/dist/vue-multiselect.css"></style>
