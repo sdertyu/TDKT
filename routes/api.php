@@ -42,6 +42,8 @@ Route::middleware('auth.api')->group(function () {
         Route::get('/thong-tin-dot/{id}', [DotTDKTController::class, 'layThongTinDot']);
         Route::get('/dot-active', [DotTDKTController::class, 'layDotActive']);
         Route::post('/them-van-ban', [DotTDKTController::class, 'themVanBanDinhKem']);
+        Route::post('/update-van-ban', [DotTDKTController::class, 'suaVanBanDinhKem']);
+        Route::delete('/xoa-van-ban/{id}', [DotTDKTController::class, 'xoaVanBanDinhKem']);
         Route::get('/list-van-ban/{id}', [DotTDKTController::class, 'layDanhSachVanBanDinhKem']);
     });
     Route::prefix('hoidong')->group(function () {
