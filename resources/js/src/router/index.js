@@ -9,6 +9,7 @@ import QuanLyDanhHieu from "../views/TCHC/QuanLyDanhHieu.vue";
 import ThongKeDanhHieu from "../views/TCHC/ThongKeDanhHieu.vue";
 import ThongKeCaNhan from "../views/TCHC/ThongKeCaNhan.vue";
 import ThongKeDonVi from "../views/TCHC/ThongKeDonVi.vue";
+import QuanLyVBDK from "../views/TCHC/QuanLyVBDK.vue";
 
 //đơn vị
 import KhenThuongTheoDot from "../views/DonVi/KhenThuongTheoDot.vue";
@@ -64,6 +65,11 @@ const router = createRouter({
                 {
                     path: "thongkedonvi",
                     component: ThongKeDonVi,
+                    meta: { roles: [2] },
+                },
+                {
+                    path: "quanlyvanban/:id",
+                    component: QuanLyVBDK,
                     meta: { roles: [2] },
                 },
 

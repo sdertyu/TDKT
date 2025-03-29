@@ -37,9 +37,9 @@
                                 data-bs-toggle="modal" data-bs-target="#dotModal">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-warning btn-sm me-2" @click="showModal = true" data-bs-toggle="modal" data-bs-target="#themFileModal">
+                            <router-link :to="`/quanlyvanban/${item.PK_MaDot}`" class="btn btn-warning btn-sm me-2">
                                 <i class="fas fa-file"></i>
-                            </button>
+                            </router-link>
                             <button class="btn btn-secondary btn-sm me-2"
                                 :class="item.bTrangThai == 1 ? 'bg-blend-color' : 'bg-success'"
                                 @click="trangThaiDot(item)">
@@ -87,35 +87,6 @@
             </div>
         </div>
 
-        <div class="modal fade" id="themFileModal" tabindex="-1" v-if="showModal">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Văn bản đính kèm</h5>
-                        <button type="button" class="btn-close" @click="showModal = false"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div v-for="(block, index) in blocks" :key="index" class="file-description-block row mb-3">
-                            <div class="form-group col-6">
-                                <label for="">Mô tả văn bản</label>
-                                <input type="text" class="form-control">
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="">Văn bản đính kèm</label>
-                                <input type="file" class="form-control">
-                            </div>
-                        </div>
-
-                            <button type="button" class="btn btn-primary" @click="addBlock">Thêm</button>
-                        
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @click="showModal = false">Đóng</button>
-                        <button type="button" class="btn btn-primary">Lưu thay đổi</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -124,15 +95,6 @@ import axios from 'axios';
 import { computed, onMounted, reactive, ref, warn } from 'vue';
 import Swal from 'sweetalert2';
 
-const showModal = ref(false); // Biến điều khiển hiển thị modal
-const blocks = ref([{}]); // Danh sách các khối input file và mô tả
-
-// Hàm để thêm một khối mới
-const addBlock = () => {
-    blocks.value.push({}); // Thêm một khối mới vào mảng
-};
-
-const listDot = ref([]);
 const currentDot = reactive({
     iNamBatDau: '',
     iNamKetThuc: '',
@@ -140,6 +102,10 @@ const currentDot = reactive({
     dNgayTao: '',
     PK_MaDot: ''
 });
+
+// ============ Xử lý đợt ============
+const listDot = ref([]);
+
 const isEditing = ref(false);
 const modalInstance = ref(null);
 
@@ -161,7 +127,6 @@ const loadDotList = () => {
     }).then(response => {
         if (response.status == 200) {
             listDot.value = response.data.data;
-            console.log(response.data);
         }
     }).catch(error => {
         console.log(error);

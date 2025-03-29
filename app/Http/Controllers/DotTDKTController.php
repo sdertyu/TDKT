@@ -7,6 +7,7 @@ use App\Models\VBDKModel;
 use Carbon\Carbon;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -123,16 +124,16 @@ class DotTDKTController extends Controller
     public function themVanBanDinhKem(Request $request)
     {
         $this->messages = [
-            'file.required' => 'Bạn chưa chọn file',
-            'file.file' => 'Vui lòng nhập đúng file',
-            'file.mimes' => 'Định dạng file không hợp lệ.',
-            'tenvanban.required' => 'Vui lòng nhập tên văn bản'
+            'file.*.required' => 'Bạn chưa chọn file',
+            'file.*.file' => 'Vui lòng nhập đúng file',
+            'file.*.mimes' => 'Định dạng file không hợp lệ.',
+            'tenvanban.*.required' => 'Vui lòng nhập tên văn bản'
         ];
 
         $validator = Validator::make($request->all(), [
             'madot' => 'required|exists:tbldotthiduakhenthuong,PK_MaDot',
-            'tenvanban' => 'required',
-            'file' => 'required',
+            'tenvanban.*' => 'required',
+            'file.*' => 'required',
         ], $this->messages);
 
         if ($validator->fails()) {
@@ -160,10 +161,11 @@ class DotTDKTController extends Controller
             ];
         }
 
-        foreach ($filePaths as $file) {
+        foreach ($filePaths as $index => $file) {
             $vanBanDinhKem = new VBDKModel();
+
             $vanBanDinhKem->FK_MaDot = $request->madot;
-            $vanBanDinhKem->sTenVanBan = $request->tenvanban;
+            $vanBanDinhKem->sTenVanBan = $request->tenvanban[$index];
             $vanBanDinhKem->sTenFile = $file['name'];
             $vanBanDinhKem->dNgayTao = now();
             $vanBanDinhKem->sDuongDan = $file['path'];
@@ -172,6 +174,83 @@ class DotTDKTController extends Controller
 
         return response()->json([
             'message' => 'Thêm thành công',
+        ], 200);
+    }
+
+    public function suaVanBanDinhKem(Request $request)
+    {
+        $this->messages = [
+            'tenvanban.required' => 'Vui lòng nhập tên văn bản'
+
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'tenvanban' => 'required',
+            'mavanban' => 'required|exists:tblvanbandinhkem,PK_MaVanBan'
+        ], $this->messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors(),
+            ], 422);
+        }
+
+        $vanBanDinhKem = VBDKModel::where('PK_MaVanBan', '=', $request->mavanban)->first();
+        if (!$vanBanDinhKem) {
+            return response()->json([
+                'message' => 'Không tìm thấy văn bản đính kèm'
+            ], 404);
+        }
+
+        if ($request->hasFile('file')) {
+            $path = $vanBanDinhKem->sDuongDan;
+            if (Storage::exists($path)) {
+                Storage::delete($path);
+            }
+
+            $file = $request->file('file');
+            $folderDot = $request->madot;
+            $filePath = $file->move('vanbandinhkem/' . $folderDot, $file->getClientOriginalName());
+
+            $vanBanDinhKem->sTenVanBan = $request->tenvanban;
+            $vanBanDinhKem->sTenFile = pathinfo($filePath)['filename'];
+            $vanBanDinhKem->sDuongDan = 'vanbandinhkem/' . $folderDot . '/' . $file->getClientOriginalName();
+            $vanBanDinhKem->save();
+
+            return response()->json([
+                'message' => 'Cập nhật thành công'
+            ], 200);
+        } else {
+            $vanBanDinhKem->sTenVanBan = $request->tenvanban;
+            $vanBanDinhKem->save();
+
+            return response()->json([
+                'message' => 'Cập nhật thành công'
+            ], 200);
+        }
+    }
+
+    public function xoaVanBanDinhKem($id)
+    {
+        $vanBanDinhKem = VBDKModel::where('PK_MaVanBan', '=', $id)->first();
+        if (!$vanBanDinhKem) {
+            return response()->json([
+                'message' => 'Không tìm thấy văn bản đính kèm'
+            ], 404);
+        }
+
+        $path = $vanBanDinhKem->sDuongDan;
+        $fullPath = public_path($path);
+
+        if (file_exists($fullPath)) {
+            unlink($fullPath); 
+        }
+
+
+        $vanBanDinhKem->delete();
+
+        return response()->json([
+            'message' => 'Xóa thành công'
         ], 200);
     }
 
