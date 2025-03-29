@@ -17,4 +17,9 @@ class DanhHieuModel extends Model
 
     public $timestamps = false;
     protected $fillable = ['FK_MaChiTiet','sTenDanhHieu'];
+
+    // public function chiTietDanhHieus()
+    // {
+    //     return $this->belongsTo(ChiTietDHModel::class, 'FK_MaChiTiet', 'PK_MaChiTiet');
+    // }
 }

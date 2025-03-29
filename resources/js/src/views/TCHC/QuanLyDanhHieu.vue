@@ -21,24 +21,25 @@
                             <tr>
                                 <th>STT</th>
                                 <th>Tên danh hiệu</th>
-                                <th>Loại</th>
+                                <th>Dành cho</th>
                                 <th>Hình thức</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="(danhhieu, index) in danhSachDanhHieu" :key="danhhieu.id">
-                                <td>{{ index + 1 }}</td>
-                                <td>{{ danhhieu.ten }}</td>
-                                <td>{{ danhhieu.loai === 'canhan' ? 'Cá nhân' : 'Đơn vị' }}</td>
-                                <td>{{ danhhieu.hinhthuc === 'theodot' ? 'Theo đợt' : 'Đột xuất' }}</td>
-                                <td>
+                                <td class="text-center">{{ ++index }}</td>
+                                <td>{{ danhhieu.sTenDanhHieu }}</td>
+                                <td>{{ danhhieu.sTenLoaiDanhHieu }}</td>
+                                <td>{{ danhhieu.sTenHinhThuc }}</td>
+                                <!-- <td>{{  }}</td> -->
+                                <td class="text-center">
                                     <button class="btn btn-warning btn-sm me-2" @click="showEditModal(danhhieu)"
                                         data-bs-toggle="modal" data-bs-target="#danhHieuModal">
-                                        <i class="fas fa-edit"></i> Sửa
+                                        <i class="fas fa-edit"></i>
                                     </button>
                                     <button class="btn btn-danger btn-sm" @click="confirmDelete(danhhieu)">
-                                        <i class="fas fa-trash"></i> Xóa
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -60,20 +61,22 @@
                         <form @submit.prevent="saveDanhHieu">
                             <div class="mb-3">
                                 <label class="form-label">Tên danh hiệu</label>
-                                <input type="text" class="form-control" v-model="danhHieuForm.ten" required>
+                                <input type="text" class="form-control" v-model="currentDanhHieu.tendanhhieu" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Loại danh hiệu</label>
-                                <select class="form-select" v-model="danhHieuForm.loai" required>
-                                    <option value="canhan">Cá nhân</option>
-                                    <option value="donvi">Đơn vị</option>
+                                <label class="form-label">Danh hiệu dành cho</label>
+                                <select class="form-select" v-model="currentDanhHieu.loaidanhhieu" required>
+                                    <option value="" disabled selected>- Chọn loại danh hiệu -</option>
+                                    <option value="1">Cá nhân</option>
+                                    <option value="2">Đơn vị</option>
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Hình thức</label>
-                                <select class="form-select" v-model="danhHieuForm.hinhthuc" required>
-                                    <option value="theodot">Theo đợt</option>
-                                    <option value="dotxuat">Đột xuất</option>
+                                <select class="form-select" v-model="currentDanhHieu.hinhthuc" required>
+                                    <option value="" disabled selected>- Chọn hình thức -</option>
+                                    <option value="1">Theo đợt</option>
+                                    <option value="2">Đột xuất</option>
                                 </select>
                             </div>
 
@@ -91,33 +94,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
-const danhSachDanhHieu = ref([
-    {
-        id: 1,
-        ten: 'Chiến sĩ thi đua cơ sở',
-        loai: 'canhan',
-        hinhthuc: 'theodot',
-        mota: 'Danh hiệu cho cá nhân đạt thành tích xuất sắc trong năm'
-    },
-    {
-        id: 2,
-        ten: 'Tập thể lao động xuất sắc',
-        loai: 'donvi',
-        hinhthuc: 'theodot',
-        mota: 'Danh hiệu cho đơn vị có thành tích xuất sắc trong năm'
-    },
-    {
-        id: 3,
-        ten: 'Giấy khen đột xuất',
-        loai: 'canhan',
-        hinhthuc: 'dotxuat',
-        mota: 'Khen thưởng đột xuất cho cá nhân có thành tích đặc biệt'
-    }
-])
+const currentDanhHieu = reactive({
+    id: null,
+    tendanhhieu: '',
+    loaidanhhieu: '',
+    hinhthuc: '',
+})
+
+const danhSachDanhHieu = ref([])
 
 const isEditing = ref(false)
 const danhHieuForm = ref({
@@ -130,7 +118,23 @@ const danhHieuForm = ref({
 
 const loadDanhHieu = async () => {
     try {
-        const response = await axios.get('/api/danhhieu')
+        const response = await axios.get('/api/danhhieu/list', {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            }
+        })
+
+        if (response.status === 200) {
+            if (Array.isArray(response.data.data)) {
+                danhSachDanhHieu.value = response.data.data; // Gán mảng trực tiếp
+            } else {
+                // Nếu dữ liệu là đối tượng, chuyển thành mảng
+                danhSachDanhHieu.value = Object.values(response.data.data);
+            }
+            console.log(danhSachDanhHieu.value);
+        }
+
+
         // Tạm thời comment lại để dùng dữ liệu mẫu
         // danhSachDanhHieu.value = response.data
     } catch (error) {
@@ -145,46 +149,69 @@ const loadDanhHieu = async () => {
 
 const showAddModal = () => {
     isEditing.value = false
-    danhHieuForm.value = {
-        id: null,
-        ten: '',
-        loai: 'canhan',
-        hinhthuc: 'theodot',
-        mota: ''
-    }
-    const modal = new bootstrap.Modal(document.getElementById('danhHieuModal'))
-    modal.show()
+    currentDanhHieu.id = null
+    currentDanhHieu.tendanhhieu = ''
+    currentDanhHieu.hinhthuc = ''
+    currentDanhHieu.loaidanhhieu = ''
 }
 
 const showEditModal = (danhhieu) => {
     isEditing.value = true
-    danhHieuForm.value = { ...danhhieu }
-    const modal = new bootstrap.Modal(document.getElementById('danhHieuModal'))
-    modal.show()
+    currentDanhHieu.id = danhhieu.PK_MaDanhHieu
+    currentDanhHieu.tendanhhieu = danhhieu.sTenDanhHieu
+    currentDanhHieu.loaidanhhieu = danhhieu.PK_MaLoaiDanhHieu
+    currentDanhHieu.hinhthuc = danhhieu.PK_MaHinhThuc
 }
 
 const saveDanhHieu = async () => {
     try {
+        let response = null;
         if (isEditing.value) {
-            // Tạm thời xử lý locally
-            const index = danhSachDanhHieu.value.findIndex(d => d.id === danhHieuForm.value.id)
-            if (index !== -1) {
-                danhSachDanhHieu.value[index] = { ...danhHieuForm.value }
-            }
-            // await axios.put(`/api/danhhieu/${danhHieuForm.value.id}`, danhHieuForm.value)
+            response = await axios.put(`/api/danhhieu/update`, currentDanhHieu, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                }
+            });
         } else {
-            // Tạm thời xử lý locally
-            const newId = Math.max(...danhSachDanhHieu.value.map(d => d.id)) + 1
-            danhSachDanhHieu.value.push({ ...danhHieuForm.value, id: newId })
-            // await axios.post('/api/danhhieu', danhHieuForm.value)
+            response = await axios.post('/api/danhhieu/add', currentDanhHieu, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                }
+            });
         }
-        const modal = bootstrap.Modal.getInstance(document.getElementById('danhHieuModal'))
-        modal.hide()
-        Swal.fire({
-            icon: 'success',
-            title: 'Thành công',
-            text: isEditing.value ? 'Cập nhật danh hiệu thành công' : 'Thêm danh hiệu thành công'
-        })
+        if (response.status === 200) {
+            if (isEditing.value) {
+                const index = danhSachDanhHieu.value.findIndex(d => d.PK_MaDanhHieu === currentDanhHieu.id)
+                danhSachDanhHieu.value[index] = {
+                    PK_MaDanhHieu: currentDanhHieu.id,
+                    sTenDanhHieu: currentDanhHieu.tendanhhieu,
+                    sTenLoaiDanhHieu: currentDanhHieu.loaidanhhieu,
+                    sTenHinhThuc: currentDanhHieu.hinhthuc
+                }
+            }
+
+            else {
+                console.log(response.data.data);
+                danhSachDanhHieu.value.push({
+                    PK_MaDanhHieu: response.data.data.PK_MaDanhHieu,
+                    sTenDanhHieu: response.data.data.sTenDanhHieu,
+                    sTenLoaiDanhHieu: response.data.data.sTenLoaiDanhHieu,
+                    sTenHinhThuc: response.data.data.sTenHinhThuc
+                })
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Lưu danh hiệu thành công',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            })
+        }
+
+        document.getElementById("danhHieuModal").querySelector(".btn-close").click();
     } catch (error) {
         console.error('Lỗi khi lưu danh hiệu:', error)
         Swal.fire({
@@ -198,7 +225,7 @@ const saveDanhHieu = async () => {
 const confirmDelete = (danhhieu) => {
     Swal.fire({
         title: 'Xác nhận xóa?',
-        text: `Bạn có chắc muốn xóa danh hiệu "${danhhieu.ten}"?`,
+        text: `Bạn có chắc muốn xóa danh hiệu "${danhhieu.sTenDanhHieu}"?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Xóa',
@@ -206,14 +233,23 @@ const confirmDelete = (danhhieu) => {
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
-                // Tạm thời xử lý locally
-                danhSachDanhHieu.value = danhSachDanhHieu.value.filter(d => d.id !== danhhieu.id)
-                // await axios.delete(`/api/danhhieu/${danhhieu.id}`)
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công',
-                    text: 'Xóa danh hiệu thành công'
+                const response = await axios.delete(`/api/danhhieu/delete/${danhhieu.PK_MaDanhHieu}`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    }
                 })
+                if (response.status === 200) {
+                    danhSachDanhHieu.value = danhSachDanhHieu.value.filter(d => d.PK_MaDanhHieu !== danhhieu.PK_MaDanhHieu)
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Xóa danh hiệu thành công',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    })
+                }
             } catch (error) {
                 console.error('Lỗi khi xóa danh hiệu:', error)
                 Swal.fire({

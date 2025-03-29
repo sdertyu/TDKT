@@ -59,5 +59,7 @@ Route::middleware('auth.api')->group(function () {
     Route::prefix('danhhieu')->group(function () {
         Route::get('/list', [DanhHieuController::class, 'index']);
         Route::post('/add',[DanhHieuController::class, 'themDanhHieu']);
+        Route::put('/update',[DanhHieuController::class, 'suaDanhHieu']);
+        Route::delete('/delete/{id}',[DanhHieuController::class, 'xoaDanhHieu']);
     });
 });
