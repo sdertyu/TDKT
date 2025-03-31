@@ -17,6 +17,7 @@ import KhenThuongDotXuat from "../views/DonVi/KhenThuongDotXuat.vue";
 import authMiddleware from "../middleware/auth";
 import DeXuatTheoDot from "../views/DonVi/DeXuatTheoDot.vue";
 import DeXuatDotXuat from "../views/DonVi/DeXuatDotXuat.vue";
+import VanBanDinhKem from "../views/DonVi/VanBan.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -90,10 +91,19 @@ const router = createRouter({
                     meta: { roles: [4] },
                 },
                 {
+                    path: "vanban",
+                    component: VanBanDinhKem,
+                    meta: { roles: [4, 5] },
+                },
+                {
                     path: "dexuatdotxuat",
                     component: DeXuatDotXuat,
                     meta: { roles: [4] },
-                }
+                },
+
+                //Cá nhân
+
+                //Hội đồng
             ],
         },
         {

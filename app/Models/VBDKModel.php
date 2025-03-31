@@ -14,6 +14,9 @@ class VBDKModel extends Model
     protected $primaryKey = 'PK_MaVanBan';
     public $incrementing = false;
     protected $keyType = 'string';
+    protected $casts = [
+        'dNgayTao' => 'datetime:H:i:s d-m-Y'
+    ];
 
 
     public $timestamps = false;

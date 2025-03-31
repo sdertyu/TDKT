@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use ZipStream\ZipStream;
 
 class DotTDKTController extends Controller
 {
@@ -153,27 +154,31 @@ class DotTDKTController extends Controller
         $folderDot = $dotTDKT->iNamBatDau . '-' . $dotTDKT->iNamKetThuc;
 
         foreach ($request->file('file') as $file) {
-            $filePath = $file->move('vanbandinhkem/' . $folderDot, $file->getClientOriginalName());
+            // $filePath = $file->move('vanbandinhkem/' . $folderDot, $file->getClientOriginalName());
+            $storedPath = $file->store('vanbandinhkem/' . $folderDot);
 
             $filePaths[] = [
-                'path' => 'vanbandinhkem/' . $folderDot . '/' . $file->getClientOriginalName(),
-                'name' => pathinfo($filePath)['filename']
+                'path' => $storedPath,
+                'name' => $file->getClientOriginalName(), // Tên gốc để lưu vào DB
             ];
         }
 
+        $response = [];
+
         foreach ($filePaths as $index => $file) {
             $vanBanDinhKem = new VBDKModel();
-
             $vanBanDinhKem->FK_MaDot = $request->madot;
             $vanBanDinhKem->sTenVanBan = $request->tenvanban[$index];
             $vanBanDinhKem->sTenFile = $file['name'];
             $vanBanDinhKem->dNgayTao = now();
             $vanBanDinhKem->sDuongDan = $file['path'];
             $vanBanDinhKem->save();
+            $response[] = $vanBanDinhKem;
         }
 
         return response()->json([
             'message' => 'Thêm thành công',
+            'data' => $response
         ], 200);
     }
 
@@ -210,11 +215,11 @@ class DotTDKTController extends Controller
 
             $file = $request->file('file');
             $folderDot = $request->madot;
-            $filePath = $file->move('vanbandinhkem/' . $folderDot, $file->getClientOriginalName());
+            $filePath = $file->store('vanbandinhkem/' . $folderDot);
 
             $vanBanDinhKem->sTenVanBan = $request->tenvanban;
-            $vanBanDinhKem->sTenFile = pathinfo($filePath)['filename'];
-            $vanBanDinhKem->sDuongDan = 'vanbandinhkem/' . $folderDot . '/' . $file->getClientOriginalName();
+            $vanBanDinhKem->sTenFile = $file->getClientOriginalName();
+            $vanBanDinhKem->sDuongDan = $filePath;
             $vanBanDinhKem->save();
 
             return response()->json([
@@ -240,12 +245,10 @@ class DotTDKTController extends Controller
         }
 
         $path = $vanBanDinhKem->sDuongDan;
-        $fullPath = public_path($path);
 
-        if (file_exists($fullPath)) {
-            unlink($fullPath); 
+        if (Storage::exists($path)) {
+            Storage::delete($path);
         }
-
 
         $vanBanDinhKem->delete();
 
@@ -265,6 +268,73 @@ class DotTDKTController extends Controller
         return response()->json([
             'message' => 'Thành công',
             'data' => $listVanBanDinhKem
+        ]);
+    }
+
+    public function layDanhSachVanBanDinhKemActive()
+    {
+        $dotTDKT = DotTDKTModel::where('bTrangThai', '=', 1)->first();
+        if ($dotTDKT) {
+            $listVanBanDinhKem = VBDKModel::where('FK_MaDot', '=', $dotTDKT->PK_MaDot)->get();
+
+            foreach ($listVanBanDinhKem as $item) {
+                $item->sDuongDan = asset($item->sDuongDan);
+            }
+
+            return response()->json([
+                'message' => 'Thành công',
+                'data' => $listVanBanDinhKem
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Không tìm thấy đợt thi đua nào đang hoạt động',
+            ], 404);
+        }
+    }
+
+    public function downloadVbdk($id)
+    {
+        $vanban = VBDKModel::findOrFail($id);
+
+        // Đường dẫn thực trong storage/app
+        $path = $vanban->sDuongDan;
+
+        if (!Storage::exists($path)) {
+            return response()->json(['message' => 'Không tìm thấy file'], 404);
+        }
+
+        // Trả file download, giữ tên gốc
+        return Storage::download($path, $vanban->sTenFile);
+    }
+
+    public function downloadZipVanBan($madot)
+    {
+        $vanbans = VBDKModel::where('FK_MaDot', $madot)->get();
+
+        if ($vanbans->isEmpty()) {
+            return response()->json(['message' => 'Không có văn bản nào để tải.'], 404);
+        }
+
+        // Tên zip
+        $dot = DotTDKTModel::find($madot)->first();
+        $zipName = 'vanban-' . $dot->PK_MaDot . '.zip';
+
+        // Tạo stream zip và trả về response
+        return response()->streamDownload(function () use ($vanbans) {
+            $zip = new ZipStream();
+
+            foreach ($vanbans as $vb) {
+                if (Storage::exists($vb->sDuongDan)) {
+                    $stream = Storage::readStream($vb->sDuongDan);
+                    $zip->addFileFromStream($vb->sTenFile, $stream);
+                    fclose($stream);
+                }
+            }
+
+            $zip->finish();
+        }, $zipName, [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $zipName . '"',
         ]);
     }
 }

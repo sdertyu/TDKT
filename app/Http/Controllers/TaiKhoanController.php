@@ -49,8 +49,7 @@ class TaiKhoanController extends Controller
                 'password' => 'required|min:6',
                 'role'      => 'required|exists:tblQuyen,PK_MaQuyen',
             ];
-        }
-        else if ($request->role == 3) {
+        } else if ($request->role == 3) {
             $rules = [
                 'username' => 'required|unique:tbltaikhoan,sUsername|max:50',
                 'password' => 'required|min:6',
@@ -95,8 +94,7 @@ class TaiKhoanController extends Controller
             $taiKhoanMoi->FK_MaQuyen = $request->role;
             $taiKhoanMoi->sTrangThai = 1;
             $taiKhoanMoi->save();
-        }
-        else if ($request->role == 3) {
+        } else if ($request->role == 3) {
             $tongTaiKhoan = count(AccountModel::all());
             $taiKhoanMoi = new AccountModel();
             $taiKhoanMoi->PK_MaTaiKhoan = 'user' . $tongTaiKhoan + 1;
@@ -249,8 +247,18 @@ class TaiKhoanController extends Controller
         ], 200);
     }
 
-    public function khoaTaiKhoan($id)
+    public function khoaTaiKhoan($id, Request $request)
     {
+        $rules = [
+            'trangThai' => 'required|in:0,1'
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $this->messages);
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
         $taiKhoanKhoa = AccountModel::where('PK_MaTaiKhoan', '=', $id)->first();
 
         if (!$taiKhoanKhoa) {
@@ -259,7 +267,7 @@ class TaiKhoanController extends Controller
             ], 404);
         }
 
-        $taiKhoanKhoa->sTrangThai = 0;
+        $taiKhoanKhoa->sTrangThai = $request->trangThai;
         $taiKhoanKhoa->save();
 
         return response()->json([
@@ -278,19 +286,7 @@ class TaiKhoanController extends Controller
                 'message' => 'Không tìm thấy tài khoản'
             ], 404);
         } else {
-            if ($taiKhoanXoa->FK_MaQuyen == 3) {
-                $donViXoa = DonViModel::where('FK_MaTaiKhoan', '=', $taiKhoanXoa->PK_MaTaiKhoan)->first();
-                if ($donViXoa) {
-                    $donViXoa->delete();
-                }
-                $taiKhoanXoa->delete();
-            } else if ($taiKhoanXoa->FK_MaQuyen == 4) {
-                $caNhanXoa = CaNhanModel::where('FK_MaTaiKhoan', '=', $taiKhoanXoa->PK_MaTaiKhoan)->first();
-                if ($caNhanXoa) {
-                    $caNhanXoa->delete();
-                }
-                $taiKhoanXoa->delete();
-            }
+            
         }
 
         return response()->json([

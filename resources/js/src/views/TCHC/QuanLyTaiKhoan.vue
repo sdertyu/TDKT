@@ -42,7 +42,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(account, index) in paginatedAccounts" :key="index">
+                                    <tr v-for="(account, index) in paginatedAccounts" :key="account.PK_MaTaiKhoan">
                                         <td class="text-center">{{ ++index }}</td>
                                         <td>{{ account.sUsername }}</td>
                                         <!-- <td>{{ account.email }}</td> -->
@@ -61,8 +61,10 @@
                                                 data-bs-toggle="modal" data-bs-target="#accountModal" title="Sửa">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-warning me-1" @click="toggleAccountStatus(account)" title="Khóa/Mở khóa">
-                                                <i :class="account.sTrangThai == 1 ? 'fas fa-lock' : 'fas fa-unlock'"></i>
+                                            <button class="btn btn-sm btn-warning me-1"
+                                                @click="toggleAccountStatus(account)" title="Khóa/Mở khóa">
+                                                <i
+                                                    :class="account.sTrangThai == 1 ? 'fas fa-lock' : 'fas fa-unlock'"></i>
                                             </button>
                                             <button class="btn btn-sm btn-danger" @click="confirmDelete(account)"
                                                 data-bs-toggle="modal" data-bs-target="#deleteModal" title="Xóa">
@@ -145,8 +147,8 @@
                         <form @submit.prevent="saveAccount">
                             <div class="mb-3">
                                 <label for="username" class="form-label tex">Tên đăng nhập</label>
-                                <input type="text" class="form-control" id="username" v-model="currentAccount.sUsername"
-                                    required />
+                                <input type="text" class="form-control" id="accountModal_username"
+                                    v-model="currentAccount.sUsername" required />
                             </div>
                             <!-- <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
@@ -159,7 +161,7 @@
                                     <input :type="isCheckPass ? 'text' : 'password'" class="form-control" id="password"
                                         v-model="currentAccount.sPassword" required />
                                     <button @click="checkPass" class="input-group-text bg-light">
-                                        <i :class="isCheckPass ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                                        <i :class="passwordIcon"></i>
                                     </button>
                                 </div>
                             </div>
@@ -186,7 +188,7 @@
                                 </select>
                             </div>
 
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="status"
                                         v-model="currentAccount.status" />
@@ -194,14 +196,14 @@
                                         {{ currentAccount.status ? "Hoạt động" : "Tạm ngưng" }}
                                     </label>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <div v-if="currentAccount.FK_MaQuyen == '5'">
-                                <!-- <div class="mb-3">
+                                <div class="mb-3">
                                     <label for="username" class="form-label tex">Mã cá nhân</label>
-                                    <input type="text" class="form-control" id="maCaNhan"
+                                    <input type="text" class="form-control" id="accountModal_maCaNhan"
                                         v-model="currentAccount.macanhan" required />
-                                </div> -->
+                                </div>
                                 <div class="mb-3">
                                     <label for="username" class="form-label tex">Tên cá nhân</label>
                                     <input type="text" class="form-control" id="fullName"
@@ -246,7 +248,7 @@
                             <div v-if="currentAccount.FK_MaQuyen == '4'">
                                 <div class="mb-3">
                                     <label for="username" class="form-label text">Mã đơn vị</label>
-                                    <input type="text" class="form-control" id="maDonVi"
+                                    <input type="text" class="form-control" id="accountModal_maDonVi"
                                         v-model="currentAccount.PK_MaDonVi" required />
                                 </div>
                                 <div class="mb-3">
@@ -301,17 +303,21 @@
 import axios from 'axios';
 import { data } from 'jquery';
 import Swal from 'sweetalert2';
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
 
 const accounts = ref([]);
 const listDonVi = ref([]);
 const changePass = ref(false);
 
 const isCheckPass = ref(false)
+const passwordIcon = ref('fa-solid fa-eye')
+// isCheckPass ? '' : 'fa-solid fa-eye'
 const vaiTro = ref('')
 
 const checkPass = () => {
     isCheckPass.value = !isCheckPass.value;
+    passwordIcon.value = isCheckPass.value ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+    console.log(passwordIcon.value);
 }
 
 watch(changePass, (newValue) => {
@@ -429,7 +435,17 @@ const openEditModal = (account) => {
                 currentAccount.value.PK_MaDonVi = data.ca_nhan[0].FK_MaDonVi;
                 console.log(currentAccount.value.PK_MaDonVi);
             }
-            // 
+            nextTick(() => {
+                const dv = document.getElementById("accountModal_maDonVi");
+                if (dv) dv.disabled = true;
+                const un = document.getElementById("accountModal_username");
+                if (un) un.disabled = true;
+                const cn = document.getElementById("accountModal_maCaNhan");
+                if (cn) cn.disabled = true;
+            });
+            // document.getElementById("accountModal_maDonVi").disabled = true;
+            // document.getElementById("accountModal_username").disabled = true;
+            // document.getElementById("accountModal_maCaNhan").disabled = true;
         }
     }).catch(error => {
         Swal.fire({
@@ -445,7 +461,24 @@ const openEditModal = (account) => {
 };
 
 const confirmDelete = (account) => {
-    currentAccount.value = { ...account };
+    Swal.fire({
+        title: "Xác nhận",
+        text: `Bạn có chắc chắn muốn xóa tài khoản ${account.sUsername}?`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Đồng ý",
+        cancelButtonText: "Hủy",
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+    }).then( async (result) => {
+        if (result.isConfirmed) {
+            const response = await axios.delete(`/api/taikhoan/delete/${account.PK_MaTaiKhoan}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                }
+            });
+        }
+    });
 };
 
 const saveAccount = () => {
@@ -529,6 +562,7 @@ const saveAccount = () => {
                 password: currentAccount.value.sPassword,
                 role: currentAccount.value.FK_MaQuyen,
                 madonvi: currentAccount.value.PK_MaDonVi,
+                macanhan: currentAccount.value.macanhan,
                 tencanhan: currentAccount.value.tencanhan,
                 myemail: currentAccount.value.email,
                 tenchucvu: currentAccount.value.tenchucvu,
@@ -554,6 +588,7 @@ const saveAccount = () => {
                         text: response.data.message,
                         timerProgressBar: true,
                     });
+                    accounts.value.push(response.data.taikhoan);
                 }
             })
             .catch(error => {
@@ -603,6 +638,59 @@ const fetchDonViList = async () => {
         console.error("Lỗi khi lấy danh sách đơn vị:", error);
         listDonVi.value = [];
     }
+};
+
+const toggleAccountStatus = (account) => {
+    Swal.fire({
+        title: "Xác nhận",
+        text: `Bạn có chắc chắn muốn ${account.sTrangThai == 1 ? "khóa" : "mở khóa"} tài khoản này?`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Đồng ý",
+        cancelButtonText: "Hủy",
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            updateAccountStatus(account);
+        }
+    });
+};
+
+const updateAccountStatus = (account) => {
+    let newStatus = account.sTrangThai == 1 ? 0 : 1;
+
+
+    axios.put(`/api/taikhoan/lock/${account.PK_MaTaiKhoan}`, { trangThai: newStatus }, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    })
+        .then(response => {
+            if (response.status === 200) {
+                account.status = newStatus;
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    icon: 'success',
+                    text: "Lưu thành công",
+                    timerProgressBar: true,
+                });
+                // accounts.value = accounts.value.map((a) => {
+                //     if (a.PK_MaTaiKhoan === account.PK_MaTaiKhoan) {
+                //         a.sTrangThai = newStatus;
+                //     }
+                //     return a;
+                // });
+                account.sTrangThai = newStatus;
+
+            }
+        })
+        .catch(error => {
+            console.error("Lỗi khi cập nhật trạng thái tài khoản:", error);
+        });
 };
 
 onMounted(() => {

@@ -191,7 +191,6 @@ const saveDanhHieu = async () => {
             }
 
             else {
-                console.log(response.data.data);
                 danhSachDanhHieu.value.push({
                     PK_MaDanhHieu: response.data.data.PK_MaDanhHieu,
                     sTenDanhHieu: response.data.data.sTenDanhHieu,

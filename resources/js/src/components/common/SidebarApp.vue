@@ -131,6 +131,12 @@ switch (role.value) {
     case '4':
         sidebarMenuItems.value = [
             {
+                title: 'Văn bản đính kèm',
+                icon: 'bi bi-file-earmark-text',
+                link: '/vanban',
+                isActive: false
+            },
+            {
                 title: 'Quản lý bình bầu',
                 icon: 'bi bi-box-seam-fill',
                 isActive: false,
