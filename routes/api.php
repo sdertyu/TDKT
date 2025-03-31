@@ -45,6 +45,10 @@ Route::middleware('auth.api')->group(function () {
         Route::post('/update-van-ban', [DotTDKTController::class, 'suaVanBanDinhKem']);
         Route::delete('/xoa-van-ban/{id}', [DotTDKTController::class, 'xoaVanBanDinhKem']);
         Route::get('/list-van-ban/{id}', [DotTDKTController::class, 'layDanhSachVanBanDinhKem']);
+        Route::get('/list-van-ban-active', [DotTDKTController::class, 'layDanhSachVanBanDinhKemActive']);
+        Route::get('/downloadVbdk/{id}', [DotTDKTController::class, 'downloadVbdk']);
+        Route::get('/downloadZip/{id}', [DotTDKTController::class, 'downloadZipVanBan']);
+
     });
     Route::prefix('hoidong')->group(function () {
         Route::get('/list', [HoiDongController::class, 'index']);

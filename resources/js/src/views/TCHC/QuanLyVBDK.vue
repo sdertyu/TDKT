@@ -85,7 +85,6 @@
 
                         <div v-else class="modal-body">
                             <div class="file-description-block row mb-3">
-                                <p>{{ currenFile }}</p>
                                 <div class="form-group col-5">
                                     <label for="">Tên văn bản</label>
                                     <input type="text" class="form-control" v-model="currenFile.sTenVanBan" required />
@@ -272,6 +271,19 @@ const saveChangeFiles = () => {
                     showConfirmButton: false,
                     timer: 3000, timerProgressBar: true
                 });
+                if (res.data.data) {
+                    let addList = res.data.data;
+                    console.log(addList);
+                    addList.forEach(element => {
+                        console.log(element);
+                        listFile.value.push({
+                            PK_MaVanBan: element.PK_MaVanBan,
+                            sTenVanBan: element.sTenVanBan,
+                            sTenFile: element.sTenFile,
+                            dNgayTao: element.dNgayTao
+                        });
+                    });
+                }
             }
             document.getElementById("themFileModal").querySelector(".btn-close").click();
         }).catch(err => {
@@ -387,7 +399,8 @@ const xoaVanBanDinhKem = (vb) => {
 
                     xoaVB.then(res => {
                         if (res.status === 200) {
-                            blocks.value = blocks.value.filter(b => b.PK_MaVanBan !== vb.PK_MaVanBan);
+                            listFile.value = listFile.value.filter(b => b !== vb);
+                            console.log(blocks.value);
                             Swal.fire({
                                 position: 'top-end',
                                 toast: true,
