@@ -24,4 +24,9 @@ class CaNhanModel extends Model
     {
         return $this->belongsTo(DonViModel::class, 'FK_MaDonVi', 'PK_MaDonVi');
     }
+
+    public function taikhoan()
+    {
+        return $this->belongsTo(AccountModel::class, 'FK_MaTaiKhoan', 'PK_MaTaiKhoan');
+    }
 }

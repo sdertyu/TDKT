@@ -530,7 +530,7 @@ const saveAccount = () => {
                         showConfirmButton: false,
                         timer: 3000,
                         icon: 'success',
-                        text: 'fff',
+                        text: 'Lưu thành công',
                         timerProgressBar: true,
                     });
                 }
