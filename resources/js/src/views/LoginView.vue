@@ -136,6 +136,7 @@ const submitLogin = () => {
                         break;
                     case 4:
                         localStorage.setItem('ten', response.data.user.don_vi[0].sTenDonVi);
+                        localStorage.setItem('maDonVi', response.data.user.don_vi[0].PK_MaDonVi);
                         break;
                     case 5:
                         localStorage.setItem('ten', response.data.user.ca_nhan[0].sTenCaNhan);

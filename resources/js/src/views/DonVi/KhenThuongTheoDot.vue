@@ -1,10 +1,10 @@
 <template>
-    <div class="container-fluid">
+    <div class="container-fluid" v-if="madot">
         <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title text-uppercase">Biên bản bình xét thi đua năm học</h3>
+                        <h3 class="card-title text-uppercase">Biên bản bình xét thi đua năm học {{ madot }}</h3>
                     </div>
                     <div class="card-body">
                         <form @submit.prevent="submitForm">
@@ -74,9 +74,9 @@
                                         <label for="chuTri">Chủ trì:</label>
                                         <select class="form-select" id="chuTri" v-model="formData.chuTri">
                                             <option value="" disabled selected>Chọn người chủ trì</option>
-                                            <option v-for="person in danhSachCaNhan" :key="person.id"
-                                                :value="person.id">
-                                                {{ person.ten }}
+                                            <option v-for="person in individuals" :key="person.id"
+                                                :value="person.taiKhoan">
+                                                {{ person.displayName }}
                                             </option>
                                         </select>
                                     </div>
@@ -86,22 +86,19 @@
                                         <label for="thuKy">Thư ký:</label>
                                         <select class="form-select" id="thuKy" v-model="formData.thuKy">
                                             <option value="" disabled selected>Chọn thư ký</option>
-                                            <option v-for="person in danhSachCaNhan" :key="person.id"
-                                                :value="person.id">
-                                                {{ person.ten }}
+                                            <option v-for="person in individuals" :key="person.id"
+                                                :value="person.taiKhoan">
+                                                {{ person.displayName }}
                                             </option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-group mb-3">
+                            <!-- <div class="form-group mb-3">
                                 <label for="namHoc">Bình xét cho năm học:</label>
-                                <select class="form-select" id="namHoc" v-model="formData.namHoc">
-                                    <option value="" disabled selected>Chọn năm học</option>
-                                    <option v-for="year in namHocList" :key="year" :value="year">{{ year }}</option>
-                                </select>
-                            </div>
+                                <input type="text" disabled :value="madot" class="form-control">
+                            </div> -->
 
                             <!-- Phần bình bầu cá nhân -->
                             <div class="card mb-4">
@@ -122,6 +119,7 @@
                                         </div>
 
                                         <div class="row">
+
                                             <div v-for="(individual, keyAward) in selectedIndividuals[award.id]"
                                                 :key="keyAward" class="col-md-6 mb-3">
                                                 <div class="row align-items-center">
@@ -152,41 +150,26 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>Danh hiệu đề xuất:</label>
-                                                    <select class="form-select" v-model="formData.tapThe.danhHieu">
-                                                        <option value="" disabled selected>Chọn danh hiệu</option>
-                                                        <option value="Tập thể lao động tiên tiến">Tập thể lao động
-                                                            tiên
-                                                            tiến</option>
-                                                        <option value="Tập thể lao động xuất sắc">Tập thể lao động
-                                                            xuất
-                                                            sắc</option>
-                                                    </select>
+                                                    <multiselect v-model="selectedUnitAwards" :options="unitAwards"
+                                                        :multiple="true" track-by="id" label="name"
+                                                        placeholder="Chọn danh hiệu"
+                                                        @select="handleSelectedUnitAwardsChange">
+                                                    </multiselect>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label>Số phiếu bầu:</label>
-                                                    <div class="input-group">
-                                                        <input type="number" class="form-control"
-                                                            v-model="formData.tapThe.soPhieu" min="0">
-                                                        <span class="input-group-text">phiếu</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <!-- Giấy khen của hiệu trưởng cho tập thể -->
-                                    <div class="mb-4">
-                                        <h5 class="border-bottom pb-2">Giấy khen của hiệu trưởng</h5>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label>Số phiếu bầu:</label>
-                                                    <div class="input-group">
-                                                        <input type="number" class="form-control"
-                                                            v-model="formData.tapThe.giayKhen.soPhieu" min="0">
-                                                        <span class="input-group-text">phiếu</span>
+                                            <div class="row">
+                                                <div v-for="(award, index) in selectedUnitAwards" :key="index"
+                                                    class="col-md-6 mb-3">
+                                                    <div class="row align-items-center">
+                                                        <label :for="award.id" class="col-4 col-form-label mb-0">
+                                                            {{ award.name }}
+                                                        </label>
+                                                        <div class="col-8">
+                                                            <input type="number" :id="award.id" class="form-control"
+                                                                placeholder="Số phiếu bầu"
+                                                                v-model="selectedUnitAwards[index]['soPhieu']" required>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -200,7 +183,7 @@
                                     <h4 class="mb-0">Biên bản bình xét</h4>
                                 </div>
                                 <div class="card-body">
-                                    <input type="file" class="form-control" name="" value="">
+                                    <input type="file" class="form-control" @change="handleFileUpload($event)">
                                 </div>
                             </div>
 
@@ -222,28 +205,16 @@ import { ref, computed, onMounted, reactive } from 'vue';
 import axios from 'axios';
 import { watch } from 'vue';
 import Multiselect from 'vue-multiselect';
+import Swal from 'sweetalert2';
+import { remove } from 'jszip';
 
-const individuals = ref([
-    { id: 1, code: 'NV001', name: 'Nguyễn Văn A', displayName: 'NV001 - Nguyễn Văn A' },
-    { id: 2, code: 'NV002', name: 'Trần Thị B', displayName: 'NV002 - Trần Thị B' },
-    { id: 3, code: 'NV003', name: 'Lê Văn C', displayName: 'NV003 - Lê Văn C' },
-    { id: 4, code: 'NV004', name: 'Phạm Thị D', displayName: 'NV004 - Phạm Thị D' },
-    { id: 5, code: 'NV005', name: 'Hoàng Văn E', displayName: 'NV005 - Hoàng Văn E' },
-    { id: 6, code: 'NV006', name: 'Nguyễn Văn A', displayName: 'NV006 - Nguyễn Văn A' } // Trùng tên với NV001
-]);
+const individuals = ref([]);
 
-const unitAwards = ref([
-    { id: 'tap_the_lao_dong_xuat_sac', name: 'Tập thể lao động xuất sắc' },
-    { id: 'co_thi_dua', name: 'Cờ thi đua' },
-    { id: 'bang_khen', name: 'Bằng khen' }
-]);
+const unitAwards = ref([]);
 
-const individualAwards = ref([
-    { id: 'chien_si_thi_dua', name: 'Chiến sĩ thi đua' },
-    { id: 'lao_dong_tien_tien', name: 'Lao động tiên tiến' },
-    { id: 'bang_khen', name: 'Bằng khen' }
-]);
+const individualAwards = ref([]);
 const selectedIndividuals = reactive({});
+const selectedUnitAwards = ref([]);
 
 // Dữ liệu form
 const formData = ref({
@@ -258,6 +229,7 @@ const formData = ref({
     thuKy: '',
     namHoc: '',
     ghiChu: '',
+    bienBan: '',
     caNhan: {
         laoDongTienTien: [],
         chienSiThiDua: [],
@@ -272,72 +244,122 @@ const formData = ref({
     }
 });
 
-const selectedAwardsObjects = ref([]);
+const handleFileUpload = (event) => {
+    formData.value.bienBan = event.target.files[0];
+};
+
 // Tính số người vắng
 const soVang = computed(() => {
     return formData.value.soTrieuTap - formData.value.soCoMat;
+
 });
+
+// Lấy danh sách cá nhân trong đơn vị
+const getCaNhanTrongDonVi = async () => {
+    // console.log(localStorage);
+    const response = await axios.get(`api/taikhoan/caNhanTrongDonVi/${localStorage.getItem('maDonVi')}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    });
+
+    if (response.status === 200) {
+        const data = response.data.data;
+        individuals.value = data.map(item => ({
+            id: item.PK_MaCaNhan,
+            taiKhoan: item.FK_MaTaiKhoan,
+            name: item.sTenCaNhan,
+            displayName: `${item.PK_MaCaNhan} - ${item.sTenCaNhan}`
+        }));
+        formData.value.tongSoNguoi = individuals.value.length;
+    }
+    else {
+        console.error('Lỗi khi lấy danh sách cá nhân:', response);
+    }
+}
+
+const madot = ref('');
 
 // Cập nhật số người vắng khi số người có mặt hoặc triệu tập thay đổi
 const watchSoNguoi = () => {
     formData.value.soVang = soVang.value;
 };
 
-// Danh sách cá nhân trong đơn vị (giả lập)
-const danhSachCaNhan = ref([]);
-
-// Danh sách năm học
-const currentYear = new Date().getFullYear();
-const namHocList = ref([]);
-
-// Khởi tạo danh sách năm học
-for (let i = 0; i < 5; i++) {
-    const year = currentYear - i;
-    namHocList.value.push(`${year}-${year + 1}`);
-}
-
-// Thêm cá nhân vào danh sách bình bầu
-const themCaNhan = (loaiDanhHieu) => {
-    formData.value.caNhan[loaiDanhHieu].push({
-        id: '',
-        soPhieu: 0
-    });
-};
-
-// Xóa cá nhân khỏi danh sách bình bầu
-const xoaCaNhan = (loaiDanhHieu, index) => {
-    formData.value.caNhan[loaiDanhHieu].splice(index, 1);
-};
-
-// Lấy danh sách cá nhân từ API
-const fetchDanhSachCaNhan = async () => {
-    try {
-        // Thay thế bằng API thực tế
-        // const response = await axios.get('/api/donvi/canhan');
-        // danhSachCaNhan.value = response.data;
-
-        // Dữ liệu mẫu
-        danhSachCaNhan.value = [
-            { id: 1, ten: 'Nguyễn Văn A' },
-            { id: 2, ten: 'Trần Thị B' },
-            { id: 3, ten: 'Lê Văn C' },
-            { id: 4, ten: 'Phạm Thị D' },
-            { id: 5, ten: 'Hoàng Văn E' }
-        ];
-    } catch (error) {
-        console.error('Lỗi khi lấy danh sách cá nhân:', error);
-    }
-};
 
 // Gửi form
 const submitForm = async () => {
     try {
-        // Thay thế bằng API thực tế
-        // await axios.post('/api/binhbau/bienbanhop', formData.value);
-        alert('Lưu biên bản thành công!');
+        if (formData.value.soTrieuTap < formData.value.soCoMat) {
+            Swal.fire({
+                icon: 'error',
+                text: 'Số người triệu tập phải lớn hơn hoặc bằng số người có mặt!',
+                toast: true,
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                position: 'top-end'
+            });
+            return;
+        }
+        if (formData.value.soTrieuTap > formData.value.tongSoNguoi) {
+            Swal.fire({
+                icon: 'error',
+                text: 'Số người triệu tập phải nhỏ hơn hoặc bằng tổng số người trong đơn vị!',
+                toast: true,
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                position: 'top-end'
+            });
+            return;
+        }
+
+        formData.value.caNhan = selectedIndividuals;
+        formData.value.tapThe = selectedUnitAwards.value;
+
+        let form = new FormData();
+        form.append('mahoidong', localStorage.getItem('maDonVi') + '-' + madot.value);
+        form.append('madot', madot.value);
+        form.append('machutri', formData.value.chuTri);
+        form.append('mathuky', formData.value.thuKy);
+        form.append('thoigian', formData.value.thoiGian);
+        form.append('diadiem', formData.value.diaChi);
+        form.append('maloaihoidong', 1); //Hội đồng đơn vị
+        form.append('hinhthuchoidong', 1); //Theo đợt
+        form.append('songuoithamdu', formData.value.soCoMat);
+        form.append('sothanhvien', formData.value.tongSoNguoi);
+        form.append('sohd', formData.value.soHuongDan);
+        form.append('ghichu', formData.value.ghiChu);
+        form.append('bienban', formData.value.bienBan);
+        form.append('dexuatcanhan', JSON.stringify(formData.value.caNhan));
+        form.append('dexuatdonvi', JSON.stringify(formData.value.tapThe));
+
+
+        const response = await axios.post(`api/hoidong/add`, form,
+            {
+                'Content-Type': 'multipart/form-data',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                }
+            });
+
+        if (response.status === 200) {
+            Swal.fire({
+                icon: 'success',
+                text: 'Lưu biên bản thành công!',
+                toast: true,
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                position: 'top-end'
+            });
+            resetForm();
+        }
+        else {
+            console.error('Lỗi khi lưu biên bản:', response);
+        }
     } catch (error) {
-        console.error('Lỗi khi gửi form:', error);
-        alert('Có lỗi xảy ra khi lưu biên bản!');
+
     }
 };
 
@@ -354,18 +376,8 @@ const resetForm = () => {
         chuTri: '',
         thuKy: '',
         namHoc: '',
-        caNhan: {
-            laoDongTienTien: [],
-            chienSiThiDua: [],
-            giayKhen: []
-        },
-        tapThe: {
-            danhHieu: '',
-            soPhieu: 0,
-            giayKhen: {
-                soPhieu: 0
-            }
-        }
+        caNhan: {},
+        tapThe: {}
     };
 };
 
@@ -378,13 +390,71 @@ const setupWatchers = () => {
 };
 
 onMounted(() => {
-    fetchDanhSachCaNhan();
     setupWatchers();
+    getCaNhanTrongDonVi();
+    getDotActive();
+    getListDanhHieu();
 });
+
+const getListDanhHieu = async () => {
+    const response = await axios.get(`api/danhhieu/list`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    });
+
+    if (response.status === 200) {
+        const data = response.data.data;
+        // console.log(data);
+        data.forEach(element => {
+            if (element.sTenLoaiDanhHieu == 'Cá nhân') {
+                individualAwards.value.push({
+                    id: element.PK_MaDanhHieu,
+                    name: element.sTenDanhHieu
+                });
+            }
+            else {
+                unitAwards.value.push({
+                    id: element.PK_MaDanhHieu,
+                    name: element.sTenDanhHieu
+                });
+            }
+        });
+    }
+    else {
+        console.error('Lỗi khi lấy danh sách cá nhân:', response);
+    }
+}
+
+const getDotActive = async () => {
+    const response = await axios.get(`api/dotthiduakhenthuong/dot-active`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    });
+
+    if (response.status === 200) {
+        const data = response.data.data;
+        // console.log(data);
+        if (data === null) {
+            Swal.fire({
+                icon: 'warning',
+                text: 'Hiện không có đợt thi đua khen thưởng nào được kích hoạt!',
+                confirmButtonText: 'OK'
+            })
+        }
+        else {
+            madot.value = data.PK_MaDot;
+        }
+    }
+    else {
+        console.error('Lỗi khi lấy danh sách cá nhân:', response);
+    }
+}
 
 const handleSelectedIndividualsChange = (val, awardId) => {
     // Kiểm tra nếu các cá nhân trong 'val' đã được chọn ở danh hiệu khác
-    const awardsToCheck = ['chien_si_thi_dua', 'lao_dong_tien_tien'];
+    const awardsToCheck = [1, 2];
 
     if (awardsToCheck.includes(awardId)) {
         const selectedInOtherAwards = awardsToCheck
@@ -412,7 +482,26 @@ const handleSelectedIndividualsChange = (val, awardId) => {
     }));
 
     // Debug log để kiểm tra
-    console.log('updated selectedIndividuals', selectedIndividuals);
+    // console.log('updated selectedIndividuals', selectedIndividuals);
+};
+
+const handleSelectedUnitAwardsChange = (val) => {
+    const ids = selectedUnitAwards.value.map(v => v.id);
+
+    if ((val.id === 4 && ids.includes(5)) || (val.id === 5 && ids.includes(4))) {
+        Swal.fire({
+            icon: 'error',
+            text: 'Không thể chọn cùng lúc 2 danh hiệu "Tập thể lao động tiên tiến" và "Tập thể lao động xuất sắc"',
+            toast: true,
+            timer: 5000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            position: 'top-end'
+        });
+
+        // Gỡ thằng vừa chọn ra khỏi selectedUnitAwards
+        selectedUnitAwards.value = selectedUnitAwards.value.filter(v => v.id !== val.id)
+    }
 };
 
 

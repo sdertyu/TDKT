@@ -286,7 +286,6 @@ class TaiKhoanController extends Controller
                 'message' => 'Không tìm thấy tài khoản'
             ], 404);
         } else {
-            
         }
 
         return response()->json([
@@ -300,6 +299,24 @@ class TaiKhoanController extends Controller
         return response()->json([
             'message' => 'success',
             'danhSachDonVi' => $danhSachDonVi
+        ], 200);
+    }
+
+    public function layDanhSachCaNhanTrongDonVi($id)
+    {
+        $donVi = DonViModel::where('PK_MaDonVi', $id)->first();
+        if (!$donVi) {
+            return response()->json([
+                'message' => 'Không tìm thấy đơn vị'
+            ], 404);
+        }
+        $danhSachCaNhan = CaNhanModel::where('FK_MaDonVi', $donVi->PK_MaDonVi)->whereHas('taikhoan', function ($query) {
+            $query->where('sTrangThai', 1); // hoặc 'status' tùy tên cột
+        })->get();
+
+        return response()->json([
+            'message' => 'success',
+            'data' => $danhSachCaNhan
         ], 200);
     }
 }
