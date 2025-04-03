@@ -5,23 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DeXuatModel extends Model
+class ThongBaoModel extends Model
 {
     use HasFactory;
+    protected $table = 'tblthongbao';
 
-    protected $table = 'tbldexuat';
-
-    protected $primaryKey = 'PK_DeXuat';
+    protected $primaryKey = 'PK_MaThongBao';
     public $incrementing = true;
+
     protected $keyType = 'int';
 
     protected $hidden = [''];
 
     public $timestamps = false;
+
     protected $casts = [
-        'dNgayTao' => 'datetime:d/m/y H:i:s',
+        'dThoiGian' => 'datetime:d/m/y H:i:s',
     ];
 
-    protected $fillable = ['FK_User', 'FK_MaHoiDong', 'iSoNguoiBau', 'sLink', 'dNgayTao', 'FK_MaHoiDong'];
-
+    protected $fillable = ['sTieuDe', 'sNoiDung', 'dNgayTao', 'FK_NguoiTao'];
 }

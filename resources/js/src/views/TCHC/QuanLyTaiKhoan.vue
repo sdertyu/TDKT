@@ -54,7 +54,7 @@
                                         <td class="text-center">
                                             <span :class="getStatusBadgeClass(account.sTrangThai)">{{
                                                 account.sTrangThai == 1 ? "Hoạt động" : "Tạm ngưng"
-                                            }}</span>
+                                                }}</span>
                                         </td>
                                         <td class="text-center">
                                             <button class="btn btn-sm btn-info me-1" @click="openEditModal(account)"
@@ -66,8 +66,7 @@
                                                 <i
                                                     :class="account.sTrangThai == 1 ? 'fas fa-lock' : 'fas fa-unlock'"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-danger" @click="confirmDelete(account)"
-                                                data-bs-toggle="modal" data-bs-target="#deleteModal" title="Xóa">
+                                            <button class="btn btn-sm btn-danger" @click="confirmDelete(account)" title="Xóa">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </td>
@@ -99,7 +98,7 @@
                                         :class="['page-item', { active: currentPage === page }]">
                                         <a class="page-link" href="#" @click.prevent="changePage(page)">{{
                                             page
-                                        }}</a>
+                                            }}</a>
                                     </li>
 
                                     <li :class="['page-item', { disabled: currentPage === totalPages }]">
@@ -166,6 +165,12 @@
                                 </div>
                             </div>
 
+                            <div class="mb-3">
+                                <label for="accountModal_email" class="form-label tex">Email</label>
+                                <input type="text" class="form-control" id="accountModal_email"
+                                    v-model="currentAccount.email" required />
+                            </div>
+
                             <div class="mb-3" v-if="isEditMode">
                                 <!-- <label for="password" class="form-label">Đổi mật khẩu</label> -->
                                 <div class="input-group">
@@ -223,11 +228,6 @@
 
                                 </div>
                                 <div class="mb-3">
-                                    <label for="username" class="form-label tex">Email</label>
-                                    <input type="text" class="form-control" id="email" v-model="currentAccount.email"
-                                        required />
-                                </div>
-                                <div class="mb-3">
                                     <label for="username" class="form-label tex">Tên chức vụ</label>
                                     <input type="text" class="form-control" id="tenChucVu"
                                         v-model="currentAccount.tenchucvu" required />
@@ -272,29 +272,6 @@
             </div>
         </div>
 
-        <!-- Modal xác nhận xóa -->
-        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Bạn có chắc chắn muốn xóa tài khoản
-                        <strong>{{ currentAccount.sUsername }}</strong>?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            Hủy
-                        </button>
-                        <button type="button" class="btn btn-danger" @click="deleteAccount" data-bs-dismiss="modal">
-                            Xóa
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -406,6 +383,8 @@ const openAddModal = () => {
     };
     changePass.value = false
     vaiTro.value = ''
+    const un = document.getElementById("accountModal_username");
+    if (un) un.disabled = false;
 };
 
 const openEditModal = (account) => {
@@ -422,6 +401,7 @@ const openEditModal = (account) => {
             currentAccount.value.id = data.PK_MaTaiKhoan;
             currentAccount.value.sPassword = data.sPassword;
             currentAccount.value.FK_MaQuyen = data.FK_MaQuyen;
+            currentAccount.value.email = data.sEmail;
             if (data.FK_MaQuyen == 4) {
                 currentAccount.value.PK_MaDonVi = data.don_vi[0].PK_MaDonVi;
                 currentAccount.value.sTenDonVi = data.don_vi[0].sTenDonVi;
@@ -430,7 +410,6 @@ const openEditModal = (account) => {
                 currentAccount.value.macanhan = data.ca_nhan[0].PK_MaCaNhan;
                 currentAccount.value.tencanhan = data.ca_nhan[0].sTenCaNhan;
                 currentAccount.value.tenchucvu = data.ca_nhan[0].sTenChucVu;
-                currentAccount.value.email = data.ca_nhan[0].sEmail;
                 currentAccount.value.gioitinh = data.ca_nhan[0].bGioiTinh;
                 currentAccount.value.PK_MaDonVi = data.ca_nhan[0].FK_MaDonVi;
                 console.log(currentAccount.value.PK_MaDonVi);
@@ -470,7 +449,7 @@ const confirmDelete = (account) => {
         cancelButtonText: "Hủy",
         confirmButtonColor: "#dc3545",
         cancelButtonColor: "#6c757d",
-    }).then( async (result) => {
+    }).then(async (result) => {
         if (result.isConfirmed) {
             const response = await axios.delete(`/api/taikhoan/delete/${account.PK_MaTaiKhoan}`, {
                 headers: {
@@ -483,33 +462,25 @@ const confirmDelete = (account) => {
 
 const saveAccount = () => {
     if (isEditMode.value) {
-        let data = {};
+        let data = {
+            id: currentAccount.value.id,
+            password: currentAccount.value.sPassword,
+            myemail: currentAccount.value.email,
+            role: currentAccount.value.FK_MaQuyen,
+        };
 
-        if (currentAccount.value.FK_MaQuyen == '3') {
-            data = {
-                username: currentAccount.value.sUsername,
-                role: currentAccount.value.FK_MaQuyen,
-            }
-        }
-        else if (currentAccount.value.FK_MaQuyen == '4') {
-            data = {
-                username: currentAccount.value.sUsername,
-                role: currentAccount.value.FK_MaQuyen,
-                madonvi: currentAccount.value.PK_MaDonVi,
-                tendonvi: currentAccount.value.sTenDonVi
-            };
+        if (currentAccount.value.FK_MaQuyen == '4') {
+
+            data.madonvi = currentAccount.value.PK_MaDonVi;
+            data.tendonvi = currentAccount.value.sTenDonVi;
+
         } else if (currentAccount.value.FK_MaQuyen == '5') {
-            data = {
-                id: currentAccount.value.id,
-                username: currentAccount.value.sUsername,
-                role: currentAccount.value.FK_MaQuyen,
-                madonvi: currentAccount.value.PK_MaDonVi,
-                tencanhan: currentAccount.value.tencanhan,
-                myemail: currentAccount.value.email,
-                tenchucvu: currentAccount.value.tenchucvu,
-                gioitinh: currentAccount.value.gioitinh,
-                macanhan: currentAccount.value.macanhan
-            };
+
+            data.madonvi = currentAccount.value.PK_MaDonVi;
+            data.tencanhan = currentAccount.value.tencanhan;
+            data.tenchucvu = currentAccount.value.tenchucvu;
+            data.gioitinh = currentAccount.value.gioitinh;
+            data.macanhan = currentAccount.value.macanhan;
         }
         if (changePass.value) {
             data.password = currentAccount.value.sPassword
@@ -539,35 +510,31 @@ const saveAccount = () => {
                 console.error(error);
             });
     } else {
-        let data = {};
+        let data = {
+            username: currentAccount.value.sUsername,
+            password: currentAccount.value.sPassword,
+            myemail: currentAccount.value.email,
+            role: currentAccount.value.FK_MaQuyen,
+        };
 
-        if (currentAccount.value.FK_MaQuyen == '3') {
-            data = {
-                username: currentAccount.value.sUsername,
-                password: currentAccount.value.sPassword,
-                role: currentAccount.value.FK_MaQuyen,
-            }
-        }
-        else if (currentAccount.value.FK_MaQuyen == '4') {
-            data = {
-                username: currentAccount.value.sUsername,
-                password: currentAccount.value.sPassword,
-                role: currentAccount.value.FK_MaQuyen,
-                madonvi: currentAccount.value.PK_MaDonVi,
-                tendonvi: currentAccount.value.sTenDonVi
-            };
+        // if (currentAccount.value.FK_MaQuyen == '3') {
+        //     data = {
+        //         username: currentAccount.value.sUsername,
+        //         password: currentAccount.value.sPassword,
+        //         role: currentAccount.value.FK_MaQuyen,
+        //     }
+        // }
+        if (currentAccount.value.FK_MaQuyen == '4') {
+            data.madonvi = currentAccount.value.PK_MaDonVi;
+            data.tendonvi = currentAccount.value.sTenDonVi
+
         } else if (currentAccount.value.FK_MaQuyen == '5') {
-            data = {
-                username: currentAccount.value.sUsername,
-                password: currentAccount.value.sPassword,
-                role: currentAccount.value.FK_MaQuyen,
-                madonvi: currentAccount.value.PK_MaDonVi,
-                macanhan: currentAccount.value.macanhan,
-                tencanhan: currentAccount.value.tencanhan,
-                myemail: currentAccount.value.email,
-                tenchucvu: currentAccount.value.tenchucvu,
-                gioitinh: currentAccount.value.gioitinh
-            };
+
+            data.madonvi = currentAccount.value.PK_MaDonVi;
+            data.macanhan = currentAccount.value.macanhan;
+            data.tencanhan = currentAccount.value.tencanhan;
+            data.tenchucvu = currentAccount.value.tenchucvu;
+            data.gioitinh = currentAccount.value.gioitinh;
         }
 
         axios.post('/api/taikhoan/add', data,

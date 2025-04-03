@@ -73,6 +73,24 @@
 
                                 </div>
                             </div>
+                            <div class="mb-3">
+                                <label for="namBatDau" class="form-label text">Hạn nộp biên bản cấp đơn vị</label>
+                                <input type="datetime-local" class="form-control" v-model="currentDot.dHanBienBanDonVi">
+                            </div>
+                            <div class="mb-3">
+                                <label for="namBatDau" class="form-label text">Hạn nộp minh chứng</label>
+                                <input type="datetime-local" class="form-control" v-model="currentDot.dHanNopMinhChung">
+                            </div>
+                            <div class="mb-3">
+                                <label for="namBatDau" class="form-label text">Hạn nộp biển bản phê duyệt cấp hội
+                                    đồng</label>
+                                <input type="datetime-local" class="form-control"
+                                    v-model="currentDot.dHanBienBanHoiDong">
+                                <Datepicker v-model="datetime" :enable-time="true" :enable-seconds="true"
+                                    format="yyyy-MM-dd HH:mm:ss" />
+
+                            </div>
+
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                     Hủy
@@ -95,12 +113,16 @@ import axios from 'axios';
 import { computed, onMounted, reactive, ref, warn } from 'vue';
 import Swal from 'sweetalert2';
 
+
 const currentDot = reactive({
     iNamBatDau: '',
     iNamKetThuc: '',
     bTrangThai: 0,
     dNgayTao: '',
-    PK_MaDot: ''
+    PK_MaDot: '',
+    dHanBienBanDonVi: '',
+    dHanNopMinhChung: '',
+    dHanBienBanHoiDong: ''
 });
 
 // ============ Xử lý đợt ============
@@ -153,21 +175,66 @@ const showEditModal = (dot) => {
     currentDot.bTrangThai = dot.bTrangThai;
     currentDot.dNgayTao = dot.dNgayTao;
     currentDot.PK_MaDot = dot.PK_MaDot
+    currentDot.dHanBienBanDonVi = dot.dHanBienBanDonVi;
+    currentDot.dHanNopMinhChung = dot.dHanNopMinhChung;
+    currentDot.dHanBienBanHoiDong = dot.dHanBienBanHoiDong;
 
-    // Mở modal
-    const modal = new bootstrap.Modal(document.getElementById('dotModal'));
-    modal.show();
 };
 
 const saveDot = () => {
 
     if (isEditing.value) {
-        const update = axios.put(`/api/dotthiduakhenthuong/${currentDot.id}`, currentDot,
+        const update = axios.put(`/api/dotthiduakhenthuong/update`, currentDot,
             {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('api_token')}`
                 }
-            })
+            });
+
+
+        update.then(response => {
+            if (response.status === 200) {
+                Swal.fire({
+                    position: 'top-end',
+                    toast: true,
+                    icon: 'success',
+                    title: 'Thêm đợt thành công',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                })
+            }
+        }).catch(error => {
+            console.log(error);
+
+            // Nếu có lỗi validation từ Laravel
+            if (error.response && error.response.status === 422) {
+                const errors = error.response.data.error
+                const errorMessages = Object.values(errors).flat().join('<br>')
+
+                Swal.fire({
+                    position: 'top-end',
+                    toast: true,
+                    icon: 'error',
+                    title: errorMessages,
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                })
+            } else {
+                // Các lỗi khác (server, mạng, v.v.)
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    showConfirmButton: false,
+                    title: 'Không thể thêm đợt!',
+                    timer: 3000,
+                    timerProgressBar: true
+                })
+            }
+        })
+
 
     } else {
         // Thêm đợt mới

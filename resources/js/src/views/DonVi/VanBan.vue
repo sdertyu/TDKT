@@ -35,6 +35,14 @@
                 </table>
             </div>
         </div>
+
+        <div class="docx-viewer">
+            <div v-if="loading" class="loading">Đang tải tài liệu...</div>
+            <div v-if="error" class="error">{{ error }}</div>
+            <div v-if="!loading && !error" ref="docxContent" class="docx-content"></div>
+        </div>
+
+
     </div>
 </template>
 
@@ -44,6 +52,8 @@ import { get } from "jquery";
 import Swal from "sweetalert2";
 import { ref, onMounted } from "vue";
 const madot = ref(null);
+import mammoth from "mammoth";
+const docxHtml = ref('');
 
 
 const listVanBanDinhKem = ref([]);
@@ -91,7 +101,7 @@ const getDotThiDuaActive = () => {
         })
         .then((response) => {
             if (response.status === 200) {
-                if(response.data.data === null){
+                if (response.data.data === null) {
                     Swal.fire({
                         toast: true,
                         icon: "warning",
@@ -122,7 +132,7 @@ onMounted(() => {
 const downLoadFile = async (item) => {
     try {
         const response = await axios.get(
-            `/api/dotthiduakhenthuong/downloadVbdk/${item.PK_MaVanBan}`,
+            `/api/dotthiduakhenthuong/previewVbdk/${item.PK_MaVanBan}`,
             {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("api_token")}`,
@@ -131,19 +141,36 @@ const downLoadFile = async (item) => {
             }
         );
 
-        const blob = new Blob([response.data]);
-        const url = window.URL.createObjectURL(blob);
+        const blobUrl = URL.createObjectURL(response.data);
+        window.open(blobUrl, '_blank');
 
-        const link = document.createElement('a');
-        link.href = url;
 
-        const fileName = getFileNameFromHeader(response.headers['content-disposition']) || 'download.docx';
-        link.download = fileName;
+        // const arrayBuffer = await response.data.arrayBuffer();
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
+        // mammoth.convertToHtml({ arrayBuffer })
+        //     .then(result => {
+        //         docxHtml.value = result.value;
+        //     })
+        //     .catch(err => {
+        //         console.error("Lỗi khi đọc file .docx:", err);
+        //     });
+
+
+
+
+        // const blob = new Blob([response.data]);
+        // const url = window.URL.createObjectURL(blob);
+
+        // const link = document.createElement('a');
+        // link.href = url;
+
+        // const fileName = getFileNameFromHeader(response.headers['content-disposition']) || 'download.docx';
+        // link.download = fileName;
+
+        // document.body.appendChild(link);
+        // link.click();
+        // document.body.removeChild(link);
+        // window.URL.revokeObjectURL(url);
 
 
     } catch (error) {

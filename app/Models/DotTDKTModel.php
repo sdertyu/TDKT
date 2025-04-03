@@ -24,7 +24,7 @@ class DotTDKTModel extends Model
 
 
     public $timestamps = false;
-    protected $fillable = ['PK_MaDot', 'dNgayTao', 'bTrangThai', 'iNamBatDau', 'iNamKetThuc'];
+    protected $fillable = ['PK_MaDot', 'dNgayTao', 'bTrangThai', 'iNamBatDau', 'iNamKetThuc', 'dHanBienBanDonVi', 'dHanNopMinhChung', 'dHanBienBanHoiDong'];
 
     public function vanbandinhkem()
     {

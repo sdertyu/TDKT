@@ -39,6 +39,7 @@ Route::middleware('auth.api')->group(function () {
     Route::prefix('dotthiduakhenthuong')->group(function () {
         Route::get('/list', [DotTDKTController::class, 'index']);
         Route::post('/add', [DotTDKTController::class, 'themDotTDKT']);
+        Route::put('/update', [DotTDKTController::class, 'SuaDotTDKT']);
         Route::put('/update-trang-thai', [DotTDKTController::class, 'suaTrangThaiDot']);
         Route::get('/thong-tin-dot/{id}', [DotTDKTController::class, 'layThongTinDot']);
         Route::get('/dot-active', [DotTDKTController::class, 'layDotActive']);
@@ -47,6 +48,7 @@ Route::middleware('auth.api')->group(function () {
         Route::delete('/xoa-van-ban/{id}', [DotTDKTController::class, 'xoaVanBanDinhKem']);
         Route::get('/list-van-ban/{id}', [DotTDKTController::class, 'layDanhSachVanBanDinhKem']);
         Route::get('/list-van-ban-active', [DotTDKTController::class, 'layDanhSachVanBanDinhKemActive']);
+        Route::get('/previewVbdk/{id}', [DotTDKTController::class, 'viewVbdk']);
         Route::get('/downloadVbdk/{id}', [DotTDKTController::class, 'downloadVbdk']);
         Route::get('/downloadZip/{id}', [DotTDKTController::class, 'downloadZipVanBan']);
 

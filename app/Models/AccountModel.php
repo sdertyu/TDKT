@@ -20,7 +20,7 @@ class AccountModel extends Authenticatable implements JWTSubject
     protected $hidden = ['sPassword'];
 
     public $timestamps = false;
-    protected $fillable = ['sUsername', 'sPassword', 'api_token'];
+    protected $fillable = ['sUsername', 'sPassword', 'api_token', 'sEmail'];
 
     public function donVi()
     {

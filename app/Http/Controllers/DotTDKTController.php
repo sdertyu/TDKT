@@ -31,6 +31,9 @@ class DotTDKTController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'iNamBatDau' => 'required|numeric|min:1933|unique:tbldotthiduakhenthuong,iNamBatDau|max:' . Carbon::now()->year,
+            'dHanBienBanDonVi' => 'datetime',
+            'dHanNopMinhChung' => 'datetime',
+            'dHanBienBanHoiDong' => 'datetime',
         ], $this->messages);
 
         if ($validator->fails()) {
@@ -46,7 +49,10 @@ class DotTDKTController extends Controller
             'iNamBatDau' => $request->iNamBatDau,
             'iNamKetThuc' => $request->iNamBatDau + 1,
             'bTrangThai' => 0,
-            'dNgayTao' => $carbon->format('Y-m-d H:i:s')
+            'dNgayTao' => $carbon->format('Y-m-d H:i:s'),
+            'dHanBienBanDonVi' => $request->dHanBienBanDonVi,
+            'dHanBienBanHoiDong' => $request->dHanBienBanHoiDong,
+            'dHanNopMinhChung' => $request->dHanNopMinhChung,
         ]);
 
         if ($dotTDKT) {
@@ -57,6 +63,51 @@ class DotTDKTController extends Controller
         } else {
             return response()->json([
                 'message' => 'Không thêm đợt thị đua'
+            ], 404);
+        }
+    }
+
+    public function SuaDotTDKT(Request $request) {
+        // Log::info($request);
+        // $rules = [
+        //     'dHanBienBanDonVi' => 'date',
+        //     'dHanNopMinhChung' => 'date',
+        //     'dHanBienBanHoiDong' => 'date',
+        // ];
+
+        // $messages = [
+        //     'dHanBienBanDonVi.date' => 'Ngày không hợp lệ',
+        //     'dHanNopMinhChung.date' => 'Ngày không hợp lệ',
+        //     'dHanBienBanHoiDong.date' => 'Ngày không hợp lệ',
+        // ];
+
+        // $validator = Validator::make($request->all(), $rules, $messages);
+
+        // if ($validator->fails()) {
+        //     return response()->json([
+        //         'error' => $validator->errors()
+        //     ], 422);
+        // }
+
+        $dotTDKT = DotTDKTModel::where('PK_MaDot', '=', $request->PK_MaDot)->first();
+        if (!$dotTDKT) {
+            return response()->json([
+                'message' => 'Không tìm thấy đợt thi đua'
+            ], 404);
+        }
+
+        $dotTDKT->dHanBienBanDonVi = $request->dHanBienBanDonVi;
+        $dotTDKT->dHanNopMinhChung = $request->dHanNopMinhChung;
+        $dotTDKT->dHanBienBanHoiDong = $request->dHanBienBanHoiDong;
+
+        if ($dotTDKT->save()) {
+            return response()->json([
+                'message' => 'Cập nhật thành công',
+                'data' => $dotTDKT
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Cập nhật không thành công'
             ], 404);
         }
     }
@@ -290,6 +341,24 @@ class DotTDKTController extends Controller
                 'message' => 'Không tìm thấy đợt thi đua nào đang hoạt động',
             ], 404);
         }
+    }
+
+    public function viewVbdk($id)
+    {
+        $vanban = VBDKModel::findOrFail($id);
+        $path = $vanban->sDuongDan;
+
+        if (!Storage::exists($path)) {
+            return response()->json(['message' => 'Không tìm thấy file'], 404);
+        }
+
+        $fileContent = Storage::get($path);
+        $mimeType = Storage::mimeType($path);
+        $filename = $vanban->sTenFile;
+
+        return response($fileContent, 200)
+            ->header('Content-Type', $mimeType)
+            ->header('Content-Disposition', "inline; filename=\"$filename\"");
     }
 
     public function downloadVbdk($id)

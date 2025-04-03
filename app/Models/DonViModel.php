@@ -18,7 +18,7 @@ class DonViModel extends Model
     // protected $hidden = [''];
 
     public $timestamps = false;
-    protected $fillable = ['sTenDonVi'];
+    protected $fillable = ['sTenDonVi', 'FK_MaTaiKhoan'];
 
     public function canhan()
     {
