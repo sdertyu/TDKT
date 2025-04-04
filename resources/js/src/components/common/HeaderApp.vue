@@ -14,23 +14,30 @@
                 <!-- <ButtonLink link="/" name="Home"/>
                 <ButtonLink link="/about" name="About"/> -->
             </ul>
-            
+
 
             <ul class="navbar-nav ms-auto">
-                <!-- <li class="nav-item">
-                    <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-                        <i class="bi bi-search"></i>
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link position-relative" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell-fill fs-5"></i>
+                        <span
+                            class="position-absolute translate-middle badge rounded-pill text-bg-warning"
+                            style="font-size: 0.65rem;">
+                            2
+                        </span>
                     </a>
-                </li> -->
+                </li>
+
+
 
                 <li class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                        <!-- <img src="" class="user-image rounded-circle shadow"
-                            alt="User Image" /> -->
+
                         <span class="d-none d-md-inline">{{ ten }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-">
-                        <li class="dropdown-item" @click="goTo('/profile')" type="button"><i class="fa-solid fa-gear"></i> Tài khoản của tôi</li>
+                        <li class="dropdown-item" @click="goTo('/profile')" type="button"><i
+                                class="fa-solid fa-gear"></i> Tài khoản của tôi</li>
                         <li class="dropdown-item" type="button" @click="logout"><i
                                 class="fa-solid fa-right-from-bracket"></i> Đăng xuất</li>
                     </ul>

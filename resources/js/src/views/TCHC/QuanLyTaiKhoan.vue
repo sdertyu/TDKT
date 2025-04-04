@@ -54,19 +54,20 @@
                                         <td class="text-center">
                                             <span :class="getStatusBadgeClass(account.sTrangThai)">{{
                                                 account.sTrangThai == 1 ? "Hoạt động" : "Tạm ngưng"
-                                                }}</span>
+                                            }}</span>
                                         </td>
                                         <td class="text-center">
-                                            <button class="btn btn-sm btn-info me-1" @click="openEditModal(account)"
+                                            <button class="btn btn-sm btn-warning me-1" @click="openEditModal(account)"
                                                 data-bs-toggle="modal" data-bs-target="#accountModal" title="Sửa">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-warning me-1"
-                                                @click="toggleAccountStatus(account)" title="Khóa/Mở khóa">
-                                                <i
-                                                    :class="account.sTrangThai == 1 ? 'fas fa-lock' : 'fas fa-unlock'"></i>
+                                            <button class="btn btn-secondary btn-sm me-2"
+                                                :class="account.sTrangThai == 0 ? 'bg-blend-color' : 'bg-success'"
+                                                @click="toggleAccountStatus(account)">
+                                                <i :class="account.sTrangThai == 0 ? 'fas fa-lock-open' : 'fas fa-lock'"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-danger" @click="confirmDelete(account)" title="Xóa">
+                                            <button class="btn btn-sm btn-danger" @click="confirmDelete(account)"
+                                                title="Xóa">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </td>
@@ -98,7 +99,7 @@
                                         :class="['page-item', { active: currentPage === page }]">
                                         <a class="page-link" href="#" @click.prevent="changePage(page)">{{
                                             page
-                                            }}</a>
+                                        }}</a>
                                     </li>
 
                                     <li :class="['page-item', { disabled: currentPage === totalPages }]">

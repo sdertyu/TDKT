@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\DotTDKTModel;
+use App\Models\DotXuatModel;
+use App\Models\HoiDongModel;
 use App\Models\VBDKModel;
 use Carbon\Carbon;
 use Illuminate\Contracts\Cache\Store;
@@ -67,7 +69,8 @@ class DotTDKTController extends Controller
         }
     }
 
-    public function SuaDotTDKT(Request $request) {
+    public function SuaDotTDKT(Request $request)
+    {
         // Log::info($request);
         // $rules = [
         //     'dHanBienBanDonVi' => 'date',
@@ -109,6 +112,43 @@ class DotTDKTController extends Controller
             return response()->json([
                 'message' => 'Cập nhật không thành công'
             ], 404);
+        }
+    }
+
+    public function XoaDotTDKT($id)
+    {
+        $dot = DotTDKTModel::where('PK_MaDot', '=', $id)->first();
+        if (!$dot) {
+            return response()->json([
+                'message' => 'Không tìm thấy đợt thi đua'
+            ], 404);
+        }
+
+        $DotXuat = DotXuatModel::where('FK_MaDot', '=', $id)->exists();
+        $hoiDong = HoiDongModel::where('FK_MaDot', '=', $id)->exists();
+
+        if ($DotXuat || $hoiDong) {
+            return response()->json([
+                'message' => 'Không thể xóa đợt thi đua vì đã có đột xuất hoặc hội đồng liên quan.'
+            ], 400);
+        }
+
+        try {
+            // Xóa văn bản đính kèm
+            VBDKModel::where('FK_MaDot', $id)->delete();
+
+            // Xóa đợt thi đua
+            $dot->delete();
+
+            return response()->json([
+                'message' => 'Đã xóa toàn bộ văn bản đính kèm và đợt thi đua.'
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'message' => 'Đã xảy ra lỗi trong quá trình xóa.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 

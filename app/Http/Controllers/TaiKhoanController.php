@@ -249,8 +249,6 @@ class TaiKhoanController extends Controller
     {
         $taiKhoanXoa = AccountModel::where('PK_MaTaiKhoan', '=', $id)->first();
 
-        $thongBao = 
-
         if (!$taiKhoanXoa) {
             return response()->json([
                 'message' => 'Không tìm thấy tài khoản'
