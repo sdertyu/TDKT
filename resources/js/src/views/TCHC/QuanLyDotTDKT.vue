@@ -165,6 +165,9 @@ const openAddModal = () => {
     currentDot.id = null;
     currentDot.iNamBatDau = '';
     currentDot.iNamKetThuc = ''
+    currentDot.dHanBienBanDonVi = ''
+    currentDot.dHanNopMinhChung = ''
+    currentDot.dHanBienBanHoiDong = ''
 };
 
 const showEditModal = (dot) => {

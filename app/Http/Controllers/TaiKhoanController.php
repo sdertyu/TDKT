@@ -90,7 +90,7 @@ class TaiKhoanController extends Controller
         $taiKhoanMoi->sPassword = bcrypt($request->password);
         $taiKhoanMoi->FK_MaQuyen = $request->role;
         $taiKhoanMoi->sEmail = $request->myemail;
-        $taiKhoanMoi->sTrangThai = 1;
+        $taiKhoanMoi->bTrangThai = 1;
         $taiKhoanMoi->save();
 
         if ($request->role == 4) {
@@ -236,7 +236,7 @@ class TaiKhoanController extends Controller
             ], 404);
         }
 
-        $taiKhoanKhoa->sTrangThai = $request->trangThai;
+        $taiKhoanKhoa->bTrangThai = $request->trangThai;
         $taiKhoanKhoa->save();
 
         return response()->json([
@@ -280,7 +280,7 @@ class TaiKhoanController extends Controller
             ], 404);
         }
         $danhSachCaNhan = CaNhanModel::where('FK_MaDonVi', $donVi->PK_MaDonVi)->whereHas('taikhoan', function ($query) {
-            $query->where('sTrangThai', 1); // hoặc 'status' tùy tên cột
+            $query->where('bTrangThai', 1); // hoặc 'status' tùy tên cột
         })->get();
 
         return response()->json([

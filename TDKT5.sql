@@ -4,7 +4,7 @@ CREATE TABLE `tblTaiKhoan` (
   `sPassword` varchar(255) NOT NULL,
   `FK_MaQuyen` int NOT NULL,
   `bTrangThai` bool NOT NULL,
-  `sEmail` varchar(100)
+  `sEmail` varchar(100) UNIQUE
 );
 
 CREATE TABLE `tblCaNhan` (
@@ -141,7 +141,14 @@ CREATE TABLE `tblThongBao` (
 
 CREATE TABLE `tblThongBao_Quyen` (
   `FK_MaQuyen` int,
-  `FK_MaThongBao` int
+  `FK_MaThongBao` int,
+  PRIMARY KEY (`FK_MaQuyen`, `FK_MaThongBao`)
+);
+
+CREATE TABLE `tblThongBao_DaDoc` (
+  `FK_MaThongBao` int,
+  `FK_MaTaiKhoan` varchar(20),
+  PRIMARY KEY (`FK_MaTaiKhoan`, `FK_MaThongBao`)
 );
 
 ALTER TABLE `tblTaiKhoan` ADD FOREIGN KEY (`FK_MaQuyen`) REFERENCES `tblQuyen` (`PK_MaQuyen`);
@@ -193,3 +200,7 @@ ALTER TABLE `tblThongBao_Quyen` ADD FOREIGN KEY (`FK_MaThongBao`) REFERENCES `tb
 ALTER TABLE `tblThongBao_Quyen` ADD FOREIGN KEY (`FK_MaQuyen`) REFERENCES `tblQuyen` (`PK_MaQuyen`);
 
 ALTER TABLE `tblThongBao` ADD FOREIGN KEY (`FK_NguoiTao`) REFERENCES `tblTaiKhoan` (`PK_MaTaiKhoan`);
+
+ALTER TABLE `tblThongBao_DaDoc` ADD FOREIGN KEY (`FK_MaTaiKhoan`) REFERENCES `tblTaiKhoan` (`PK_MaTaiKhoan`);
+
+ALTER TABLE `tblThongBao_DaDoc` ADD FOREIGN KEY (`FK_MaThongBao`) REFERENCES `tblThongBao` (`PK_MaThongBao`);

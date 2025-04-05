@@ -52,8 +52,8 @@
                                                 }}</span>
                                         </td> -->
                                         <td class="text-center">
-                                            <span :class="getStatusBadgeClass(account.sTrangThai)">{{
-                                                account.sTrangThai == 1 ? "Hoạt động" : "Tạm ngưng"
+                                            <span :class="getStatusBadgeClass(account.bTrangThai)">{{
+                                                account.bTrangThai == 1 ? "Hoạt động" : "Tạm ngưng"
                                             }}</span>
                                         </td>
                                         <td class="text-center">
@@ -62,9 +62,9 @@
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <button class="btn btn-secondary btn-sm me-2"
-                                                :class="account.sTrangThai == 0 ? 'bg-blend-color' : 'bg-success'"
+                                                :class="account.bTrangThai == 0 ? 'bg-blend-color' : 'bg-success'"
                                                 @click="toggleAccountStatus(account)">
-                                                <i :class="account.sTrangThai == 0 ? 'fas fa-lock-open' : 'fas fa-lock'"></i>
+                                                <i :class="account.bTrangThai == 0 ? 'fas fa-lock-open' : 'fas fa-lock'"></i>
                                             </button>
                                             <button class="btn btn-sm btn-danger" @click="confirmDelete(account)"
                                                 title="Xóa">
@@ -611,7 +611,7 @@ const fetchDonViList = async () => {
 const toggleAccountStatus = (account) => {
     Swal.fire({
         title: "Xác nhận",
-        text: `Bạn có chắc chắn muốn ${account.sTrangThai == 1 ? "khóa" : "mở khóa"} tài khoản này?`,
+        text: `Bạn có chắc chắn muốn ${account.bTrangThai == 1 ? "khóa" : "mở khóa"} tài khoản này?`,
         icon: "question",
         showCancelButton: true,
         confirmButtonText: "Đồng ý",
@@ -626,7 +626,7 @@ const toggleAccountStatus = (account) => {
 };
 
 const updateAccountStatus = (account) => {
-    let newStatus = account.sTrangThai == 1 ? 0 : 1;
+    let newStatus = account.bTrangThai == 1 ? 0 : 1;
 
 
     axios.put(`/api/taikhoan/lock/${account.PK_MaTaiKhoan}`, { trangThai: newStatus }, {
@@ -648,11 +648,11 @@ const updateAccountStatus = (account) => {
                 });
                 // accounts.value = accounts.value.map((a) => {
                 //     if (a.PK_MaTaiKhoan === account.PK_MaTaiKhoan) {
-                //         a.sTrangThai = newStatus;
+                //         a.bTrangThai = newStatus;
                 //     }
                 //     return a;
                 // });
-                account.sTrangThai = newStatus;
+                account.bTrangThai = newStatus;
 
             }
         })

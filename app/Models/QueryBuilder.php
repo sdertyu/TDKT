@@ -15,13 +15,13 @@ class QueryBuilder extends Model
         if ($id_quyen == 3) {
             $array = DB::table('tbltaikhoan as tk')
                 ->join('tblquyen as q', 'q.PK_MaQuyen', '=', 'tk.FK_MaQuyen')
-                ->select("tk.PK_MaTaiKhoan", "tk.sUsername", "tk.sTrangThai", "dv.sTenDonVi")->where('tk.PK_MaTaiKhoan', '=', $id_tk)
+                ->select("tk.PK_MaTaiKhoan", "tk.sUsername", "tk.bTrangThai", "dv.sTenDonVi")->where('tk.PK_MaTaiKhoan', '=', $id_tk)
                 ->join('tbldonvi as dv', 'dv.FK_MaTaiKhoan', '=', 'tk.PK_MaTaiKhoan')
                 ->first();
         } else if ($id_quyen == 4) {
             $array = DB::table('tbltaikhoan as tk')
                 ->join('tblquyen as q', 'q.PK_MaQuyen', '=', 'tk.FK_MaQuyen')
-                ->select("tk.PK_MaTaiKhoan", "tk.sUsername", "tk.sTrangThai", "cn.FK_MaDonVi", "cn.sTenCaNhan", "cn.sEmail", "cn.sTenChucVu", "cn.bGioiTinh")->where('tk.PK_MaTaiKhoan', '=', $id_tk)
+                ->select("tk.PK_MaTaiKhoan", "tk.sUsername", "tk.bTrangThai", "cn.FK_MaDonVi", "cn.sTenCaNhan", "cn.sEmail", "cn.sTenChucVu", "cn.bGioiTinh")->where('tk.PK_MaTaiKhoan', '=', $id_tk)
                 ->join('tblcanhan as cn', 'cn.FK_MaTaiKhoan', '=', 'tk.PK_MaTaiKhoan')
                 ->get();
         }

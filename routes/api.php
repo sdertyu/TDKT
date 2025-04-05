@@ -7,6 +7,7 @@ use App\Http\Controllers\DotTDKTController;
 use App\Http\Controllers\HinhThucController;
 use App\Http\Controllers\HoiDongController;
 use App\Http\Controllers\TaiKhoanController;
+use App\Http\Controllers\ThongBaoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -81,5 +82,10 @@ Route::middleware('auth.api')->group(function () {
     });
     Route::prefix('hinhthuc')->group(function () {
         Route::get('/getList', [HinhThucController::class, 'getListHinhThuc']);
+    });
+
+    Route::prefix('thongbao')->group(function () {
+        Route::get('/getlist', [ThongBaoController::class, 'getListThongBao']);
+        Route::post('/markread', [ThongBaoController::class, 'markRead']);
     });
 });

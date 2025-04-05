@@ -19,7 +19,7 @@ class DeXuatModel extends Model
 
     public $timestamps = false;
     protected $casts = [
-        'dNgayTao' => 'datetime:d/m/y H:i:s',
+        'dNgayTao' => 'datetime:H:i:s d/m/y',
     ];
 
     protected $fillable = ['FK_User', 'FK_MaHoiDong', 'iSoNguoiBau', 'sLink', 'dNgayTao', 'FK_MaHoiDong'];

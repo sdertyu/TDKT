@@ -16,7 +16,7 @@ class DanhHieuModel extends Model
     // protected $hidden = [''];
 
     public $timestamps = false;
-    protected $fillable = ['FK_MaHinhThuc', 'FK_MaLoaiDanhHieu', 'FK_MaCap', 'sTenDanhHieu', 'sTrangThai'];
+    protected $fillable = ['FK_MaHinhThuc', 'FK_MaLoaiDanhHieu', 'FK_MaCap', 'sTenDanhHieu', 'bTrangThai'];
 
     // public function chiTietDanhHieus()
     // {

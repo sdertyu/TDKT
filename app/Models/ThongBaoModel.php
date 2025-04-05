@@ -20,7 +20,7 @@ class ThongBaoModel extends Model
     public $timestamps = false;
 
     protected $casts = [
-        'dThoiGian' => 'datetime:d/m/y H:i:s',
+        'dNgayTao' => 'datetime:d/m/y H:i:s',
     ];
 
     protected $fillable = ['sTieuDe', 'sNoiDung', 'dNgayTao', 'FK_NguoiTao'];

@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class DotTDKTModel extends Model
 {
@@ -30,4 +31,22 @@ class DotTDKTModel extends Model
     {
         return $this->hasMany(VBDKModel::class, 'FK_MaDot', 'PK_MaDot');
     }
+
+    protected static function booted()
+    {
+        // Khi tạo mới
+        static::creating(function ($model) {
+            
+        });
+
+        // Khi cập nhật
+        static::updating(function ($model) {
+            foreach (['dHanBienBanDonVi', 'dHanNopMinhChung', 'dHanBienBanHoiDong'] as $field) {
+                if ($model->isDirty($field)) {
+                    
+                }
+            }
+        });
+    }
+
 }
