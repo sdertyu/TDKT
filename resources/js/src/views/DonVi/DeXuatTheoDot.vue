@@ -1,7 +1,7 @@
 <template>
     <div class="card my-2">
         <div class="card-header">
-            <h5 class="card-title">Danh sách danh hiệu được đề xuất</h5>
+            <h5 class="card-title">Danh sách danh hiệu được đề xuất đợt {{ dot }}</h5>
         </div>
         <div class="card-body">
             <div v-if="danhHieuDeXuats.length === 0" class="text-center py-3">
@@ -30,23 +30,31 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import { ref, onMounted } from 'vue';
+import { useGlobalStore } from '@/stores/global'
+
+import {toastSuccess, toastError} from '@/utils/toast.js';
 
 // Danh sách danh hiệu đề xuất
 const danhHieuDeXuats = ref([]);
+const dot = useGlobalStore().dotActive;
 
 // Hàm lấy danh sách danh hiệu đề xuất
-const fetchDanhHieuDeXuat = async () => {
-    try {
-        // Giả lập dữ liệu, thay thế bằng API call thực tế
-        danhHieuDeXuats.value = [
-            { id: 1, ten: 'Chiến sĩ thi đua cơ sở', loai: 'Cá nhân', minhChung: '' },
-            { id: 2, ten: 'Lao động tiên tiến', loai: 'Cá nhân', minhChung: '' },
-            { id: 3, ten: 'Tập thể lao động xuất sắc', loai: 'Tập thể', minhChung: '' },
-        ];
-    } catch (error) {
-        console.error('Lỗi khi lấy danh sách danh hiệu:', error);
-    }
+const getDanhHieuDeXuat = () => {
+    axios.get('/api/dexuat/getlisttheodot', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    })
+    .then(response => {
+        if(response.status === 200 ) {
+            danhHieuDeXuats.value = response.data.data;
+        } else {
+            toastError('Lỗi khi lấy danh sách danh hiệu đề xuất:', response.message);
+        }
+    })
+        
 };
 
 // Hàm lưu thông tin minh chứng
@@ -61,6 +69,7 @@ const luuMinhChung = async () => {
 };
 
 onMounted(() => {
-    fetchDanhHieuDeXuat();
+    getDanhHieuDeXuat();
+    console.log(useGlobalStore().dotActive);
 });
 </script>

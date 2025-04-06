@@ -18,7 +18,8 @@
 
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown">
-                    <a @click="checkNotifications" href="#" class="nav-link position-relative" data-bs-toggle="dropdown">
+                    <a @click="checkNotifications" href="#" class="nav-link position-relative"
+                        data-bs-toggle="dropdown">
                         <i class="bi bi-bell-fill fs-5"></i>
                         <span v-if="soChuaDoc !== 0"
                             class="position-absolute translate-middle badge rounded-pill text-bg-warning"
@@ -29,11 +30,11 @@
 
                     <ul class="dropdown-menu dropdown-menu-end custom-dropdown">
                         <li>
-                            <span class="dropdown-item dropdown-header">15 Notifications</span>
+                            <span class="dropdown-item dropdown-header">Thông báo</span>
                             <hr class="dropdown-divider">
                         </li>
 
-                        <li v-for="(item, index) in listThongBao" :key="index">
+                        <li v-for="(item, index) in listThongBao" :key="index" @click="goTo('/thongbao/' + item.PK_MaThongBao)">
                             <div class="dropdown-item notification-item"
                                 :style="item.daDoc === null ? 'background-color: #d7dadc;' : ''">
                                 <div class="notification-title fw-bold mb-1">
@@ -93,22 +94,25 @@ const logout = () => {
 }
 
 const checkNotifications = () => {
-    const readNotifications = axios.post('/api/thongbao/markread', {}, {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
-        }
-    }).then(response => {
-        if (response.status === 200) {
-            listThongBao.value.forEach(item => {
-                item.daDoc = 1;
-            });
-            soChuaDoc.value = 0;
-        } else {
-            toastError("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
-        }
-    }).catch(error => {
-        toastError("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
-    });
+    if (soChuaDoc !== 0) {
+        const readNotifications = axios.post('/api/thongbao/markread', {}, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            }
+        }).then(response => {
+            if (response.status === 200) {
+                // listThongBao.value.forEach(item => {
+                //     item.daDoc = 1;
+                // });
+                soChuaDoc.value = 0;
+            } else {
+                toastError("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
+            }
+        }).catch(error => {
+            console.log("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
+        });
+    }
+
 }
 
 const goTo = (link) => {
@@ -116,7 +120,7 @@ const goTo = (link) => {
 }
 
 const getAllNotifications = () => {
-    axios.get('/api/thongbao/getlist', {
+    axios.get('/api/thongbao/getlisttheoquyen', {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('api_token')}`
         }

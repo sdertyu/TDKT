@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\DanhHieuController;
+use App\Http\Controllers\DeXuatController;
 use App\Http\Controllers\DonViController;
 use App\Http\Controllers\DotTDKTController;
 use App\Http\Controllers\HinhThucController;
@@ -85,7 +86,12 @@ Route::middleware('auth.api')->group(function () {
     });
 
     Route::prefix('thongbao')->group(function () {
-        Route::get('/getlist', [ThongBaoController::class, 'getListThongBao']);
+        Route::get('/getlisttheoquyen', [ThongBaoController::class, 'getListThongBaoTheoQuyen']);
         Route::post('/markread', [ThongBaoController::class, 'markRead']);
+        Route::get('/getthongbao/{id}', [ThongBaoController::class, 'getThongBao']);
+    });
+
+    Route::prefix('dexuat')->group(function () {
+        Route::get('/getlisttheodot', [DeXuatController::class, 'getListDeXuatTheoDot']);
     });
 });

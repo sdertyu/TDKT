@@ -20,8 +20,17 @@ class ThongBaoModel extends Model
     public $timestamps = false;
 
     protected $casts = [
-        'dNgayTao' => 'datetime:d/m/y H:i:s',
+        'dNgayTao' => 'datetime:H:i:s d/m/y',
     ];
 
     protected $fillable = ['sTieuDe', 'sNoiDung', 'dNgayTao', 'FK_NguoiTao'];
+
+    public function thongBaoQuyen()
+    {
+        return $this->hasMany(ThongBaoQuyenModel::class, 'FK_MaThongBao', 'PK_MaThongBao');
+    }
+
+    public function thongBaoDaDoc() {
+        return $this->hasMany(ThongBaoDaDocModel::class, 'FK_MaThongBao', 'PK_MaThongBao');
+    }
 }
