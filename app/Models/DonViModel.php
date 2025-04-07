@@ -20,7 +20,7 @@ class DonViModel extends Model
     public $timestamps = false;
     protected $fillable = ['sTenDonVi', 'FK_MaTaiKhoan'];
 
-    public function canhan()
+    public function caNhan()
     {
         return $this->hasMany(CaNhanModel::class, 'FK_MaDonVi', 'PK_MaDonVi');
     }

@@ -20,6 +20,9 @@ import DeXuatTheoDot from "../views/DonVi/DeXuatTheoDot.vue";
 import DeXuatDotXuat from "../views/DonVi/DeXuatDotXuat.vue";
 import VanBanDinhKem from "../views/DonVi/VanBan.vue";
 
+//hội đồng
+import ThongTinMinhChung from "../views/HoiDong/ThongTinMinhChung.vue";
+
 
 //all
 import ThongBaoView from "../views/ThongBaoView.vue";
@@ -89,12 +92,12 @@ const router = createRouter({
                 {
                     path: "khenthuongdot",
                     component: KhenThuongTheoDot,
-                    meta: { roles: [4] , title: 'Khen thưởng theo đợt'},
+                    meta: { roles: [4, 5] , title: 'Khen thưởng theo đợt'},
                 },
                 {
                     path: "dexuattheodot",
                     component: DeXuatTheoDot,
-                    meta: { roles: [4] , title: "Đề xuất theo đợt"},
+                    meta: { roles: [4, 5] , title: "Đề xuất theo đợt"},
                 },
                 {
                     path: "khenthuongdotxuat",
@@ -116,8 +119,13 @@ const router = createRouter({
 
                 //Cá nhân
 
-                //Hội đồng
 
+                //Hội đồng
+                {
+                    path: 'thongtinminhchung',
+                    component: ThongTinMinhChung,
+                    meta: { roles: [3] , title: 'Thông tin minh chứng'},
+                },
                 //chung
                 {
                     path: "thongbao/:id",
@@ -127,7 +135,7 @@ const router = createRouter({
                 {
                     path: 'themminhchung/:id',
                     component: ThemMinhChung,
-                    meta: { roles: [4, 5] , title: 'Thêm minh chứng'},
+                    meta: { roles: [3, 4, 5] , title: 'Thêm minh chứng'},
                 }
             ],
         },

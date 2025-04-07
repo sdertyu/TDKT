@@ -97,26 +97,22 @@ const logout = () => {
 
 const checkNotifications = () => {
     if (soChuaDoc.value !== 0) {
-        if (!docThongBao.value) {
-            const readNotifications = axios.post('/api/thongbao/markread', {}, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
-                }
-            }).then(response => {
-                if (response.status === 200) {
-                    // listThongBao.value.forEach(item => {
-                    //     item.daDoc = 1;
-                    // });
-                    soChuaDoc.value = 0;
-                    docThongBao.value = true;
-                } else {
-                    toastError("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
-                }
-            }).catch(error => {
-                console.log("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
-            });
-        }
-
+        const readNotifications = axios.post('/api/thongbao/markread', {}, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            }
+        }).then(response => {
+            if (response.status === 200) {
+                // listThongBao.value.forEach(item => {
+                //     item.daDoc = 1;
+                // });
+                soChuaDoc.value = 0;
+            } else {
+                toastError("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
+            }
+        }).catch(error => {
+            console.log("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
+        });
     }
 
 }
@@ -148,7 +144,6 @@ const getAllNotifications = () => {
 
 onMounted(() => {
     getAllNotifications();
-    console.log(soChuaDoc.value);
 });
 
 </script>

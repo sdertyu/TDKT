@@ -94,6 +94,7 @@ Route::middleware('auth.api')->group(function () {
 
     Route::prefix('dexuat')->group(function () {
         Route::get('/getlisttheodot', [DeXuatController::class, 'getListDeXuatTheoDot']);
+        Route::get('/getalldexuat', [DeXuatController::class, 'getAllDeXuatTheoDot']);
     });
 
     Route::prefix('minhchung')->group(function () {

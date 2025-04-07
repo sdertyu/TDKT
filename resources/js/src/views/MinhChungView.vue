@@ -7,7 +7,7 @@
                     <h4 class="mb-0">
                         <i class="bi bi-cloud-upload me-2"></i>Upload Minh Chứng
                     </h4>
-                    <button class="btn btn-sm btn-light" @click="showUploadModal = true">
+                    <button v-if="role !== '3'" class="btn btn-sm btn-light" @click="showUploadModal = true">
                         <i class="bi bi-plus-lg me-1"></i>Thêm mới
                     </button>
                 </div>
@@ -26,7 +26,7 @@
 
                 <!-- File list -->
                 <div v-else>
-                    <div class="table-responsive">
+                    <div class="table-responsive"> 
                         <table class="table table-hover align-middle border-0">
                             <thead class="bg-light">
                                 <tr>
@@ -57,7 +57,7 @@
                                                 @click="downloadFile(file)">
                                                 <i class="bi bi-download"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-outline-danger" @click="removeFile(file)"
+                                            <button v-if="role !== '3'" class="btn btn-sm btn-outline-danger" @click="removeFile(file)"
                                                 title="Xóa file">
                                                 <i class="bi bi-trash"></i>
                                             </button>
@@ -136,6 +136,7 @@
 </template>
 
 <script setup>
+import { get } from 'jquery';
 import Swal from 'sweetalert2';
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
@@ -148,6 +149,7 @@ const isDragging = ref(false);
 const showUploadModal = ref(false);
 const showToast = ref(true);
 const maDeXuat = useRoute().params.id;
+const role = ref(localStorage.getItem('role'));
 
 onMounted(() => {
     getListMinhChung()
@@ -200,6 +202,11 @@ const onFileChange = async (event) => {
 
         if (response.status === 200) {
             toastSuccess('Lưu minh chứng thành công');
+            setTimeout(() => {
+                uploadingFiles.value = [];
+                getListMinhChung();
+                
+            }, 1500)
         }
     } catch (error) {
         toastError('Lưu minh chứng thất bại');

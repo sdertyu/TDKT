@@ -8,20 +8,23 @@
                 <p>Không có danh hiệu nào được đề xuất</p>
             </div>
             <div v-else>
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <th>STT</th>
-                        <th>Tên danh hiệu</th>
-                        <th>Ngày tạo</th>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(item, index) in danhHieuDeXuats" :key="item.id" @click="themMinhChung(item)">
-                            <td>{{ index + 1 }}</td>
-                            <td>{{ item.tenDanhHieu }}</td>
-                            <td>{{ item.NgayTao }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle border-0">
+                        <thead class="mb-3 border-bottom">
+                            <th class="text-center">STT</th>
+                            <th>Tên danh hiệu</th>
+                            <th class="text-center">Ngày tạo</th>
+                        </thead>
+                        <tbody>
+                            <tr class="border-bottom" style="cursor: pointer" v-for="(item, index) in danhHieuDeXuats" :key="item.id"
+                                @click="themMinhChung(item)">
+                                <td class="text-center">{{ index + 1 }}</td>
+                                <td>{{ item.tenDanhHieu }}</td>
+                                <td class="text-center">{{ item.NgayTao }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -72,6 +75,5 @@ const luuMinhChung = async () => {
 
 onMounted(() => {
     getDanhHieuDeXuat();
-    console.log(useGlobalStore().dotActive);
 });
 </script>

@@ -15,7 +15,8 @@ const getDotActive = async () => {
 
     if (response.status === 200) {
         if (response.data.data) {
-            useGlobalStore().setDot(response.data.data.PK_MaDot === null);
+            console.log(response.data.data);
+            useGlobalStore().setDot(response.data.data.PK_MaDot);
         }
     }
     else {
