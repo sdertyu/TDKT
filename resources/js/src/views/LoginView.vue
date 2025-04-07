@@ -70,13 +70,8 @@
 </template>
 
 <script setup>
-// import axios from 'axios';
+// 
 import { ref } from 'vue';
-import { useRoute } from 'vue-router';
-import router from '../router';
-// import { useRouter } from 'vue-router';
-// const router = useRouter();
-
 
 const username = ref('');
 const password = ref('');

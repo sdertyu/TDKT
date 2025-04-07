@@ -22,8 +22,17 @@ class DeXuatController extends Controller
         $hoiDong = DeXuatModel::whereHas('hoiDong', function ($query) use ($dotActive) {
             $query->where('FK_MaDot', $dotActive->PK_MaDot); // HoiDong có FK_MaDot
         })
+        ->with(['danhHieu'])
         ->where('FK_User', $user->PK_MaTaiKhoan)
-        ->get();
+        ->get()
+        ->map(function ($deXuat) {
+            return [
+                'PK_MaDeXuat' => $deXuat->PK_MaDeXuat,
+                'NgayTao' => formatDate($deXuat->dNgayTao),
+                'tenDanhHieu' => $deXuat->danhHieu->sTenDanhHieu,
+            ];
+        });
+        
 
         if ($hoiDong->isEmpty()) {
             return response()->json([

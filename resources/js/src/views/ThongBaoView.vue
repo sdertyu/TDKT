@@ -11,7 +11,7 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import axios from 'axios';
+
 import { toastError } from '@/utils/toast.js';
 
 

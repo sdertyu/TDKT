@@ -22,6 +22,11 @@ class MinhChungModel extends Model
     protected $fillable = [
         'sTenFile',
         'sDuongDan',
-        'FK_MaDeXuat'
+        'FK_MaDeXuat',
+        'dNgayTao'
     ];
+
+    public function deXuat() {
+        return $this->belongsTo(DeXuatModel::class, 'FK_MaDeXuat', 'PK_MaDeXuat');
+    }
 }

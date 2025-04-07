@@ -5,7 +5,6 @@
 <script setup>
 
 import { onMounted } from 'vue';
-import { useGlobalStore } from '@/stores/global';
 
 const getDotActive = async () => {
     const response = await axios.get(`api/dotthiduakhenthuong/dot-active`, {
@@ -15,8 +14,9 @@ const getDotActive = async () => {
     });
 
     if (response.status === 200) {
-        useGlobalStore().setDot(response.data.data.PK_MaDot);
-
+        if (response.data.data) {
+            useGlobalStore().setDot(response.data.data.PK_MaDot === null);
+        }
     }
     else {
         console.error('Lỗi khi lấy danh sách cá nhân:', response);

@@ -34,7 +34,8 @@
                             <hr class="dropdown-divider">
                         </li>
 
-                        <li v-for="(item, index) in listThongBao" :key="index" @click="goTo('/thongbao/' + item.PK_MaThongBao)">
+                        <li v-for="(item, index) in listThongBao" :key="index"
+                            @click="goTo('/thongbao/' + item.PK_MaThongBao)">
                             <div class="dropdown-item notification-item"
                                 :style="item.daDoc === null ? 'background-color: #d7dadc;' : ''">
                                 <div class="notification-title fw-bold mb-1">
@@ -71,12 +72,13 @@
     </nav>
 </template>
 <script setup>
-import axios from 'axios';
+
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { toastSuccess, toastError } from '@/utils/toast.js';
+
 const listThongBao = ref([]);
 const soChuaDoc = ref(0);
+const docThongBao = ref(false);
 
 
 const ten = localStorage.getItem('ten') ? localStorage.getItem('ten') : "Phòng TCHC";
@@ -94,23 +96,27 @@ const logout = () => {
 }
 
 const checkNotifications = () => {
-    if (soChuaDoc !== 0) {
-        const readNotifications = axios.post('/api/thongbao/markread', {}, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
-            }
-        }).then(response => {
-            if (response.status === 200) {
-                // listThongBao.value.forEach(item => {
-                //     item.daDoc = 1;
-                // });
-                soChuaDoc.value = 0;
-            } else {
-                toastError("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
-            }
-        }).catch(error => {
-            console.log("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
-        });
+    if (soChuaDoc.value !== 0) {
+        if (!docThongBao.value) {
+            const readNotifications = axios.post('/api/thongbao/markread', {}, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                }
+            }).then(response => {
+                if (response.status === 200) {
+                    // listThongBao.value.forEach(item => {
+                    //     item.daDoc = 1;
+                    // });
+                    soChuaDoc.value = 0;
+                    docThongBao.value = true;
+                } else {
+                    toastError("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
+                }
+            }).catch(error => {
+                console.log("Có lỗi xảy ra khi đánh dấu thông báo đã đọc");
+            });
+        }
+
     }
 
 }
@@ -142,6 +148,7 @@ const getAllNotifications = () => {
 
 onMounted(() => {
     getAllNotifications();
+    console.log(soChuaDoc.value);
 });
 
 </script>

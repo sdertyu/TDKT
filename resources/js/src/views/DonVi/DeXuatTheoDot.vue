@@ -8,33 +8,32 @@
                 <p>Không có danh hiệu nào được đề xuất</p>
             </div>
             <div v-else>
-                <div v-for="(danhHieu, index) in danhHieuDeXuats" :key="index" class="mb-4 p-3 border rounded">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="mb-0">{{ danhHieu.ten }}</h6>
-                        <span class="badge bg-primary">{{ danhHieu.loai }}</span>
-                    </div>
-                    <div class="form-group">
-                        <label :for="`minhChung-${index}`" class="form-label">Minh chứng:</label>
-                        <textarea :id="`minhChung-${index}`" v-model="danhHieu.minhChung" class="form-control" rows="3"
-                            placeholder="Nhập thông tin minh chứng cho danh hiệu này..."></textarea>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-end mt-3">
-                    <button @click="luuMinhChung" class="btn btn-primary">
-                        <i class="fas fa-save me-1"></i> Lưu minh chứng
-                    </button>
-                </div>
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <th>STT</th>
+                        <th>Tên danh hiệu</th>
+                        <th>Ngày tạo</th>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item, index) in danhHieuDeXuats" :key="item.id" @click="themMinhChung(item)">
+                            <td>{{ index + 1 }}</td>
+                            <td>{{ item.tenDanhHieu }}</td>
+                            <td>{{ item.NgayTao }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import axios from 'axios';
+
 import { ref, onMounted } from 'vue';
 import { useGlobalStore } from '@/stores/global'
 
-import {toastSuccess, toastError} from '@/utils/toast.js';
+
+import router from '../../router';
 
 // Danh sách danh hiệu đề xuất
 const danhHieuDeXuats = ref([]);
@@ -47,15 +46,18 @@ const getDanhHieuDeXuat = () => {
             Authorization: `Bearer ${localStorage.getItem('api_token')}`
         }
     })
-    .then(response => {
-        if(response.status === 200 ) {
-            danhHieuDeXuats.value = response.data.data;
-        } else {
-            toastError('Lỗi khi lấy danh sách danh hiệu đề xuất:', response.message);
-        }
-    })
-        
+        .then(response => {
+            if (response.status === 200) {
+                danhHieuDeXuats.value = response.data.data;
+            } else {
+                toastError('Lỗi khi lấy danh sách danh hiệu đề xuất:', response.message);
+            }
+        })
 };
+
+const themMinhChung = (item) => {
+    router.push(`/themminhchung/${item.PK_MaDeXuat}`);
+}
 
 // Hàm lưu thông tin minh chứng
 const luuMinhChung = async () => {

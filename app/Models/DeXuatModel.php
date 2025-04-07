@@ -27,5 +27,9 @@ class DeXuatModel extends Model
     public function hoiDong() {
         return $this->belongsTo(HoiDongModel::class, 'FK_MaHoiDong', 'PK_MaHoiDong');
     }
+
+    public function danhHieu() {
+        return $this->belongsTo(DanhHieuModel::class, 'FK_MaDanhHieu', 'PK_MaDanhHieu');
+    }
     
 }

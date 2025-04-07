@@ -117,7 +117,7 @@
 
 <script setup>
 import { ref, onMounted, reactive } from 'vue'
-import axios from 'axios'
+
 import Swal from 'sweetalert2'
 import { toastSuccess, toastError } from '@/utils/toast'
 import { isArray } from 'chart.js/helpers'

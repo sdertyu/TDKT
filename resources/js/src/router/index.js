@@ -23,7 +23,7 @@ import VanBanDinhKem from "../views/DonVi/VanBan.vue";
 
 //all
 import ThongBaoView from "../views/ThongBaoView.vue";
-
+import ThemMinhChung from "../views/MinhChungView.vue";
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -118,11 +118,16 @@ const router = createRouter({
 
                 //Hội đồng
 
-                //all
+                //chung
                 {
                     path: "thongbao/:id",
                     component: ThongBaoView,
                     meta: { title: 'Thông báo'},
+                },
+                {
+                    path: 'themminhchung/:id',
+                    component: ThemMinhChung,
+                    meta: { roles: [4, 5] , title: 'Thêm minh chứng'},
                 }
             ],
         },

@@ -120,7 +120,7 @@
 </template>
 
 <script setup>
-import axios from 'axios';
+
 import { computed, onMounted, reactive, ref, warn } from 'vue';
 import Swal from 'sweetalert2';
 import { useRoute } from 'vue-router';

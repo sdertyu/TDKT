@@ -7,6 +7,7 @@ use App\Http\Controllers\DonViController;
 use App\Http\Controllers\DotTDKTController;
 use App\Http\Controllers\HinhThucController;
 use App\Http\Controllers\HoiDongController;
+use App\Http\Controllers\MinhChungController;
 use App\Http\Controllers\TaiKhoanController;
 use App\Http\Controllers\ThongBaoController;
 use Illuminate\Http\Request;
@@ -93,5 +94,12 @@ Route::middleware('auth.api')->group(function () {
 
     Route::prefix('dexuat')->group(function () {
         Route::get('/getlisttheodot', [DeXuatController::class, 'getListDeXuatTheoDot']);
+    });
+
+    Route::prefix('minhchung')->group(function () {
+        Route::get('getlist/{id}', [MinhChungController::class, 'getListMinhChung']);
+        Route::post('/upload', [MinhChungController::class, 'uploadMinhChung']);
+        Route::get('/download/{id}', [MinhChungController::class, 'downloadMinhChung']);
+        Route::post('/delete/{id}', [MinhChungController::class, 'deleteMinhChung']);
     });
 });

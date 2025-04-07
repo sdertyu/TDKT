@@ -47,13 +47,12 @@
 </template>
 
 <script setup>
-import axios from "axios";
-import { get } from "jquery";
+// import axios from "axios";
 import Swal from "sweetalert2";
+
 import { ref, onMounted } from "vue";
 const madot = ref(null);
-import mammoth from "mammoth";
-const docxHtml = ref('');
+
 
 
 const listVanBanDinhKem = ref([]);
@@ -92,41 +91,9 @@ const getListVanBanDinhKem = () => {
         });
 };
 
-const getDotThiDuaActive = () => {
-    axios
-        .get("/api/dotthiduakhenthuong/dot-active", {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("api_token")}`,
-            },
-        })
-        .then((response) => {
-            if (response.status === 200) {
-                if (response.data.data === null) {
-                    Swal.fire({
-                        toast: true,
-                        icon: "warning",
-                        title: "Chưa có đợt thi đua nào được kích hoạt!",
-                        position: "top-end",
-                        position: "top-end",
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                    });
-                    return;
-                }
-                madot.value = response.data.data.PK_MaDot;
-
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-
-}
-
 onMounted(() => {
-    getDotThiDuaActive();
     getListVanBanDinhKem();
+    madot.value = useGlobalStore().dotActive;
 });
 
 const downLoadFile = async (item) => {
