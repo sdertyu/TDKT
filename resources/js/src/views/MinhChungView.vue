@@ -7,7 +7,7 @@
                     <h4 class="mb-0">
                         <i class="bi bi-cloud-upload me-2"></i>Upload Minh Chứng
                     </h4>
-                    <button v-if="role" class="btn btn-sm btn-light" @click="showUploadModal = true">
+                    <button v-if="!role" class="btn btn-sm btn-light" @click="showUploadModal = true">
                         <i class="bi bi-plus-lg me-1"></i>Thêm mới
                     </button>
                 </div>
@@ -58,7 +58,7 @@
                                                 @click.stop="downloadFile(file)">
                                                 <i class="bi bi-download"></i>
                                             </button>
-                                            <button v-if="role" class="btn btn-sm btn-outline-danger"
+                                            <button v-if="!role" class="btn btn-sm btn-outline-danger"
                                                 @click.stop="removeFile(file)" title="Xóa file">
                                                 <i class="bi bi-trash"></i>
                                             </button>
@@ -179,11 +179,12 @@ const isDragging = ref(false);
 const showUploadModal = ref(false);
 const showToast = ref(true);
 const maDeXuat = useRoute().params.id;
-const role = ref(localStorage.getItem('role') in [2,3]);
+const role = ref([2,3].includes(Number(localStorage.getItem('role'))));
 const pdfUrl = ref('')
 
 onMounted(() => {
     getListMinhChung()
+    console.log(role.value);
 })
 
 const getListMinhChung = () => {
