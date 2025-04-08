@@ -7,7 +7,7 @@
                     <h4 class="mb-0">
                         <i class="bi bi-cloud-upload me-2"></i>Upload Minh Chứng
                     </h4>
-                    <button v-if="role !== '3'" class="btn btn-sm btn-light" @click="showUploadModal = true">
+                    <button v-if="role" class="btn btn-sm btn-light" @click="showUploadModal = true">
                         <i class="bi bi-plus-lg me-1"></i>Thêm mới
                     </button>
                 </div>
@@ -26,7 +26,7 @@
 
                 <!-- File list -->
                 <div v-else>
-                    <div class="table-responsive"> 
+                    <div class="table-responsive">
                         <table class="table table-hover align-middle border-0">
                             <thead class="bg-light">
                                 <tr>
@@ -37,7 +37,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(file, index) in files" :key="index" class="border-bottom">
+                                <tr v-for="(file, index) in files" :key="index" class="border-bottom"
+                                    @click="previewFile(file)">
                                     <td class="text-center">{{ index + 1 }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
@@ -54,11 +55,11 @@
                                     <td class="text-center">
                                         <div class="btn-group">
                                             <button class="btn btn-sm btn-outline-primary" title="Tải xuống"
-                                                @click="downloadFile(file)">
+                                                @click.stop="downloadFile(file)">
                                                 <i class="bi bi-download"></i>
                                             </button>
-                                            <button v-if="role !== '3'" class="btn btn-sm btn-outline-danger" @click="removeFile(file)"
-                                                title="Xóa file">
+                                            <button v-if="role" class="btn btn-sm btn-outline-danger"
+                                                @click.stop="removeFile(file)" title="Xóa file">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
@@ -132,14 +133,43 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal Preview PDF (Bootstrap style) -->
+        <!-- <div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-labelledby="pdfPreviewModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="pdfPreviewModalLabel">Xem file PDF</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <PdfEmbed :source="pdfUrl" />
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
+        <div class="modal fade h-100" id="pdfPreviewModal" tabindex="-1" ref="pdfModalEl" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-body p-0">
+                        <iframe v-if="pdfUrl" :src="pdfUrl" width="100%" height="700px" style="border: none;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 
 <script setup>
 import { get } from 'jquery';
 import Swal from 'sweetalert2';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
+
+
 
 
 // State variables
@@ -149,7 +179,8 @@ const isDragging = ref(false);
 const showUploadModal = ref(false);
 const showToast = ref(true);
 const maDeXuat = useRoute().params.id;
-const role = ref(localStorage.getItem('role'));
+const role = ref(localStorage.getItem('role') in [2,3]);
+const pdfUrl = ref('')
 
 onMounted(() => {
     getListMinhChung()
@@ -164,7 +195,6 @@ const getListMinhChung = () => {
         .then(response => {
             if (response.status === 200) {
                 files.value = response.data.data;
-                console.log(files.value);
             }
         })
         .catch(error => {
@@ -205,7 +235,7 @@ const onFileChange = async (event) => {
             setTimeout(() => {
                 uploadingFiles.value = [];
                 getListMinhChung();
-                
+
             }, 1500)
         }
     } catch (error) {
@@ -214,6 +244,29 @@ const onFileChange = async (event) => {
         showUploadModal.value = false;
     }
 };
+
+const previewFile = async (file) => {
+    try {
+        const response = await axios.get('/api/minhchung/preview/' + file.PK_MaMinhChung, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            },
+            responseType: 'blob'
+        })
+
+        const blob = new Blob([response.data], { type: 'application/pdf' })
+        pdfUrl.value = URL.createObjectURL(blob)
+        const modalEl = document.getElementById('pdfPreviewModal')
+        if (modalEl) {
+            const instance = bootstrap.Modal.getOrCreateInstance(modalEl)
+            instance.show()
+        }
+
+    } catch (error) {
+        console.error('Lỗi khi lấy PDF:', error)
+    }
+}
+
 
 const downloadFile = (file) => {
     axios.get('/api/minhchung/download/' + file.PK_MaMinhChung, {
@@ -296,105 +349,6 @@ const getFileIconClass = (fileName) => {
     }
 };
 
-const getFileType = (filename) => {
-    const extension = filename.split('.').pop().toLowerCase();
-    const typeMap = {
-        'jpg': 'image/jpeg',
-        'jpeg': 'image/jpeg',
-        'png': 'image/png',
-        'gif': 'image/gif',
-        'pdf': 'application/pdf',
-        'doc': 'application/msword',
-        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'xls': 'application/vnd.ms-excel',
-        'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'zip': 'application/zip',
-        'rar': 'application/x-rar-compressed',
-        '7z': 'application/x-7z-compressed',
-        'mp3': 'audio/mpeg',
-        'mp4': 'video/mp4'
-    };
-
-    return typeMap[extension] || 'application/octet-stream';
-};
-
-const getFileTypeLabel = (type) => {
-    if (type.includes('image')) {
-        return 'Hình ảnh';
-    } else if (type.includes('pdf')) {
-        return 'PDF Document';
-    } else if (type.includes('word') || type.includes('document')) {
-        return 'Word Document';
-    } else if (type.includes('excel') || type.includes('sheet')) {
-        return 'Excel Spreadsheet';
-    } else if (type.includes('zip') || type.includes('rar') || type.includes('7z')) {
-        return 'Archived File';
-    } else if (type.includes('audio')) {
-        return 'Audio File';
-    } else if (type.includes('video')) {
-        return 'Video File';
-    } else {
-        return 'Document';
-    }
-};
-
-const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
-
-const formatDate = (date) => {
-    return date.toLocaleString('vi-VN', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-};
-
-const simulateUpload = (fileIndex) => {
-    const file = files.value[fileIndex];
-
-    // Add to uploading files
-    uploadingFiles.value.push({
-        name: file.name,
-        progress: 0
-    });
-
-    const uploadingIndex = uploadingFiles.value.length - 1;
-
-    // Update file status
-    files.value[fileIndex].status = 'uploading';
-
-    const intervalId = setInterval(() => {
-        if (uploadingFiles.value[uploadingIndex]) {
-            uploadingFiles.value[uploadingIndex].progress += 5;
-
-            if (uploadingFiles.value[uploadingIndex].progress >= 100) {
-                clearInterval(intervalId);
-
-                // Update file status to success
-                files.value[fileIndex].status = 'success';
-
-                // Remove from uploading after a delay
-                setTimeout(() => {
-                    const index = uploadingFiles.value.findIndex(f => f.name === file.name);
-                    if (index !== -1) {
-                        uploadingFiles.value.splice(index, 1);
-                    }
-                }, 2000);
-            }
-        } else {
-            clearInterval(intervalId);
-        }
-    }, 200);
-};
 </script>
 
 <style scoped>
@@ -438,5 +392,46 @@ const simulateUpload = (fileIndex) => {
 .toast-header {
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 1000px;
+    height: 90%;
+    margin: 2rem auto;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.modal-dialog {
+    width: 95vw !important;
+    height: 95vh;
+}
+
+.modal-content {
+    height: 100%;
+}
+
+.modal-body {
+    height: 100%;
+    padding: 0;
+}
+
+.modal-body iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
 }
 </style>

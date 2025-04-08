@@ -122,4 +122,20 @@ class MinhChungController extends Controller
             'message' => 'Xóa thành công'
         ], 200);
     }
+
+    public function viewMinhChung($id)
+    {
+        $minhChung = MinhChungModel::findOrFail($id);
+        $filePath = storage_path('app/' . $minhChung->sDuongDan);
+
+        abort_unless(file_exists($filePath), 404, 'Không tìm thấy file');
+
+        $mime = mime_content_type($filePath);
+        abort_unless($mime === 'application/pdf', 415, 'Chỉ hỗ trợ file PDF');
+
+        return response()->file($filePath, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $minhChung->sTenFile . '"'
+        ]);
+    }
 }

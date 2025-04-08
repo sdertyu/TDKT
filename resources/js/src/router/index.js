@@ -124,7 +124,7 @@ const router = createRouter({
                 {
                     path: 'thongtinminhchung',
                     component: ThongTinMinhChung,
-                    meta: { roles: [3] , title: 'Thông tin minh chứng'},
+                    meta: { roles: [2, 3] , title: 'Thông tin minh chứng'},
                 },
                 //chung
                 {

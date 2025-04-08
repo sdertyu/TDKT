@@ -14,19 +14,27 @@
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>STT</th>
+                            <th class="text-center">STT</th>
                             <th>Tên văn bản</th>
                             <th>Tên file</th>
-                            <th>Thao tác</th>
+                            <th class="text-center">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(item, index) in listVanBanDinhKem" :key="item.id">
-                            <td>{{ index + 1 }}</td>
+                        <tr class="align-middle" v-for="(item, index) in listVanBanDinhKem" :key="item.id" @click="xemVBDK(item)">
+                            <td class="text-center">{{ index + 1 }}</td>
                             <td>{{ item.sTenVanBan }}</td>
-                            <td>{{ item.sTenFile }}</td>
+                            <div class="d-flex align-items-center">
+                                <div class="file-icon me-3">
+                                    <i :class="getFileIconClass(item.sTenFile)" class="bi fs-3"></i>
+                                </div>
+                                <div class="file-info">
+                                    <div class="fw-medium text-truncate" style="max-width: 280px;">{{
+                                        item.sTenFile }}</div>
+                                </div>
+                            </div>
                             <td class="text-center">
-                                <button class="btn" @click="downLoadFile(item)">
+                                <button class="btn" @click.stop="downLoadFile(item)">
                                     <i class="bi bi-download"></i>
                                 </button>
                             </td>
@@ -36,12 +44,15 @@
             </div>
         </div>
 
-        <div class="docx-viewer">
-            <div v-if="loading" class="loading">Đang tải tài liệu...</div>
-            <div v-if="error" class="error">{{ error }}</div>
-            <div v-if="!loading && !error" ref="docxContent" class="docx-content"></div>
+        <div class="modal fade h-100" id="pdfPreviewModal" tabindex="-1" ref="pdfModalEl" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-body p-0">
+                        <iframe v-if="pdfUrl" :src="pdfUrl" width="100%" height="700px" style="border: none;" />
+                    </div>
+                </div>
+            </div>
         </div>
-
 
     </div>
 </template>
@@ -50,10 +61,10 @@
 // import axios from "axios";
 import Swal from "sweetalert2";
 
-import { ref, onMounted } from "vue";
+import { ref, onMounted, nextTick } from "vue";
+// import { Modal } from "bootstrap";
 const madot = ref(null);
-
-
+const pdfUrl = ref('')
 
 const listVanBanDinhKem = ref([]);
 
@@ -91,15 +102,60 @@ const getListVanBanDinhKem = () => {
         });
 };
 
+const getFileIconClass = (fileName) => {
+    if (!fileName) return 'bi-file-earmark text-secondary';
+
+    const ext = fileName.split('.').pop().toLowerCase();
+
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext)) {
+        return 'bi-file-earmark-image text-info';
+    } else if (ext === 'pdf') {
+        return 'bi-file-earmark-pdf text-danger';
+    } else if (['doc', 'docx'].includes(ext)) {
+        return 'bi-file-earmark-word text-primary';
+    } else if (['xls', 'xlsx'].includes(ext)) {
+        return 'bi-file-earmark-excel text-success';
+    } else if (['zip', 'rar', '7z'].includes(ext)) {
+        return 'bi-file-earmark-zip text-warning';
+    } else if (['mp3', 'wav', 'flac'].includes(ext)) {
+        return 'bi-file-earmark-music text-success';
+    } else if (['mp4', 'mov', 'avi', 'mkv'].includes(ext)) {
+        return 'bi-file-earmark-play text-danger';
+    } else {
+        return 'bi-file-earmark text-secondary';
+    }
+};
+
 onMounted(() => {
     getListVanBanDinhKem();
     madot.value = useGlobalStore().dotActive;
 });
 
+const xemVBDK = async (file) => {
+    try {
+        const response = await axios.get('/api/dotthiduakhenthuong/previewVbdk/' + file.PK_MaVanBan, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            },
+            responseType: 'blob'
+        })
+
+        const blob = new Blob([response.data], { type: 'application/pdf' })
+        pdfUrl.value = URL.createObjectURL(blob)
+        const modalEl = document.getElementById('pdfPreviewModal')
+        if (modalEl) {
+            const instance = bootstrap.Modal.getOrCreateInstance(modalEl)
+            instance.show()
+        }
+    } catch (error) {
+        console.error('Lỗi khi lấy PDF:', error)
+    }
+}
+
 const downLoadFile = async (item) => {
     try {
         const response = await axios.get(
-            `/api/dotthiduakhenthuong/previewVbdk/${item.PK_MaVanBan}`,
+            `/api/dotthiduakhenthuong/downloadVbdk/${item.PK_MaVanBan}`,
             {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("api_token")}`,
@@ -108,37 +164,14 @@ const downLoadFile = async (item) => {
             }
         );
 
-        const blobUrl = URL.createObjectURL(response.data);
-        window.open(blobUrl, '_blank');
-
-
-        // const arrayBuffer = await response.data.arrayBuffer();
-
-        // mammoth.convertToHtml({ arrayBuffer })
-        //     .then(result => {
-        //         docxHtml.value = result.value;
-        //     })
-        //     .catch(err => {
-        //         console.error("Lỗi khi đọc file .docx:", err);
-        //     });
-
-
-
-
-        // const blob = new Blob([response.data]);
-        // const url = window.URL.createObjectURL(blob);
-
-        // const link = document.createElement('a');
-        // link.href = url;
-
-        // const fileName = getFileNameFromHeader(response.headers['content-disposition']) || 'download.docx';
-        // link.download = fileName;
-
-        // document.body.appendChild(link);
-        // link.click();
-        // document.body.removeChild(link);
-        // window.URL.revokeObjectURL(url);
-
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', item.sTenFile) // tên file gốc
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url) // dọn rác
 
     } catch (error) {
         console.error("Lỗi khi tải file:", error);
@@ -179,3 +212,46 @@ const downloadAllAsZip = async () => {
 };
 
 </script>
+
+<style scoped>
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 1000px;
+    height: 90%;
+    margin: 2rem auto;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.modal-dialog {
+    width: 95vw !important;
+    height: 95vh;
+}
+
+.modal-content {
+    height: 100%;
+}
+
+.modal-body {
+    height: 100%;
+    padding: 0;
+}
+
+.modal-body iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+</style>

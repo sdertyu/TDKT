@@ -7,12 +7,6 @@
                         <i class="bi bi-list"></i>
                     </a>
                 </li>
-                <!-- <li class="nav-item d-none d-md-block"><a href="/" class="nav-link">Home</a></li>
-                <li class="nav-item d-none d-md-block">
-                    <a href="/about" class="nav-link">Contact</a>
-                </li> -->
-                <!-- <ButtonLink link="/" name="Home"/>
-                <ButtonLink link="/about" name="About"/> -->
             </ul>
 
 
@@ -56,7 +50,6 @@
 
                 <li class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-
                         <span class="d-none d-md-inline">{{ ten }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-xl">
@@ -78,7 +71,6 @@ import { useRouter } from 'vue-router';
 
 const listThongBao = ref([]);
 const soChuaDoc = ref(0);
-const docThongBao = ref(false);
 
 
 const ten = localStorage.getItem('ten') ? localStorage.getItem('ten') : "Phòng TCHC";

@@ -102,5 +102,6 @@ Route::middleware('auth.api')->group(function () {
         Route::post('/upload', [MinhChungController::class, 'uploadMinhChung']);
         Route::get('/download/{id}', [MinhChungController::class, 'downloadMinhChung']);
         Route::post('/delete/{id}', [MinhChungController::class, 'deleteMinhChung']);
+        Route::get('/preview/{id}', [MinhChungController::class, 'viewMinhChung']);
     });
 });

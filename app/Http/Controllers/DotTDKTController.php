@@ -476,20 +476,18 @@ class DotTDKTController extends Controller
 
     public function viewVbdk($id)
     {
-        $vanban = VBDKModel::findOrFail($id);
-        $path = $vanban->sDuongDan;
+        $vanBan = VBDKModel::findOrFail($id);
+        $filePath = storage_path('app/' . $vanBan->sDuongDan);
 
-        if (!Storage::exists($path)) {
-            return response()->json(['message' => 'Không tìm thấy file'], 404);
-        }
+        abort_unless(file_exists($filePath), 404, 'Không tìm thấy file');
 
-        $fileContent = Storage::get($path);
-        $mimeType = Storage::mimeType($path);
-        $filename = $vanban->sTenFile;
+        $mime = mime_content_type($filePath);
+        abort_unless($mime === 'application/pdf', 415, 'Chỉ hỗ trợ file PDF');
 
-        return response($fileContent, 200)
-            ->header('Content-Type', $mimeType)
-            ->header('Content-Disposition', "inline; filename=\"$filename\"");
+        return response()->file($filePath, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $vanBan->sTenFile . '"'
+        ]);
     }
 
     public function downloadVbdk($id)

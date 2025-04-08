@@ -89,7 +89,13 @@ switch (role.value) {
                         isActive: false
                     }
                 ]
-            }
+            },
+            {
+                title: 'thông tin minh chứng',
+                icon: 'bi-archive',
+                link: '/thongtinminhchung',
+                isActive: false
+            },
             // {
             //     title: 'Widgets',
             //     icon: 'bi bi-box-seam-fill',
