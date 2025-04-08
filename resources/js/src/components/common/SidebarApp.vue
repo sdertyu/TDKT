@@ -11,7 +11,7 @@ const sidebarMenuItems = ref([]);
 // Hàm để thiết lập trạng thái active dựa trên URL hiện tại
 const setActiveMenuItem = () => {
     const currentPath = route.path;
-    
+
     sidebarMenuItems.value.forEach(item => {
         // Kiểm tra item chính
         if (item.link === currentPath) {
@@ -19,7 +19,7 @@ const setActiveMenuItem = () => {
         } else {
             item.isActive = false;
         }
-        
+
         // Kiểm tra các item con nếu có
         if (item.children && item.children.length > 0) {
             let hasPath = false;
@@ -31,7 +31,7 @@ const setActiveMenuItem = () => {
                 child.isActive = true;
                 hasPath = true;
             });
-            
+
             // Nếu có item con active, mở rộng menu cha
             if (hasPath) {
                 item.isOpen = true;
@@ -89,7 +89,13 @@ switch (role.value) {
                         isActive: false
                     }
                 ]
-            }
+            },
+            {
+                title: 'thông tin minh chứng',
+                icon: 'bi-archive',
+                link: '/thongtinminhchung',
+                isActive: false
+            },
             // {
             //     title: 'Widgets',
             //     icon: 'bi bi-box-seam-fill',
@@ -121,11 +127,23 @@ switch (role.value) {
     case '3':
         sidebarMenuItems.value = [
             {
-                title: 'Quản lý tài khoản',
-                icon: 'bi bi-person-exclamation',
-                link: '/quanlytaikhoan',
+                title: 'Văn bản đính kèm',
+                icon: 'bi bi-file-earmark-text',
+                link: '/vanban',
                 isActive: false
             },
+            {
+                title: 'Hội đồng TĐKT',
+                icon: 'bi bi-person-rolodex',
+                link: '/hoidongtdkt',
+                isActive: false
+            },
+            {
+                title: 'thông tin minh chứng',
+                icon: 'bi-archive',
+                link: '/thongtinminhchung',
+                isActive: false
+            }
         ];
         break;
     case '4':
@@ -181,11 +199,32 @@ switch (role.value) {
     case '5':
         sidebarMenuItems.value = [
             {
-                title: 'Quản lý tài khoản',
-                icon: 'bi bi-person-exclamation',
-                link: '/quanlytaikhoan',
+                title: 'Văn bản đính kèm',
+                icon: 'bi bi-file-earmark-text',
+                link: '/vanban',
                 isActive: false
             },
+            {
+                title: 'Quản lý đề xuất',
+                icon: 'bi bi-file-earmark-text',
+                isActive: false,
+                isOpen: false,
+                children: [
+                    {
+                        title: 'Đề xuất theo đợt',
+                        icon: 'bi bi-award',
+                        link: '/dexuattheodot',
+                        isActive: false
+                    },
+                    {
+                        title: 'Đề xuất đột xuất',
+                        icon: 'bi bi-circle',
+                        link: '/dexuatdotxuat',
+                        isActive: false
+                    }
+                ]
+            }
+
         ];
         break;
     default:

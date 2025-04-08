@@ -46,7 +46,7 @@ class AccountController extends Controller
                 'message' => 'Không tìm thấy tài khoản'
             ], 404);
         }
-        if ($user->sTrangThai == 0) {
+        if ($user->bTrangThai == 0) {
             return response()->json([
                 'message' => 'Tài khoản đã bị vô hiệu hóa'
             ], 403);

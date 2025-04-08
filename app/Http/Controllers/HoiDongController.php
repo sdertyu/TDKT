@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ChiTietHDModel;
 use App\Models\DeXuatModel;
-use App\Models\HinhThucHDModel;
+use App\Models\HinhThucModel;
 use App\Models\HoiDongModel;
 use App\Models\LoaiHDModel;
 use Illuminate\Http\Request;
@@ -57,7 +56,7 @@ class HoiDongController extends Controller
             'mathuky' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
             'thoigian' => 'required|date',
             'diadiem' => 'required',
-            'hinhthuchoidong' => 'required|exists:tblhinhthuchd,PK_HinhThucHD',
+            'hinhthuchoidong' => 'required|exists:tblhinhthuc,PK_MaHinhThuc',
             'maloaihoidong' => 'required|exists:tblloaihoidong,PK_MaLoaiHD',
             'songuoithamdu' => 'required|integer',
             'sothanhvien' => 'required|integer',
@@ -127,7 +126,7 @@ class HoiDongController extends Controller
 
     public function layDanhSachHinhThucHD()
     {
-        $listHinhThuc = HinhThucHDModel::all();
+        $listHinhThuc = HinhThucModel::all();
         return response()->json([
             'success' => true,
             'listHinhThuc' => $listHinhThuc
@@ -160,8 +159,8 @@ class HoiDongController extends Controller
         $hoiDong->sDiaChi = $request->diadiem;
         $hoiDong->iSoNguoiThamDu = $request->songuoithamdu;
         $hoiDong->iSoThanhVien = $request->sothanhvien;
-        $hoiDong->FK_MaLoaiHD = $request->maloaihoidong;
-        $hoiDong->FK_HinhThucHD = $request->hinhthuchoidong;
+        $hoiDong->FK_MaLoaiHD = 1;
+        $hoiDong->FK_MaHinhThuc = 1;
         $hoiDong->sDuongDan = $filePath;
         $hoiDong->sTenFile = $file->getClientOriginalName();
         $hoiDong->sSoHD = $request->sohd;
@@ -199,10 +198,10 @@ class HoiDongController extends Controller
     }
     public function themHoiDongTruong(Request $request, $currentUser)
     {
-        $chiTietHD = new ChiTietHDModel();
-        $chiTietHD->FK_MaLoaiHD = 2;
-        $chiTietHD->FK_HinhThucHD = $request->mahinhthuckhenthuong;
-        $chiTietHD->save();
+        // $chiTietHD = new ChiTietHDModel();
+        // $chiTietHD->FK_MaLoaiHD = 2;
+        // $chiTietHD->FK_HinhThucHD = $request->mahinhthuckhenthuong;
+        // $chiTietHD->save();
 
         $file = $request->file('bienban');
         $file->move(public_path('bienban/truong/'), $file->getClientOriginalName());
@@ -221,11 +220,13 @@ class HoiDongController extends Controller
         $hoiDong->sDiaChi = $request->diadiem;
         $hoiDong->iSoNguoiThamDu = $request->songuoithamdu;
         $hoiDong->iSoThanhVien = $request->sothanhvien;
-        $hoiDong->FK_ChiTietHD = $chiTietHD->PK_MaChiTietHD;
+        // $hoiDong->FK_ChiTietHD = $chiTietHD->PK_MaChiTietHD;
         $hoiDong->sDuongDan = $filePath;
         $hoiDong->sTenFile = $fileName;
         $hoiDong->sSoHD = $request->sohd;
         $hoiDong->sGhiChu = $request->ghichu;
+        $hoiDong->FK_MaLoaiHD = 1;
+        $hoiDong->FK_MaHinhThuc = 1;
         $hoiDong->save();
     }
 }

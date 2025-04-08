@@ -83,7 +83,7 @@
 </template>
 
 <script setup>
-import axios from 'axios'
+
 import { ref, reactive } from 'vue'
 
 // Reactive state

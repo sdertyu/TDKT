@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\DotTDKTModel;
+use App\Models\DotXuatModel;
+use App\Models\HoiDongModel;
+use App\Models\ThongBaoModel;
+use App\Models\ThongBaoQuyenModel;
 use App\Models\VBDKModel;
 use Carbon\Carbon;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -19,6 +24,7 @@ class DotTDKTController extends Controller
         'ngaytao.date' => 'Ngày tạo phải là một ngày hợp lệ.',
         'ngaytao.after_or_equal' => 'Ngày tạo phải không được nhỏ hơn ngày hiện tại.',
     ];
+
     public function index()
     {
         $listDotTDKT = DotTDKTModel::orderBy("PK_MaDot", "DESC")->get();
@@ -31,6 +37,9 @@ class DotTDKTController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'iNamBatDau' => 'required|numeric|min:1933|unique:tbldotthiduakhenthuong,iNamBatDau|max:' . Carbon::now()->year,
+            'dHanBienBanDonVi' => 'nullable|date',
+            'dHanNopMinhChung' => 'nullable|date',
+            'dHanBienBanHoiDong' => 'nullable|date',
         ], $this->messages);
 
         if ($validator->fails()) {
@@ -46,8 +55,47 @@ class DotTDKTController extends Controller
             'iNamBatDau' => $request->iNamBatDau,
             'iNamKetThuc' => $request->iNamBatDau + 1,
             'bTrangThai' => 0,
-            'dNgayTao' => $carbon->format('Y-m-d H:i:s')
+            'dNgayTao' => $carbon->format('Y-m-d H:i:s'),
+            'dHanBienBanDonVi' => $request->dHanBienBanDonVi,
+            'dHanBienBanHoiDong' => $request->dHanBienBanHoiDong,
+            'dHanNopMinhChung' => $request->dHanNopMinhChung,
         ]);
+
+        $fields = [
+            'dHanBienBanDonVi' => [
+                'tieuDe' => 'Thông báo về thời hạn nộp biên bản đơn vị',
+                'noiDungLabel' => 'Yêu cầu các đơn vị nộp biên bản bình bầu thi đua khen thưởng của đơn vị mình lên hệ thống trước: ',
+                'quyen' => [4],
+            ],
+            'dHanBienBanHoiDong' => [
+                'tieuDe' => 'Thông báo về thời hạn nộp biên bản hội đồng',
+                'noiDungLabel' => 'Hội đồng thi đua cần hoàn thành biên bản họp xét thi đua và nộp lên hệ thống trước: ',
+                'quyen' => [3],
+            ],
+            'dHanNopMinhChung' => [
+                'tieuDe' => 'Thông báo về hạn nộp minh chứng',
+                'noiDungLabel' => 'Đề nghị các đơn vị cùng toàn bộ cá nhân trong trường tiến hành cung cấp minh chứng về các danh hiệu đã được đề xuất theo biên bản bình xét thi đua tại đơn vị trước: ',
+                'quyen' => [4, 5],
+            ],
+        ];
+
+        foreach ($fields as $field => $data) {
+            if ($request->$field !== null) {
+                $thongBao = ThongBaoModel::create([
+                    'sTieuDe' => $data['tieuDe'],
+                    'sNoiDung' => $data['noiDungLabel'] . formatDate($request->$field),
+                    'dNgayTao' => $carbon->format('Y-m-d H:i:s'),
+                    'FK_NguoiTao' => auth()->user()->PK_MaTaiKhoan,
+                ]);
+
+                foreach ($data['quyen'] as $maQuyen) {
+                    ThongBaoQuyenModel::create([
+                        'FK_MaThongBao' => $thongBao->PK_MaThongBao,
+                        'FK_MaQuyen' => $maQuyen,
+                    ]);
+                }
+            }
+        }
 
         if ($dotTDKT) {
             return response()->json([
@@ -58,6 +106,140 @@ class DotTDKTController extends Controller
             return response()->json([
                 'message' => 'Không thêm đợt thị đua'
             ], 404);
+        }
+    }
+
+    public function SuaDotTDKT(Request $request)
+    {
+        $rules = [
+            'dHanBienBanDonVi' => 'nullable|date',
+            'dHanNopMinhChung' => 'nullable|date',
+            'dHanBienBanHoiDong' => 'nullable|date',
+        ];
+
+        $messages = [
+            'dHanBienBanDonVi.date' => 'Ngày không hợp lệ',
+            'dHanNopMinhChung.date' => 'Ngày không hợp lệ',
+            'dHanBienBanHoiDong.date' => 'Ngày không hợp lệ',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $dotTDKT = DotTDKTModel::where('PK_MaDot', '=', $request->PK_MaDot)->first();
+
+            if (!$dotTDKT) {
+                return response()->json([
+                    'message' => 'Không tìm thấy đợt thi đua'
+                ], 404);
+            }
+
+            // Kiểm tra thay đổi & tạo thông báo
+            $fields = [
+                'dHanBienBanDonVi' => [
+                    'tieuDe' => 'Thông báo về thời hạn nộp biên bản đơn vị',
+                    'noiDungLabel' => 'Yêu cầu các đơn vị nộp biên bản bình bầu thi đua khen thưởng của đơn vị mình lên hệ thống trước: ',
+                    'quyen' => [4],
+                ],
+                'dHanBienBanHoiDong' => [
+                    'tieuDe' => 'Thông báo về thời hạn nộp biên bản hội đồng',
+                    'noiDungLabel' => 'Hội đồng thi đua cần hoàn thành biên bản họp xét thi đua và nộp lên hệ thống trước: ',
+                    'quyen' => [3],
+                ],
+                'dHanNopMinhChung' => [
+                    'tieuDe' => 'Thông báo về hạn nộp minh chứng',
+                    'noiDungLabel' => 'Đề nghị các đơn vị cùng toàn bộ cá nhân trong trường tiến hành cung cấp minh chứng về các danh hiệu đã được đề xuất theo biên bản bình xét thi đua tại đơn vị trước: ',
+                    'quyen' => [4, 5],
+                ],
+            ];
+
+            $carbon = Carbon::now();  // Tạo đối tượng Carbon với thời gian hiện tại
+            $carbon->setTimezone('Asia/Ho_Chi_Minh');  // Đặt múi giờ là múi giờ Việt Nam
+
+            foreach ($fields as $field => $data) {
+                if ($dotTDKT->$field !== $request->$field) {
+                    $thongBao = ThongBaoModel::create([
+                        'sTieuDe' => $data['tieuDe'],
+                        'sNoiDung' => $data['noiDungLabel'] . formatDate($request->$field),
+                        'dNgayTao' => $carbon->format('Y-m-d H:i:s'),
+                        'FK_NguoiTao' => auth()->user()->PK_MaTaiKhoan,
+                    ]);
+
+                    foreach ($data['quyen'] as $maQuyen) {
+                        ThongBaoQuyenModel::create([
+                            'FK_MaThongBao' => $thongBao->PK_MaThongBao,
+                            'FK_MaQuyen' => $maQuyen,
+                        ]);
+                    }
+                }
+            }
+
+            
+            // Gán dữ liệu mới
+            $dotTDKT->dHanBienBanDonVi = $request->dHanBienBanDonVi;
+            $dotTDKT->dHanNopMinhChung = $request->dHanNopMinhChung;
+            $dotTDKT->dHanBienBanHoiDong = $request->dHanBienBanHoiDong;
+            $dotTDKT->save();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Cập nhật thành công',
+                'data' => $dotTDKT
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Lỗi cập nhật đợt TĐKT: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Đã xảy ra lỗi, vui lòng thử lại sau.'
+            ], 500);
+        }
+    }
+
+
+    public function XoaDotTDKT($id)
+    {
+        $dot = DotTDKTModel::where('PK_MaDot', '=', $id)->first();
+        if (!$dot) {
+            return response()->json([
+                'message' => 'Không tìm thấy đợt thi đua'
+            ], 404);
+        }
+
+        $DotXuat = DotXuatModel::where('FK_MaDot', '=', $id)->exists();
+        $hoiDong = HoiDongModel::where('FK_MaDot', '=', $id)->exists();
+
+        if ($DotXuat || $hoiDong) {
+            return response()->json([
+                'message' => 'Không thể xóa đợt thi đua vì đã có đột xuất hoặc hội đồng liên quan.'
+            ], 400);
+        }
+
+        try {
+            // Xóa văn bản đính kèm
+            VBDKModel::where('FK_MaDot', $id)->delete();
+
+            // Xóa đợt thi đua
+            $dot->delete();
+
+            return response()->json([
+                'message' => 'Đã xóa toàn bộ văn bản đính kèm và đợt thi đua.'
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'message' => 'Đã xảy ra lỗi trong quá trình xóa.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -290,6 +472,22 @@ class DotTDKTController extends Controller
                 'message' => 'Không tìm thấy đợt thi đua nào đang hoạt động',
             ], 404);
         }
+    }
+
+    public function viewVbdk($id)
+    {
+        $vanBan = VBDKModel::findOrFail($id);
+        $filePath = storage_path('app/' . $vanBan->sDuongDan);
+
+        abort_unless(file_exists($filePath), 404, 'Không tìm thấy file');
+
+        $mime = mime_content_type($filePath);
+        abort_unless($mime === 'application/pdf', 415, 'Chỉ hỗ trợ file PDF');
+
+        return response()->file($filePath, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $vanBan->sTenFile . '"'
+        ]);
     }
 
     public function downloadVbdk($id)

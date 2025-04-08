@@ -41,7 +41,7 @@
                                 <i class="fas fa-file"></i>
                             </router-link>
                             <button class="btn btn-secondary btn-sm me-2"
-                                :class="item.bTrangThai == 1 ? 'bg-blend-color' : 'bg-success'"
+                                :class="item.bTrangThai == 0 ? 'bg-blend-color' : 'bg-success'"
                                 @click="trangThaiDot(item)">
                                 <i :class="item.bTrangThai == 0 ? 'fas fa-lock-open' : 'fas fa-lock'"></i>
                             </button>
@@ -73,6 +73,22 @@
 
                                 </div>
                             </div>
+                            <div class="mb-3">
+                                <label for="namBatDau" class="form-label text">Hạn nộp biên bản cấp đơn vị</label>
+                                <input type="datetime-local" class="form-control" v-model="currentDot.dHanBienBanDonVi">
+                            </div>
+                            <div class="mb-3">
+                                <label for="namBatDau" class="form-label text">Hạn nộp minh chứng</label>
+                                <input type="datetime-local" class="form-control" v-model="currentDot.dHanNopMinhChung">
+                            </div>
+                            <div class="mb-3">
+                                <label for="namBatDau" class="form-label text">Hạn nộp biển bản phê duyệt cấp hội
+                                    đồng</label>
+                                <input type="datetime-local" class="form-control"
+                                    v-model="currentDot.dHanBienBanHoiDong">
+
+                            </div>
+
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                     Hủy
@@ -91,16 +107,22 @@
 </template>
 
 <script setup>
-import axios from 'axios';
+
 import { computed, onMounted, reactive, ref, warn } from 'vue';
 import Swal from 'sweetalert2';
+
+
+
 
 const currentDot = reactive({
     iNamBatDau: '',
     iNamKetThuc: '',
     bTrangThai: 0,
     dNgayTao: '',
-    PK_MaDot: ''
+    PK_MaDot: '',
+    dHanBienBanDonVi: '',
+    dHanNopMinhChung: '',
+    dHanBienBanHoiDong: ''
 });
 
 // ============ Xử lý đợt ============
@@ -143,6 +165,9 @@ const openAddModal = () => {
     currentDot.id = null;
     currentDot.iNamBatDau = '';
     currentDot.iNamKetThuc = ''
+    currentDot.dHanBienBanDonVi = ''
+    currentDot.dHanNopMinhChung = ''
+    currentDot.dHanBienBanHoiDong = ''
 };
 
 const showEditModal = (dot) => {
@@ -153,21 +178,48 @@ const showEditModal = (dot) => {
     currentDot.bTrangThai = dot.bTrangThai;
     currentDot.dNgayTao = dot.dNgayTao;
     currentDot.PK_MaDot = dot.PK_MaDot
+    currentDot.dHanBienBanDonVi = dot.dHanBienBanDonVi;
+    currentDot.dHanNopMinhChung = dot.dHanNopMinhChung;
+    currentDot.dHanBienBanHoiDong = dot.dHanBienBanHoiDong;
 
-    // Mở modal
-    const modal = new bootstrap.Modal(document.getElementById('dotModal'));
-    modal.show();
 };
 
 const saveDot = () => {
 
     if (isEditing.value) {
-        const update = axios.put(`/api/dotthiduakhenthuong/${currentDot.id}`, currentDot,
+        const update = axios.put(`/api/dotthiduakhenthuong/update`, currentDot,
             {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('api_token')}`
                 }
-            })
+            });
+
+
+        update.then(response => {
+            if (response.status === 200) {
+                toastSuccess('Cập nhật đợt thành công');
+                const data = response.data.data;
+                const targetDot = listDot.value.find(dottd => dottd.PK_MaDot === data.PK_MaDot);
+                if (targetDot) {
+                    targetDot.dHanBienBanDonVi = data.dHanBienBanDonVi;
+                    targetDot.dHanNopMinhChung = data.dHanNopMinhChung;
+                    targetDot.dHanBienBanHoiDong = data.dHanBienBanHoiDong;
+                }
+            }
+        }).catch(error => {
+            console.log(error);
+
+            // Nếu có lỗi validation từ Laravel
+            if (error.response && error.response.status === 422) {
+                const errors = error.response.data.error
+                const errorMessages = Object.values(errors).flat().join('<br>')
+
+                toastError(errorMessages)
+            } else {
+                toastError('Không thể cập nhật đợt!');
+            }
+        })
+
 
     } else {
         // Thêm đợt mới
@@ -181,44 +233,17 @@ const saveDot = () => {
         add.then(response => {
             if (response.status === 200) {
                 listDot.value.push(response.data.data);
-                Swal.fire({
-                    position: 'top-end',
-                    toast: true,
-                    icon: 'success',
-                    title: 'Thêm đợt thành công',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true
-                })
+                toastSuccess('Thêm đợt thành công');
             }
         }).catch(error => {
-            console.log(error);
-
-            // Nếu có lỗi validation từ Laravel
             if (error.response && error.response.status === 422) {
                 const errors = error.response.data.error
                 const errorMessages = Object.values(errors).flat().join('<br>')
 
-                Swal.fire({
-                    position: 'top-end',
-                    toast: true,
-                    icon: 'error',
-                    title: errorMessages,
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true
-                })
+                toastError(errorMessages)
             } else {
                 // Các lỗi khác (server, mạng, v.v.)
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'error',
-                    showConfirmButton: false,
-                    title: 'Không thể thêm đợt!',
-                    timer: 3000,
-                    timerProgressBar: true
-                })
+                toastError('Không thể thêm đợt!');
             }
         })
 
@@ -253,27 +278,11 @@ const trangThaiDot = (item) => {
                             dot.bTrangThai = 0
                         }
                     })
-                    Swal.fire({
-                        position: 'top-end',
-                        toast: true,
-                        icon: 'success',
-                        title: 'Thành công',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    })
+                    toastSuccess('Thay đổi trạng thái đợt thành công');
                 }
             }).catch(error => {
                 console.log(error);
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'error',
-                    showConfirmButton: false,
-                    title: 'Không thể thêm đợt!',
-                    timer: 3000,
-                    timerProgressBar: true
-                })
+                toastError('Không thể thay đổi trạng thái đợt!');
             })
         }
     })
@@ -287,30 +296,35 @@ const confirmDelete = (dot) => {
         showCancelButton: true,
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy'
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            try {
-                // Tạm thời xử lý locally
-                listDot.value = listDot.value.filter(d => d.id !== dot.id);
-                // await axios.delete(`/api/dotthiduakhenthuong/${dot.id}`, {
-                //     headers: {
-                //         Authorization: `Bearer ${localStorage.getItem('api_token')}`
-                //     }
-                // });
+    }).then((result) => {
 
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công',
-                    text: 'Xóa đợt thành công'
-                });
-            } catch (error) {
-                console.error('Lỗi khi xóa đợt:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi',
-                    text: 'Không thể xóa đợt'
-                });
-            }
+        if (result.isConfirmed) {
+            const response = axios.delete(`/api/dotthiduakhenthuong/delete/${dot.PK_MaDot}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                }
+            })
+
+            response.then(res => {
+                if (res.status === 200) {
+                    listDot.value = listDot.value.filter(item => item.PK_MaDot !== dot.PK_MaDot);
+                    toastSuccess('Xóa đợt thành công');
+                }
+            }).catch(error => {
+                toastError('Không thể xóa đợt!');
+                if(error.response) {
+                    if (error.response.status === 422) {
+                        const errors = error.response.data.error
+                        const errorMessages = Object.values(errors).flat().join('<br>')
+
+                        toastError(errorMessages)
+                    } else {
+                        toastError(error.response.data.message)
+                    }
+                } else {
+                    toastError('Không thể xóa đợt!');
+                }
+            });
         }
     });
 };

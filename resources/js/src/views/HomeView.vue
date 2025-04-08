@@ -11,6 +11,9 @@
     </div>
 </template>
 
+<script setup>
+</script>
+
 <style scoped>
 .home-container {
     padding: 2rem;

@@ -4,8 +4,19 @@
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-import axios from 'axios';
+import axios from '@/axiosCustom';
 window.axios = axios;
+
+
+import { toastSuccess, toastError } from '@/utils/toast.js';
+window.toastSuccess = toastSuccess;
+window.toastError = toastError;
+
+import { useGlobalStore } from '@/stores/global';
+window.useGlobalStore = useGlobalStore;
+
+import * as bootstrap from 'bootstrap'
+window.bootstrap = bootstrap
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 

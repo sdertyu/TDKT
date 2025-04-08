@@ -2,14 +2,28 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./src/router";
+import { createPinia } from 'pinia'
 
 import $ from "jquery";
 window.$ = window.jQuery = $;
 
 const app = createApp(App);
+
+router.beforeEach((to, from, next) => {
+    const defaultTitle = "Hệ thống thi đua khen thưởng";
+
+    if (to.meta && to.meta.title) {
+        document.title = to.meta.title;
+    } else {
+        document.title = defaultTitle;
+    }
+
+    next();
+});
+
 app.use(router);
+app.use(createPinia())
 app.mount("#app");
 
 import "./bootstrap";
-import "bootstrap/dist/js/bootstrap.min.js";
 import "@fortawesome/fontawesome-free/js/all.js";

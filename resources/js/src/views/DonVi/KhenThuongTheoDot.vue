@@ -202,7 +202,7 @@
 
 <script setup>
 import { ref, computed, onMounted, reactive } from 'vue';
-import axios from 'axios';
+
 import { watch } from 'vue';
 import Multiselect from 'vue-multiselect';
 import Swal from 'sweetalert2';

@@ -42,18 +42,17 @@ class TaiKhoanController extends Controller
     }
     public function themTaiKhoan(Request $request)
     {
-        $rules = [];
-        if ($request->role == 2) {
+        $rules = [
+            'username' => 'required|unique:tbltaikhoan,sUsername|max:50',
+            'password' => 'required|min:6',
+            'role' => 'required|exists:tblQuyen,PK_MaQuyen',
+            'myemail' => 'required|email|Unique:tbltaikhoan,sEmail',
+        ];
+        if ($request->role == 2 || $request->role == 3) {
             $rules = [
                 'username' => 'required|unique:tbltaikhoan,sUsername|max:50',
                 'password' => 'required|min:6',
-                'role'      => 'required|exists:tblQuyen,PK_MaQuyen',
-            ];
-        } else if ($request->role == 3) {
-            $rules = [
-                'username' => 'required|unique:tbltaikhoan,sUsername|max:50',
-                'password' => 'required|min:6',
-                'role'      => 'required|exists:tblQuyen,PK_MaQuyen',
+                'role'      => 'required|exists:tblQuyen,PK_MaQuyen|Unique:tbltaikhoan,FK_MaQuyen',
             ];
         } else if ($request->role == 4) {
             $rules = [
@@ -85,65 +84,36 @@ class TaiKhoanController extends Controller
                 'message' => $validator->errors()->all() ? implode(', ', $validator->errors()->all()) : ''
             ], 422);
         }
-        if ($request->role == 2) {
-            $tongTaiKhoan = count(AccountModel::all());
-            $taiKhoanMoi = new AccountModel();
-            $taiKhoanMoi->PK_MaTaiKhoan = 'user' . $tongTaiKhoan + 1;
-            $taiKhoanMoi->sUsername = $request->username;
-            $taiKhoanMoi->sPassword = bcrypt($request->password);
-            $taiKhoanMoi->FK_MaQuyen = $request->role;
-            $taiKhoanMoi->sTrangThai = 1;
-            $taiKhoanMoi->save();
-        } else if ($request->role == 3) {
-            $tongTaiKhoan = count(AccountModel::all());
-            $taiKhoanMoi = new AccountModel();
-            $taiKhoanMoi->PK_MaTaiKhoan = 'user' . $tongTaiKhoan + 1;
-            $taiKhoanMoi->sUsername = $request->username;
-            $taiKhoanMoi->sPassword = bcrypt($request->password);
-            $taiKhoanMoi->FK_MaQuyen = $request->role;
-            $taiKhoanMoi->sTrangThai = 1;
-            $taiKhoanMoi->save();
-        } else if ($request->role == 4) {
-            $tongTaiKhoan = count(AccountModel::all());
-            $taiKhoanMoi = new AccountModel();
-            $taiKhoanMoi->PK_MaTaiKhoan = 'user' . $tongTaiKhoan + 1;
-            $taiKhoanMoi->sUsername = $request->username;
-            $taiKhoanMoi->sPassword = bcrypt($request->password);
-            $taiKhoanMoi->FK_MaQuyen = $request->role;
-            $taiKhoanMoi->sTrangThai = 1;
+        $taiKhoanMoi = new AccountModel();
+        $taiKhoanMoi->PK_MaTaiKhoan = 'user' . $request->username;
+        $taiKhoanMoi->sUsername = $request->username;
+        $taiKhoanMoi->sPassword = bcrypt($request->password);
+        $taiKhoanMoi->FK_MaQuyen = $request->role;
+        $taiKhoanMoi->sEmail = $request->myemail;
+        $taiKhoanMoi->bTrangThai = 1;
+        $taiKhoanMoi->save();
 
-            $tongDonVi = count(DonViModel::all());
+        if ($request->role == 4) {
             $donViMoi = new DonViModel();
 
             $donViMoi->PK_MaDonVi = $request->madonvi;
             $donViMoi->sTenDonVi = $request->tendonvi;
             $donViMoi->FK_MaTaiKhoan = $taiKhoanMoi->PK_MaTaiKhoan;
-
-            $taiKhoanMoi->save();
+            
             $donViMoi->save();
         } else if ($request->role == 5) {
-            $tongTaiKhoan = count(AccountModel::all());
-            $taiKhoanMoi = new AccountModel();
-            $taiKhoanMoi->PK_MaTaiKhoan = 'user' . $tongTaiKhoan + 1;
-            $taiKhoanMoi->sUsername = $request->username;
-            $taiKhoanMoi->sPassword = bcrypt($request->password);
-            $taiKhoanMoi->FK_MaQuyen = $request->role;
-            $taiKhoanMoi->sTrangThai = 1;
 
-            $tongCaNhan = count(CaNhanModel::all());
             $caNhanMoi = new CaNhanModel();
 
             $caNhanMoi->PK_MaCaNhan = $request->macanhan;
             $caNhanMoi->FK_MaDonVi = $request->madonvi;
             $caNhanMoi->sTenCaNhan = $request->tencanhan;
-            $caNhanMoi->sEmail = $request->myemail;
             $caNhanMoi->sTenChucVu = $request->tenchucvu;
             $caNhanMoi->bGioiTinh = $request->gioitinh;
             $caNhanMoi->FK_MaTaiKhoan = $taiKhoanMoi->PK_MaTaiKhoan;
-
-            $taiKhoanMoi->save();
             $caNhanMoi->save();
         }
+
         return response()->json([
             'icon' => "success",
             'message' => "Thêm thành công",
@@ -172,9 +142,9 @@ class TaiKhoanController extends Controller
     public function capNhatTaiKhoan(Request $request)
     {
         $rules = [
-            'username' => 'required|exists:tbltaikhoan,sUsername|max:50',
             'password' => 'nullable|min:6', // mật khẩu không bắt buộc trừ khi tích ô "Đổi mật khẩu"
             'role' => 'required|exists:tblQuyen,PK_MaQuyen',
+            'myemail' => 'required|email|Unique:tbltaikhoan,sEmail,' . $request->id . ',PK_MaTaiKhoan',
         ];
 
         // Kiểm tra nếu có yêu cầu "Đổi mật khẩu", thì mật khẩu sẽ là bắt buộc
@@ -204,6 +174,22 @@ class TaiKhoanController extends Controller
             ], 422);
         }
 
+        $taiKhoanUpt = AccountModel::where('PK_MaTaiKhoan', '=', $request->id)->first();
+        if(!$taiKhoanUpt) {
+            return response()->json([
+                'message' => 'Tài khoản không tồn tại'
+            ], 404);
+        } else {
+            if ($request->changePass) {
+                $taiKhoanUpt->sPassword = bcrypt($request->password);
+            }
+            if($request->myemail != $taiKhoanUpt->sEmail) {
+                $taiKhoanUpt->sEmail = $request->myemail;
+            }
+            $taiKhoanUpt->FK_MaQuyen = $request->role;
+            $taiKhoanUpt->save();
+        }
+
         if ($request->role == 4) {
             $donViUpt = DonViModel::where('PK_MaDonVi', '=', $request->madonvi)->first();
             if ($donViUpt) {
@@ -211,14 +197,6 @@ class TaiKhoanController extends Controller
                     'sTenDonVi' => $request->tendonvi,
                 ]);
                 $donViUpt->save();
-
-                $taiKhoanUpt = AccountModel::where('PK_MaTaiKhoan', '=', $donViUpt->FK_MaTaiKhoan)->first();
-                if ($taiKhoanUpt) {
-                    $taiKhoanUpt->update([
-                        'sPassword' => bcrypt($request->password),
-                    ]);
-                    $taiKhoanUpt->save();
-                }
             }
         }
         if ($request->role == 5) {
@@ -226,19 +204,10 @@ class TaiKhoanController extends Controller
             if ($caNhanUpt) {
                 $caNhanUpt->update([
                     'sTenCaNhan' => $request->tencanhan,
-                    'sEmail' => $request->myemail,
                     'sTenChucVu' => $request->tenchucvu,
                     'bGioiTinh' => $request->gioitinh,
                 ]);
                 $caNhanUpt->save();
-
-                $taiKhoanUpt = AccountModel::where('PK_MaTaiKhoan', '=', $caNhanUpt->FK_MaTaiKhoan)->first();
-                if ($taiKhoanUpt) {
-                    $taiKhoanUpt->update([
-                        'sPassword' => bcrypt($request->password),
-                    ]);
-                    $taiKhoanUpt->save();
-                }
             }
         }
 
@@ -267,7 +236,7 @@ class TaiKhoanController extends Controller
             ], 404);
         }
 
-        $taiKhoanKhoa->sTrangThai = $request->trangThai;
+        $taiKhoanKhoa->bTrangThai = $request->trangThai;
         $taiKhoanKhoa->save();
 
         return response()->json([
@@ -280,12 +249,12 @@ class TaiKhoanController extends Controller
     {
         $taiKhoanXoa = AccountModel::where('PK_MaTaiKhoan', '=', $id)->first();
 
-
         if (!$taiKhoanXoa) {
             return response()->json([
                 'message' => 'Không tìm thấy tài khoản'
             ], 404);
         } else {
+
         }
 
         return response()->json([
@@ -311,7 +280,7 @@ class TaiKhoanController extends Controller
             ], 404);
         }
         $danhSachCaNhan = CaNhanModel::where('FK_MaDonVi', $donVi->PK_MaDonVi)->whereHas('taikhoan', function ($query) {
-            $query->where('sTrangThai', 1); // hoặc 'status' tùy tên cột
+            $query->where('bTrangThai', 1); // hoặc 'status' tùy tên cột
         })->get();
 
         return response()->json([

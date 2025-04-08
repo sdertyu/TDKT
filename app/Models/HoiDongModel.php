@@ -18,5 +18,15 @@ class HoiDongModel extends Model
     public $incrementing = false;
 
     public $timestamps = false;
-    protected $fillable = ['FK_MaTaiKhoan', 'FK_MaDot', 'dNgayTao', 'FK_ChuTri', 'FK_ThuKy', 'dThoiGianHop', 'sDiaChi', 'iSoNguoiThamDu', 'iSoThanhVien', 'FK_ChiTietHD', 'sDuongDan', 'sTenFile', 'sSoHD', 'sGhiChu'];
+    protected $fillable = ['FK_MaTaiKhoan', 'FK_MaDot', 'dNgayTao', 'FK_ChuTri', 'FK_ThuKy', 'dThoiGianHop', 'sDiaChi', 'iSoNguoiThamDu', 'iSoThanhVien', 'FK_ChiTietHD', 'sDuongDan', 'sTenFile', 'sSoHD', 'sGhiChu', 'FK_MaLoaiHD', 'FK_MaHinhThuc', 'FK_MaDotXuat'];
+
+    public function deXuat()
+    {
+        return $this->hasMany(DeXuatModel::class, 'FK_MaHoiDong', 'PK_MaHoiDong');
+    }
+
+    public function dot()
+    {
+        return $this->belongsTo(DotTDKTModel::class, 'FK_MaDot', 'PK_MaDot');
+    }
 }

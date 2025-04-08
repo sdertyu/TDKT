@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class DotTDKTModel extends Model
 {
@@ -24,10 +25,15 @@ class DotTDKTModel extends Model
 
 
     public $timestamps = false;
-    protected $fillable = ['PK_MaDot', 'dNgayTao', 'bTrangThai', 'iNamBatDau', 'iNamKetThuc'];
+    protected $fillable = ['PK_MaDot', 'dNgayTao', 'bTrangThai', 'iNamBatDau', 'iNamKetThuc', 'dHanBienBanDonVi', 'dHanNopMinhChung', 'dHanBienBanHoiDong'];
 
     public function vanbandinhkem()
     {
         return $this->hasMany(VBDKModel::class, 'FK_MaDot', 'PK_MaDot');
     }
+
+    public function hoiDong() {
+        return $this->hasMany(HoiDongModel::class, 'FK_MaDot', 'PK_MaDot');
+    }
+
 }

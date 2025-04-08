@@ -3,7 +3,7 @@ CREATE TABLE `tblTaiKhoan` (
   `sUsername` varchar(50) UNIQUE NOT NULL,
   `sPassword` varchar(255) NOT NULL,
   `FK_MaQuyen` int NOT NULL,
-  `sTrangThai` bool NOT NULL
+  `bTrangThai` bool NOT NULL
 );
 
 CREATE TABLE `tblCaNhan` (

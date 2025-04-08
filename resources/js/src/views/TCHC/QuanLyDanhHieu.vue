@@ -23,6 +23,8 @@
                                 <th>Tên danh hiệu</th>
                                 <th>Dành cho</th>
                                 <th>Hình thức</th>
+                                <th>Cấp danh hiệu</th>
+                                <th>Trạng thái</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
@@ -32,11 +34,22 @@
                                 <td>{{ danhhieu.sTenDanhHieu }}</td>
                                 <td>{{ danhhieu.sTenLoaiDanhHieu }}</td>
                                 <td>{{ danhhieu.sTenHinhThuc }}</td>
+                                <td>{{ danhhieu.sTenCap }}</td>
+                                <td class="text-center">
+                                    <span :class="danhhieu.bTrangThai == 1 ? 'badge bg-success' : 'badge bg-secondary'">{{
+                                        danhhieu.bTrangThai == 1 ? "Hoạt động" : "Tạm ngưng"
+                                    }}</span>
+                                </td>
                                 <!-- <td>{{  }}</td> -->
                                 <td class="text-center">
                                     <button class="btn btn-warning btn-sm me-2" @click="showEditModal(danhhieu)"
                                         data-bs-toggle="modal" data-bs-target="#danhHieuModal">
                                         <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm me-2"
+                                        :class="danhhieu.bTrangThai == 0 ? 'bg-blend-color' : 'bg-success'"
+                                        @click="changeStatus(danhhieu)">
+                                        <i :class="danhhieu.bTrangThai == 0 ? 'fas fa-lock-open' : 'fas fa-lock'"></i>
                                     </button>
                                     <button class="btn btn-danger btn-sm" @click="confirmDelete(danhhieu)">
                                         <i class="fas fa-trash"></i>
@@ -67,16 +80,25 @@
                                 <label class="form-label">Danh hiệu dành cho</label>
                                 <select class="form-select" v-model="currentDanhHieu.loaidanhhieu" required>
                                     <option value="" disabled selected>- Chọn loại danh hiệu -</option>
-                                    <option value="1">Cá nhân</option>
-                                    <option value="2">Đơn vị</option>
+                                    <option v-for="(loai) in listLoaiDanhHieu" :key="loai.PK_MaLoaiDanhHieu"
+                                        :value="loai.PK_MaLoaiDanhHieu">{{ loai.sTenLoaiDanhHieu }}</option>
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Hình thức</label>
                                 <select class="form-select" v-model="currentDanhHieu.hinhthuc" required>
                                     <option value="" disabled selected>- Chọn hình thức -</option>
-                                    <option value="1">Theo đợt</option>
-                                    <option value="2">Đột xuất</option>
+                                    <option v-for="(hinhThuc) in listHinhThuc" :key="hinhThuc.PK_MaHinhThuc"
+                                        :value="hinhThuc.PK_MaHinhThuc">{{ hinhThuc.sTenHinhThuc }}</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Cấp danh hiệu</label>
+                                <select class="form-select" v-model="currentDanhHieu.capdanhhieu" required>
+                                    <option value="" disabled selected>- Chọn hình thức -</option>
+                                    <option v-for="(cap) in listCapDanhHieu" :key="cap.PK_MaHinhThuc"
+                                        :value="cap.PK_MaCap">{{ cap.sTenCap }}</option>
                                 </select>
                             </div>
 
@@ -95,17 +117,24 @@
 
 <script setup>
 import { ref, onMounted, reactive } from 'vue'
-import axios from 'axios'
+
 import Swal from 'sweetalert2'
+import { toastSuccess, toastError } from '@/utils/toast'
+import { isArray } from 'chart.js/helpers'
 
 const currentDanhHieu = reactive({
     id: null,
     tendanhhieu: '',
     loaidanhhieu: '',
     hinhthuc: '',
+    capdanhhieu: '',
+    trangthai: null
 })
 
 const danhSachDanhHieu = ref([])
+const listLoaiDanhHieu = ref([])
+const listHinhThuc = ref([])
+const listCapDanhHieu = ref([])
 
 const isEditing = ref(false)
 const danhHieuForm = ref({
@@ -139,12 +168,60 @@ const loadDanhHieu = async () => {
         // danhSachDanhHieu.value = response.data
     } catch (error) {
         console.error('Lỗi khi tải danh sách danh hiệu:', error)
-        Swal.fire({
-            icon: 'error',
-            title: 'Lỗi',
-            text: 'Không thể tải danh sách danh hiệu'
-        })
+        toastError('Không thể tải danh sách danh hiệu')
     }
+}
+
+const getHinhThuc = () => {
+    axios.get('/api/hinhthuc/getList', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    })
+        .then(response => {
+            if (response.status === 200) {
+                listHinhThuc.value = response.data.data
+                // danhSachDanhHieu.value = response.data.data
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi khi tải hình thức:', error)
+            toastError('Không thể tải hình thức')
+        })
+}
+const getLoaiDanhHieu = () => {
+    axios.get('/api/loaidanhhieu/getList', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    })
+        .then(response => {
+            if (response.status === 200) {
+                listLoaiDanhHieu.value = response.data.data
+                // danhSachDanhHieu.value = response.data.data
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi khi tải loại danh hiệu:', error)
+            toastError('Không thể tải loại danh hiệu')
+        })
+}
+const getCapDanhHieu = () => {
+    axios.get('/api/capdanhhieu/getList', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    })
+        .then(response => {
+            if (response.status === 200) {
+                listCapDanhHieu.value = response.data.data
+                // danhSachDanhHieu.value = response.data.data
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi khi tải cấp danh hiệu:', error)
+            toastError('Không thể tải cấp danh hiệu')
+        })
 }
 
 const showAddModal = () => {
@@ -153,6 +230,8 @@ const showAddModal = () => {
     currentDanhHieu.tendanhhieu = ''
     currentDanhHieu.hinhthuc = ''
     currentDanhHieu.loaidanhhieu = ''
+    currentDanhHieu.capdanhhieu = ''
+    currentDanhHieu.trangthai = ''
 }
 
 const showEditModal = (danhhieu) => {
@@ -161,6 +240,8 @@ const showEditModal = (danhhieu) => {
     currentDanhHieu.tendanhhieu = danhhieu.sTenDanhHieu
     currentDanhHieu.loaidanhhieu = danhhieu.PK_MaLoaiDanhHieu
     currentDanhHieu.hinhthuc = danhhieu.PK_MaHinhThuc
+    currentDanhHieu.capdanhhieu = danhhieu.PK_MaCap
+    currentDanhHieu.trangthai = danhhieu.bTrangThai
 }
 
 const saveDanhHieu = async () => {
@@ -191,6 +272,7 @@ const saveDanhHieu = async () => {
             }
 
             else {
+                console.log(response.data.data);
                 danhSachDanhHieu.value.push({
                     PK_MaDanhHieu: response.data.data.PK_MaDanhHieu,
                     sTenDanhHieu: response.data.data.sTenDanhHieu,
@@ -199,25 +281,55 @@ const saveDanhHieu = async () => {
                 })
             }
 
-            Swal.fire({
-                icon: 'success',
-                title: 'Lưu danh hiệu thành công',
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
-            })
+            toastSuccess(isEditing.value ? 'Cập nhật danh hiệu thành công' : 'Thêm danh hiệu thành công')
         }
 
-        document.getElementById("danhHieuModal").querySelector(".btn-close").click();
+
     } catch (error) {
-        console.error('Lỗi khi lưu danh hiệu:', error)
-        Swal.fire({
-            icon: 'error',
-            title: 'Lỗi',
-            text: 'Không thể lưu danh hiệu'
+        if (error.response) {
+            if (error.response.status === 422) {
+                const errors = error.response.data.errors;
+                let errorMessage = Object.values(errors).flat().join('<br>')
+                console.log(errors);
+                toastError(errorMessage)
+            } else {
+                toastError(error.response.data.message)
+            }
+        }
+        else {
+            toastError('Có lỗi xảy ra khi lưu danh hiệu')
+        }
+    } finally {
+        document.getElementById("danhHieuModal").querySelector(".btn-close").click();
+    }
+}
+
+const changeStatus = async (danhhieu) => {
+    try {
+        const response = await axios.put(`/api/danhhieu/updatestatus/${danhhieu.PK_MaDanhHieu}`, {
+            trangthai: danhhieu.bTrangThai == 0 ? 1 : 0
+        }, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            }
         })
+        if (response.status === 200) {
+            danhhieu.bTrangThai = danhhieu.bTrangThai == 0 ? 1 : 0
+            toastSuccess('Cập nhật trạng thái thành công')
+        }
+    } catch (error) {
+        if (error.response) {
+            if(error.response.status === 422) {
+                const errors = error.response.data.errors;
+                let errorMessage = Object.values(errors).flat().join('<br>')
+                toastError(errorMessage)
+            } else {
+                toastError(error.response.data.message)
+            }
+        }
+        else {
+            toastError('Có lỗi xảy ra khi cập nhật trạng thái')
+        }
     }
 }
 
@@ -239,23 +351,15 @@ const confirmDelete = (danhhieu) => {
                 })
                 if (response.status === 200) {
                     danhSachDanhHieu.value = danhSachDanhHieu.value.filter(d => d.PK_MaDanhHieu !== danhhieu.PK_MaDanhHieu)
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Xóa danh hiệu thành công',
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    })
+                    toastSuccess('Xóa danh hiệu thành công')
                 }
             } catch (error) {
-                console.error('Lỗi khi xóa danh hiệu:', error)
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi',
-                    text: 'Không thể xóa danh hiệu'
-                })
+                if (error.response) {
+                    toastError(error.response.data.message)
+                }
+                else {
+                    toastError('Có lỗi xảy ra khi xóa danh hiệu')
+                }
             }
         }
     })
@@ -263,5 +367,8 @@ const confirmDelete = (danhhieu) => {
 
 onMounted(() => {
     loadDanhHieu()
+    getHinhThuc()
+    getLoaiDanhHieu()
+    getCapDanhHieu()
 })
 </script>
