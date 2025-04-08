@@ -1,19 +1,49 @@
 FROM php:8.2-fpm
 
-# Cài các extension cần thiết cho Laravel
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev \
-    && docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    nodejs \
+    npm
 
-# Cài Composer
-COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+# Install yarn
+RUN npm install -g yarn
+
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www
 
-# Copy mã nguồn Laravel vào container
+# Copy existing application directory contents
 COPY . /var/www
 
-# Cấp quyền cho thư mục storage và bootstrap/cache
-RUN chown -R www-data:www-data /var/www \
-    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+# Install PHP dependencies
+RUN composer install --no-interaction --no-progress
+
+# Install Node.js dependencies and build assets
+RUN yarn install
+RUN yarn build
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www
+RUN chmod -R 775 /var/www/storage
+RUN chmod -R 775 /var/www/bootstrap/cache
+
+# Expose port 9000 for FPM
+EXPOSE 9000
+
+CMD ["php-fpm"]
