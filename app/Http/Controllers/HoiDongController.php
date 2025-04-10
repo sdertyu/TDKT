@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DeXuatModel;
+use App\Models\DotTDKTModel;
 use App\Models\HinhThucModel;
 use App\Models\HoiDongModel;
 use App\Models\LoaiHDModel;
@@ -49,37 +50,142 @@ class HoiDongController extends Controller
     {
         $currentUser = auth()->user();
 
-        $validator = Validator::make($request->all(), [
-            'mahoidong' => 'required|unique:tblhoidong,PK_MaHoiDong',
-            'madot' => 'required|exists:tbldotthiduakhenthuong,PK_MaDot',
-            'machutri' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
-            'mathuky' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
-            'thoigian' => 'required|date',
-            'diadiem' => 'required',
-            'hinhthuchoidong' => 'required|exists:tblhinhthuc,PK_MaHinhThuc',
-            'maloaihoidong' => 'required|exists:tblloaihoidong,PK_MaLoaiHD',
-            'songuoithamdu' => 'required|integer',
-            'sothanhvien' => 'required|integer',
-            'bienban' => 'required|file',
-            'sohd' => 'required',
-        ], $this->messages);
+        if ($currentUser->FK_MaQuyen == 3) {
+            $validator = Validator::make($request->all(), [
+                'maHoiDong' => 'required|unique:tblhoidong,PK_MaHoiDong',
+                'maDot' => 'required|exists:tbldotthiduakhenthuong,PK_MaDot',
+                'huongDanSo' => 'required',
+                'thoiGian' => 'required|date',
+                'diaChi' => 'required',
+                'tongNguoiTrieuTap' => 'required|integer',
+                'soNguoiCoMat' => 'required|integer',
+                'ghiChu' => 'nullable|string',
+                'chuTichId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
+                'phoThuongTrucId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
+                'phoChuTichId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
+                'thuKyId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
+                'fileDinhKem' => 'required|file',
+            ], $this->messages);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => $validator->errors()
-            ], 422);
-        }
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => $validator->errors()
+                ], 422);
+            }
 
-        if ($currentUser->FK_MaQuyen == 2) {
             $this->themHoiDongTruong($request, $currentUser);
-        }
-        if ($currentUser->FK_MaQuyen == 4) {
+        } else if ($currentUser->FK_MaQuyen == 4) {
+            $validator = Validator::make($request->all(), [
+                'mahoidong' => 'required|unique:tblhoidong,PK_MaHoiDong',
+                'madot' => 'required|exists:tbldotthiduakhenthuong,PK_MaDot',
+                'machutri' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
+                'mathuky' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
+                'thoigian' => 'required|date',
+                'diadiem' => 'required',
+                'hinhthuchoidong' => 'required|exists:tblhinhthuc,PK_MaHinhThuc',
+                'maloaihoidong' => 'required|exists:tblloaihoidong,PK_MaLoaiHD',
+                'songuoithamdu' => 'required|integer',
+                'sothanhvien' => 'required|integer',
+                'bienban' => 'required|file',
+                'sohd' => 'required',
+            ], $this->messages);
+
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => $validator->errors()
+                ], 422);
+            }
             $this->themHoiDongDV($request, $currentUser);
         }
 
         return response()->json([
             'message' => 'Thêm hội đồng thành công',
         ]);
+    }
+
+    public function themHoiDongDV(Request $request, $currentUser)
+    {
+        $file = $request->file('bienban');
+        $folderDot = $request->madot;
+        $filePath = $file->store('vanBanHoiDong/' . $folderDot);
+
+        $hoiDong = new HoiDongModel();
+        $hoiDong->PK_MaHoiDong = $request->mahoidong;
+        $hoiDong->FK_MaDot = $request->madot;
+        $hoiDong->FK_MaTaiKhoan = $currentUser->PK_MaTaiKhoan;
+        $hoiDong->dNgayTao = getDateNow();
+        $hoiDong->FK_ChuTri = $request->machutri;
+        $hoiDong->FK_ThuKy = $request->mathuky;
+        $hoiDong->dThoiGianHop = $request->thoigian;
+        $hoiDong->sDiaChi = $request->diadiem;
+        $hoiDong->iSoNguoiThamDu = $request->songuoithamdu;
+        $hoiDong->iSoThanhVien = $request->sothanhvien;
+        $hoiDong->FK_MaLoaiHD = 1;
+        $hoiDong->FK_MaHinhThuc = 1;
+        $hoiDong->sDuongDan = $filePath;
+        $hoiDong->sTenFile = $file->getClientOriginalName();
+        $hoiDong->sSoHD = $request->sohd;
+        $hoiDong->sGhiChu = $request->ghichu;
+        $hoiDong->save();
+
+        if ($hoiDong) {
+            $caNhan = json_decode($request->dexuatcanhan, true);
+            foreach ($caNhan as $key => $cn) {
+                foreach ($cn as $key2 => $value) {
+                    // Log::info($value);
+                    $dexuat = new DeXuatModel();
+                    $dexuat->FK_User = $value['taiKhoan'];
+                    $dexuat->FK_MaHoiDong = $request->mahoidong;
+                    $dexuat->iSoNguoiBau = $value['soPhieu'];
+                    $dexuat->sLink = '';
+                    $dexuat->dNgayTao = now();
+                    $dexuat->FK_MaDanhHieu = $key;
+                    $dexuat->save();
+                }
+            }
+
+            $donVi = json_decode($request->dexuatdonvi, true);
+            foreach ($donVi as $key => $dv) {
+                $dexuat = new DeXuatModel();
+                $dexuat->FK_User = $currentUser->PK_MaTaiKhoan;
+                $dexuat->FK_MaHoiDong = $request->mahoidong;
+                $dexuat->iSoNguoiBau = $dv['soPhieu'];
+                $dexuat->sLink = '';
+                $dexuat->dNgayTao = now();
+                $dexuat->FK_MaDanhHieu = $dv['id'];
+                $dexuat->save();
+            }
+        }
+    }
+    public function themHoiDongTruong(Request $request, $currentUser)
+    {
+
+        $file = $request->file('fileDinhKem');
+        $folderDot = $request->madot;
+        $filePath = $file->store('vanBanHoiDong/' . $folderDot);
+
+        $hoiDong = new HoiDongModel();
+        $hoiDong->PK_MaHoiDong = $request->maHoiDong;
+        $hoiDong->FK_MaDot = $request->maDot;
+        $hoiDong->FK_MaTaiKhoan = $currentUser->PK_MaTaiKhoan;
+        $hoiDong->dNgayTao = getDateNow();
+        $hoiDong->FK_ChuTri = $request->chuTichId;
+        $hoiDong->FK_ThuKy = $request->thuKyId;
+        $hoiDong->dThoiGianHop = $request->thoiGian;
+        $hoiDong->sDiaChi = $request->diaChi;
+        $hoiDong->iSoNguoiThamDu = $request->soNguoiCoMat;
+        $hoiDong->iSoThanhVien = $request->tongNguoiTrieuTap;
+        // $hoiDong->FK_ChiTietHD = $chiTietHD->PK_MaChiTietHD;
+        $hoiDong->sDuongDan = $filePath;
+        $hoiDong->sTenFile = $file->getClientOriginalName();
+        $hoiDong->sSoHD = $request->huongDanSo;
+        $hoiDong->sGhiChu = $request->ghiChu;
+        $hoiDong->FK_PhoChuTich = $request->phoChuTichId;
+        $hoiDong->FK_PhoChuTichTT = $request->phoThuongTrucId;
+        $hoiDong->FK_MaLoaiHD = 2;
+        $hoiDong->FK_MaHinhThuc = 1;
+        $hoiDong->save();
     }
 
     public function capNhatHoiDong(Request $request)
@@ -142,91 +248,5 @@ class HoiDongController extends Controller
         ], 200);
     }
 
-    public function themHoiDongDV(Request $request, $currentUser)
-    {
-        $file = $request->file('bienban');
-        $folderDot = $request->madot;
-        $filePath = $file->store('vanBanHoiDong/' . $folderDot);
-
-        $hoiDong = new HoiDongModel();
-        $hoiDong->PK_MaHoiDong = $request->mahoidong;
-        $hoiDong->FK_MaDot = $request->madot;
-        $hoiDong->FK_MaTaiKhoan = $currentUser->PK_MaTaiKhoan;
-        $hoiDong->dNgayTao = now();
-        $hoiDong->FK_ChuTri = $request->machutri;
-        $hoiDong->FK_ThuKy = $request->mathuky;
-        $hoiDong->dThoiGianHop = $request->thoigian;
-        $hoiDong->sDiaChi = $request->diadiem;
-        $hoiDong->iSoNguoiThamDu = $request->songuoithamdu;
-        $hoiDong->iSoThanhVien = $request->sothanhvien;
-        $hoiDong->FK_MaLoaiHD = 1;
-        $hoiDong->FK_MaHinhThuc = 1;
-        $hoiDong->sDuongDan = $filePath;
-        $hoiDong->sTenFile = $file->getClientOriginalName();
-        $hoiDong->sSoHD = $request->sohd;
-        $hoiDong->sGhiChu = $request->ghichu;
-        $hoiDong->save();
-
-        if ($hoiDong) {
-            $caNhan = json_decode($request->dexuatcanhan, true);
-            foreach ($caNhan as $key => $cn) {
-                foreach ($cn as $key2 => $value) {
-                    // Log::info($value);
-                    $dexuat = new DeXuatModel();
-                    $dexuat->FK_User = $value['taiKhoan'];
-                    $dexuat->FK_MaHoiDong = $request->mahoidong;
-                    $dexuat->iSoNguoiBau = $value['soPhieu'];
-                    $dexuat->sLink = '';
-                    $dexuat->dNgayTao = now();
-                    $dexuat->FK_MaDanhHieu = $key;
-                    $dexuat->save();
-                }
-            }
-            
-            $donVi = json_decode($request->dexuatdonvi, true);
-            foreach ($donVi as $key => $dv) {
-                $dexuat = new DeXuatModel();
-                $dexuat->FK_User = $currentUser->PK_MaTaiKhoan;
-                $dexuat->FK_MaHoiDong = $request->mahoidong;
-                $dexuat->iSoNguoiBau = $dv['soPhieu'];
-                $dexuat->sLink = '';
-                $dexuat->dNgayTao = now();
-                $dexuat->FK_MaDanhHieu = $dv['id'];
-                $dexuat->save();
-            }
-        }
-    }
-    public function themHoiDongTruong(Request $request, $currentUser)
-    {
-        // $chiTietHD = new ChiTietHDModel();
-        // $chiTietHD->FK_MaLoaiHD = 2;
-        // $chiTietHD->FK_HinhThucHD = $request->mahinhthuckhenthuong;
-        // $chiTietHD->save();
-
-        $file = $request->file('bienban');
-        $file->move(public_path('bienban/truong/'), $file->getClientOriginalName());
-
-        $filePath = 'bienban/truong/' . $file->getClientOriginalName();
-        $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-
-        $hoiDong = new HoiDongModel();
-        $hoiDong->PK_MaHoiDong = $request->mahoidong;
-        $hoiDong->FK_MaDot = $request->madot;
-        $hoiDong->FK_MaTaiKhoan = $currentUser->PK_MaTaiKhoan;
-        $hoiDong->dNgayTao = now();
-        $hoiDong->FK_ChuTri = $request->machutri;
-        $hoiDong->FK_ThuKy = $request->mathuky;
-        $hoiDong->dThoiGianHop = $request->thoigian;
-        $hoiDong->sDiaChi = $request->diadiem;
-        $hoiDong->iSoNguoiThamDu = $request->songuoithamdu;
-        $hoiDong->iSoThanhVien = $request->sothanhvien;
-        // $hoiDong->FK_ChiTietHD = $chiTietHD->PK_MaChiTietHD;
-        $hoiDong->sDuongDan = $filePath;
-        $hoiDong->sTenFile = $fileName;
-        $hoiDong->sSoHD = $request->sohd;
-        $hoiDong->sGhiChu = $request->ghichu;
-        $hoiDong->FK_MaLoaiHD = 1;
-        $hoiDong->FK_MaHinhThuc = 1;
-        $hoiDong->save();
-    }
+    
 }

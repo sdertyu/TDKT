@@ -39,6 +39,7 @@ Route::middleware('auth.api')->group(function () {
         Route::delete('/delete/{id}', [TaiKhoanController::class, 'xoaTaiKhoan']);
         Route::get('/donvi', [TaiKhoanController::class, 'layDanhSachDonVi']);
         Route::get('/caNhanTrongDonVi/{id}', [TaiKhoanController::class, 'layDanhSachCaNhanTrongDonVi']);
+        Route::get('/getlistcanhan', [TaiKhoanController::class, 'layDanhSachToanBoCaNhan']);
     });
     Route::prefix('dotthiduakhenthuong')->group(function () {
         Route::get('/list', [DotTDKTController::class, 'index']);
@@ -95,6 +96,9 @@ Route::middleware('auth.api')->group(function () {
     Route::prefix('dexuat')->group(function () {
         Route::get('/getlisttheodot', [DeXuatController::class, 'getListDeXuatTheoDot']);
         Route::get('/getalldexuat', [DeXuatController::class, 'getAllDeXuatTheoDot']);
+        Route::get('/getlistdexuatxetduyet', [DeXuatController::class, 'getListDeXuatXetDuyet']);
+        Route::post('/xetduyetdexuat',[DeXuatController::class, 'xetDuyetDeXuat']);
+
     });
 
     Route::prefix('minhchung')->group(function () {

@@ -24,12 +24,12 @@ class AccountModel extends Authenticatable implements JWTSubject
 
     public function donVi()
     {
-        return $this->hasMany(DonViModel::class, 'FK_MaTaiKhoan', 'PK_MaTaiKhoan');
+        return $this->hasOne(DonViModel::class, 'FK_MaTaiKhoan', 'PK_MaTaiKhoan');
     }
 
     public function caNhan()
     {
-        return $this->hasMany(CaNhanModel::class, 'FK_MaTaiKhoan', 'PK_MaTaiKhoan');
+        return $this->hasOne(CaNhanModel::class, 'FK_MaTaiKhoan', 'PK_MaTaiKhoan');
     }
 
     public function getJWTIdentifier()

@@ -22,6 +22,7 @@ import VanBanDinhKem from "../views/DonVi/VanBan.vue";
 
 //hội đồng
 import ThongTinMinhChung from "../views/HoiDong/ThongTinMinhChung.vue";
+import HoiDongTDKT from "../views/HoiDong/HoiDongTDKT.vue";
 
 
 //all
@@ -136,6 +137,11 @@ const router = createRouter({
                     path: 'themminhchung/:id',
                     component: ThemMinhChung,
                     meta: { roles: [3, 4, 5] , title: 'Thêm minh chứng'},
+                },
+                {
+                    path: "hoidongtdkt",
+                    component: HoiDongTDKT,
+                    meta: { roles: [3] , title: 'Hội đồng thi đua khen thưởng'},
                 }
             ],
         },

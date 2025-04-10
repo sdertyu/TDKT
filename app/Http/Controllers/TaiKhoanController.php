@@ -7,6 +7,7 @@ use App\Models\AccountModel;
 use App\Models\CaNhanModel;
 use App\Models\DonViModel;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class TaiKhoanController extends Controller
@@ -99,7 +100,7 @@ class TaiKhoanController extends Controller
             $donViMoi->PK_MaDonVi = $request->madonvi;
             $donViMoi->sTenDonVi = $request->tendonvi;
             $donViMoi->FK_MaTaiKhoan = $taiKhoanMoi->PK_MaTaiKhoan;
-            
+
             $donViMoi->save();
         } else if ($request->role == 5) {
 
@@ -175,7 +176,7 @@ class TaiKhoanController extends Controller
         }
 
         $taiKhoanUpt = AccountModel::where('PK_MaTaiKhoan', '=', $request->id)->first();
-        if(!$taiKhoanUpt) {
+        if (!$taiKhoanUpt) {
             return response()->json([
                 'message' => 'Tài khoản không tồn tại'
             ], 404);
@@ -183,7 +184,7 @@ class TaiKhoanController extends Controller
             if ($request->changePass) {
                 $taiKhoanUpt->sPassword = bcrypt($request->password);
             }
-            if($request->myemail != $taiKhoanUpt->sEmail) {
+            if ($request->myemail != $taiKhoanUpt->sEmail) {
                 $taiKhoanUpt->sEmail = $request->myemail;
             }
             $taiKhoanUpt->FK_MaQuyen = $request->role;
@@ -254,7 +255,6 @@ class TaiKhoanController extends Controller
                 'message' => 'Không tìm thấy tài khoản'
             ], 404);
         } else {
-
         }
 
         return response()->json([
@@ -287,5 +287,34 @@ class TaiKhoanController extends Controller
             'message' => 'success',
             'data' => $danhSachCaNhan
         ], 200);
+    }
+
+    public function layDanhSachToanBoCaNhan()
+    {
+        try {
+            $danhSachCaNhan = CaNhanModel::whereHas('taikhoan', function ($query) {
+                $query->where('bTrangThai', 1);
+            })
+            ->with(['taikhoan' => function($query) {
+                $query->select('PK_MaTaiKhoan');
+            }])
+            ->get();
+            
+            if ($danhSachCaNhan->isEmpty()) {
+                return response()->json([
+                    'message' => 'Không tìm thấy cá nhân nào'
+                ], 404);
+            }
+            
+            return response()->json([
+                'message' => 'success',
+                'data' => $danhSachCaNhan
+            ], 200);
+            
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Lỗi khi lấy danh sách cá nhân'
+            ], 500);
+        }
     }
 }

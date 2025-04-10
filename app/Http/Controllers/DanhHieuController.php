@@ -7,6 +7,7 @@ use App\Models\ChiTietDHModel;
 use App\Models\ChiTietHDModel;
 use App\Models\DanhHieuModel;
 use App\Models\DeXuatModel;
+use App\Models\KetQuaModel;
 use App\Models\LoaiDanhHieuModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
