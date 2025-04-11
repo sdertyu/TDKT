@@ -130,11 +130,11 @@ const submitLogin = () => {
                         localStorage.setItem('ten', "Hội đồng TĐKT");
                         break;
                     case 4:
-                        localStorage.setItem('ten', response.data.user.don_vi[0].sTenDonVi);
-                        localStorage.setItem('maDonVi', response.data.user.don_vi[0].PK_MaDonVi);
+                        localStorage.setItem('ten', response.data.user.don_vi.sTenDonVi);
+                        localStorage.setItem('maDonVi', response.data.user.don_vi.PK_MaDonVi);
                         break;
                     case 5:
-                        localStorage.setItem('ten', response.data.user.ca_nhan[0].sTenCaNhan);
+                        localStorage.setItem('ten', response.data.user.ca_nhan.sTenCaNhan);
                         break;
                     default:
                         localStorage.setItem('ten', 'Unknown');

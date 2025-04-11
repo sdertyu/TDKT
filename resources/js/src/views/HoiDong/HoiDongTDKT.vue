@@ -107,9 +107,28 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="form-label">Tệp đính kèm biên bản họp</label>
-                                <input type="file" class="form-control" @change="handleFileUpload"
+                                <input type="file" class="form-control" @change="e => handleFileUpload('bienBan', e)"
                                     accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
                                 <small class="text-muted">Hỗ trợ file: PDF, Word, Excel, hình ảnh (tối đa 10MB)</small>
+                                <p v-if="hoiDong.tenBienBan" class="mt-2 fst-italic">
+                                    <i class="fas fa-file-alt me-1"></i> File đã tải lên: <strong>{{
+                                        hoiDong.tenBienBan }}</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label">Tệp đính kèm biên bản kiểm phiếu</label>
+                                <input type="file" class="form-control" @change="e => handleFileUpload('kiemPhieu', e)"
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
+                                <small class="text-muted">Hỗ trợ file: PDF, Word, Excel, hình ảnh (tối đa 10MB)</small>
+                                <p v-if="hoiDong.tenKiemPhieu" class="mt-2 fst-italic">
+                                    <i class="fas fa-file-alt me-1"></i> File đã tải lên: <strong>{{
+                                        hoiDong.tenKiemPhieu }}</strong>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -153,6 +172,7 @@
                                 <th>Người đề xuất</th>
                                 <th>Đơn vị</th>
                                 <th style="width: 200px">Tổng số người bầu</th>
+                                <th style="width: 120px">Tỷ lệ %</th>
                                 <th style="width: 150px">Trạng thái</th>
                             </tr>
                         </thead>
@@ -163,18 +183,21 @@
                                 <td>{{ deXuat.ca_nhan.ten_ca_nhan }}</td>
                                 <td>{{ deXuat.ca_nhan.don_vi }}</td>
                                 <td>
-                                    <input v-model.number="deXuat.soNguoiBau" type="number" min="0" class="form-control"
-                                        :max="hoiDong.soNguoiCoMat" />
+                                    <input v-model.number="deXuat.so_nguoi_bau" type="number" min="0"
+                                        class="form-control" :max="hoiDong.soNguoiCoMat" />
+                                </td>
+                                <td class="text-center fw-bold">
+                                    {{ hoiDong.soNguoiCoMat > 0 ? ((deXuat.so_nguoi_bau / hoiDong.soNguoiCoMat) * 100).toFixed(2) : 0 }}%
                                 </td>
                                 <td>
-                                    <select v-model="deXuat.trangThai" class="form-select">
+                                    <select v-model="deXuat.trang_thai" class="form-select">
                                         <option value="1">Duyệt</option>
                                         <option value="0">Không duyệt</option>
                                     </select>
                                 </td>
                             </tr>
                             <tr v-if="danhSachDeXuatCaNhan.length === 0">
-                                <td colspan="6" class="text-center">Không có đề xuất cá nhân nào trong đợt này</td>
+                                <td colspan="7" class="text-center">Không có đề xuất cá nhân nào trong đợt này</td>
                             </tr>
                         </tbody>
                     </table>
@@ -203,6 +226,7 @@
                                 <th>Tên danh hiệu</th>
                                 <th>Đơn vị</th>
                                 <th style="width: 200px">Tổng số người bầu</th>
+                                <th style="width: 120px">Tỷ lệ %</th>
                                 <th style="width: 150px">Trạng thái</th>
                             </tr>
                         </thead>
@@ -212,11 +236,14 @@
                                 <td>{{ deXuat.danh_hieu }}</td>
                                 <td>{{ deXuat.don_vi.ten_don_vi }}</td>
                                 <td>
-                                    <input v-model.number="deXuat.soNguoiBau" type="number" min="0" class="form-control"
-                                        :max="hoiDong.soNguoiCoMat" />
+                                    <input v-model.number="deXuat.so_nguoi_bau" type="number" min="0"
+                                        class="form-control" :max="hoiDong.soNguoiCoMat" />
+                                </td>
+                                <td class="text-center fw-bold">
+                                    {{ hoiDong.soNguoiCoMat > 0 ? ((deXuat.so_nguoi_bau / hoiDong.soNguoiCoMat) * 100).toFixed(2) : 0 }}%
                                 </td>
                                 <td>
-                                    <select v-model="deXuat.trangThai" class="form-select">
+                                    <select v-model="deXuat.trang_thai" class="form-select">
                                         <option value="1">Duyệt</option>
                                         <option value="0">Không duyệt</option>
                                     </select>
@@ -257,7 +284,8 @@ const hoiDong = ref({
     phoThuongTrucId: '',
     phoChuTichId: '',
     thuKyId: '',
-    fileDinhKem: null
+    fileBienBan: null,
+    fileKiemPhieu: null,
 });
 
 const danhSachCanhan = ref([]);
@@ -269,19 +297,23 @@ const danhSachDeXuatDonVi = ref([]);
 const madot = ref('');
 
 // Handle file upload
-const handleFileUpload = (event) => {
+const handleFileUpload = (type, event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    // File size validation (10MB max)
-    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
-        alert('Kích thước file không được vượt quá 10MB!');
-        event.target.value = ''; // Reset file input
+        toastError('Kích thước file không được vượt quá 10MB!');
+        event.target.value = '';
         return;
     }
 
-    hoiDong.value.fileDinhKem = file;
+    if (type === 'bienBan') {
+        hoiDong.value.fileBienBan = file;
+    } else if (type === 'kiemPhieu') {
+        console.log("object");
+        hoiDong.value.fileKiemPhieu = file;
+    }
 };
 
 // Functions
@@ -302,14 +334,21 @@ const saveHoiDong = async () => {
         // Create FormData for file upload
         const formData = new FormData();
         for (const key in hoiDong.value) {
-            if (key === 'fileDinhKem' && hoiDong.value[key]) {
-                formData.append('fileDinhKem', hoiDong.value[key]);
+            // console.log(hoiDong.value[key]);
+            if (key === 'fileBienBan' && hoiDong.value[key] != null) {
+                formData.append('fileBienBan', hoiDong.value[key] == null ? '' : hoiDong.value[key]);
+            }
+            else if (key === 'fileKiemPhieu' && hoiDong.value[key] != null) {
+                formData.append('fileKiemPhieu', hoiDong.value[key] == null ? '' : hoiDong.value[key]);
             } else {
                 formData.append(key, hoiDong.value[key]);
             }
         }
-        formData.append('maHoiDong', localStorage.getItem('user_name') + '-' + madot.value); // Include maHoiDong if exists
-        formData.append('maDot', madot.value); // Include madot if exists
+
+        let maHD = localStorage.getItem('user_name') + '-' + madot.value
+        let maDot = madot.value
+        formData.append('maHoiDong', maHD); // Include maHoiDong if exists
+        formData.append('maDot', maDot); // Include madot if exists
 
         // API call to save Hội đồng information
         const add = await axios.post('/api/hoidong/add', formData, {
@@ -335,14 +374,14 @@ const saveDeXuat = async () => {
     try {
         // Validate before saving
         for (const deXuat of danhSachDeXuatCaNhan.value) {
-            if (deXuat.soNguoiBau > hoiDong.value.soNguoiCoMat) {
+            if (deXuat.so_nguoi_bau > hoiDong.value.soNguoiCoMat) {
                 alert(`Đề xuất cá nhân "${deXuat.danh_hieu}" có số người bầu vượt quá số người có mặt!`);
                 return;
             }
         }
 
         for (const deXuat of danhSachDeXuatDonVi.value) {
-            if (deXuat.soNguoiBau > hoiDong.value.soNguoiCoMat) {
+            if (deXuat.so_nguoi_bau > hoiDong.value.soNguoiCoMat) {
                 alert(`Đề xuất đơn vị "${deXuat.danh_hieu}" có số người bầu vượt quá số người có mặt!`);
                 return;
             }
@@ -356,10 +395,12 @@ const saveDeXuat = async () => {
             formData.append('deXuat[]', JSON.stringify(item));
         });
 
-        formData.append('maHoiDong', localStorage.getItem('user_name') + '-' + madot.value); // Include maHoiDong if exists
+        let maHD = localStorage.getItem('user_name') + '-' + madot.value
+        formData.append('maHoiDong', maHD); // Include maHoiDong if exists
         for (let [key, value] of formData.entries()) {
             console.log(`${key}:`, value);
         }
+        console.log(localStorage);
         // return
         const save = await axios.post('/api/dexuat/xetduyetdexuat', formData, {
             headers: {
@@ -426,6 +467,22 @@ const getListDeXuat = () => {
             if (response.status === 200) {
                 danhSachDeXuatCaNhan.value = response.data.data.de_xuat_ca_nhan;
                 danhSachDeXuatDonVi.value = response.data.data.de_xuat_don_vi || [];
+                let hoiDongInfo = response.data.data.hoi_dong;
+                if (hoiDongInfo !== null) {
+                    hoiDong.value.huongDanSo = hoiDongInfo.sSoHD;
+                    hoiDong.value.thoiGian = hoiDongInfo.dThoiGianHop;
+                    hoiDong.value.diaChi = hoiDongInfo.sDiaChi;
+                    hoiDong.value.tongNguoiTrieuTap = hoiDongInfo.iSoThanhVien;
+                    hoiDong.value.soNguoiCoMat = hoiDongInfo.iSoNguoiThamDu;
+                    hoiDong.value.ghiChu = hoiDongInfo.sGhiChu;
+                    hoiDong.value.chuTichId = hoiDongInfo.FK_ChuTri;
+                    hoiDong.value.phoThuongTrucId = hoiDongInfo.FK_PhoChuTichTT;
+                    hoiDong.value.phoChuTichId = hoiDongInfo.FK_PhoChuTich;
+                    hoiDong.value.thuKyId = hoiDongInfo.FK_ThuKy;
+                    hoiDong.value.tenBienBan = hoiDongInfo.sTenBienBan;
+                    hoiDong.value.tenKiemPhieu = hoiDongInfo.sTenKiemPhieu;
+                }
+
             }
         })
         .catch(error => {
@@ -440,7 +497,7 @@ const getListDeXuat = () => {
                 }
             }
             else {
-                toastError('Có lỗi xảy ra khi lưu danh hiệu')
+                toastError('Có lỗi xảy ra')
             }
         });
 }
@@ -465,7 +522,7 @@ const setAllCaNhanStatus = (status) => {
     }).then((result) => {
         if (result.isConfirmed) {
             danhSachDeXuatCaNhan.value.forEach(item => {
-                item.trangThai = status;
+                item.trang_thai = status;
             });
 
             // Update styling after state change
@@ -506,7 +563,7 @@ const setAllDonViStatus = (status) => {
     }).then((result) => {
         if (result.isConfirmed) {
             danhSachDeXuatDonVi.value.forEach(item => {
-                item.trangThai = status;
+                item.trang_thai = status;
             });
 
             // Update styling after state change
@@ -537,6 +594,7 @@ onMounted(async () => {
         // hoiDong.value = response.data;
 
         // Fetch danh sách cá nhân
+        // getHoiDongDeXuat();
         getListCaNhan();
 
         // Fetch proposals list

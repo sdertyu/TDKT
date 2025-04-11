@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class HoiDongController extends Controller
 {
@@ -52,7 +53,7 @@ class HoiDongController extends Controller
 
         if ($currentUser->FK_MaQuyen == 3) {
             $validator = Validator::make($request->all(), [
-                'maHoiDong' => 'required|unique:tblhoidong,PK_MaHoiDong',
+                'maHoiDong' => 'required',
                 'maDot' => 'required|exists:tbldotthiduakhenthuong,PK_MaDot',
                 'huongDanSo' => 'required',
                 'thoiGian' => 'required|date',
@@ -64,7 +65,8 @@ class HoiDongController extends Controller
                 'phoThuongTrucId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
                 'phoChuTichId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
                 'thuKyId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
-                'fileDinhKem' => 'required|file',
+                'fileBienBan' => 'nullable|file',
+                'fileKiemPhieu' => 'nullable|file',
             ], $this->messages);
 
             if ($validator->fails()) {
@@ -76,7 +78,7 @@ class HoiDongController extends Controller
             $this->themHoiDongTruong($request, $currentUser);
         } else if ($currentUser->FK_MaQuyen == 4) {
             $validator = Validator::make($request->all(), [
-                'mahoidong' => 'required|unique:tblhoidong,PK_MaHoiDong',
+                'mahoidong' => 'required',
                 'madot' => 'required|exists:tbldotthiduakhenthuong,PK_MaDot',
                 'machutri' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
                 'mathuky' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
@@ -86,7 +88,7 @@ class HoiDongController extends Controller
                 'maloaihoidong' => 'required|exists:tblloaihoidong,PK_MaLoaiHD',
                 'songuoithamdu' => 'required|integer',
                 'sothanhvien' => 'required|integer',
-                'bienban' => 'required|file',
+                'bienban' => 'nullable|file',
                 'sohd' => 'required',
             ], $this->messages);
 
@@ -106,86 +108,160 @@ class HoiDongController extends Controller
 
     public function themHoiDongDV(Request $request, $currentUser)
     {
-        $file = $request->file('bienban');
-        $folderDot = $request->madot;
-        $filePath = $file->store('vanBanHoiDong/' . $folderDot);
+        $existingHoiDong = HoiDongModel::where('PK_MaHoiDong', $request->mahoidong)->first();
+        if (!$existingHoiDong) {
+            $file = $request->file('bienban');
+            $folderDot = $request->madot;
+            $filePath = $file->store('vanBanHoiDong/' . $folderDot);
 
-        $hoiDong = new HoiDongModel();
-        $hoiDong->PK_MaHoiDong = $request->mahoidong;
-        $hoiDong->FK_MaDot = $request->madot;
-        $hoiDong->FK_MaTaiKhoan = $currentUser->PK_MaTaiKhoan;
-        $hoiDong->dNgayTao = getDateNow();
-        $hoiDong->FK_ChuTri = $request->machutri;
-        $hoiDong->FK_ThuKy = $request->mathuky;
-        $hoiDong->dThoiGianHop = $request->thoigian;
-        $hoiDong->sDiaChi = $request->diadiem;
-        $hoiDong->iSoNguoiThamDu = $request->songuoithamdu;
-        $hoiDong->iSoThanhVien = $request->sothanhvien;
-        $hoiDong->FK_MaLoaiHD = 1;
-        $hoiDong->FK_MaHinhThuc = 1;
-        $hoiDong->sDuongDan = $filePath;
-        $hoiDong->sTenFile = $file->getClientOriginalName();
-        $hoiDong->sSoHD = $request->sohd;
-        $hoiDong->sGhiChu = $request->ghichu;
-        $hoiDong->save();
+            $hoiDong = new HoiDongModel();
+            $hoiDong->PK_MaHoiDong = $request->mahoidong;
+            $hoiDong->FK_MaDot = $request->madot;
+            $hoiDong->FK_MaTaiKhoan = $currentUser->PK_MaTaiKhoan;
+            $hoiDong->dNgayTao = getDateNow();
+            $hoiDong->FK_ChuTri = $request->machutri;
+            $hoiDong->FK_ThuKy = $request->mathuky;
+            $hoiDong->dThoiGianHop = $request->thoigian;
+            $hoiDong->sDiaChi = $request->diadiem;
+            $hoiDong->iSoNguoiThamDu = $request->songuoithamdu;
+            $hoiDong->iSoThanhVien = $request->sothanhvien;
+            $hoiDong->FK_MaLoaiHD = 1;
+            $hoiDong->FK_MaHinhThuc = 1;
+            $hoiDong->sDuongDanBienBan = $filePath;
+            $hoiDong->sTenBienBan = $file->getClientOriginalName();
+            $hoiDong->sSoHD = $request->sohd;
+            $hoiDong->sGhiChu = $request->ghichu;
+            $hoiDong->save();
 
-        if ($hoiDong) {
-            $caNhan = json_decode($request->dexuatcanhan, true);
-            foreach ($caNhan as $key => $cn) {
-                foreach ($cn as $key2 => $value) {
-                    // Log::info($value);
+            if ($hoiDong) {
+                $caNhan = json_decode($request->dexuatcanhan, true);
+                foreach ($caNhan as $key => $cn) {
+                    foreach ($cn as $key2 => $value) {
+                        // Log::info($value);
+                        $dexuat = new DeXuatModel();
+                        $dexuat->FK_User = $value['taiKhoan'];
+                        $dexuat->FK_MaHoiDong = $request->mahoidong;
+                        $dexuat->iSoNguoiBau = $value['soPhieu'];
+                        $dexuat->sLink = '';
+                        $dexuat->dNgayTao = now();
+                        $dexuat->FK_MaDanhHieu = $key;
+                        $dexuat->save();
+                    }
+                }
+
+                $donVi = json_decode($request->dexuatdonvi, true);
+                foreach ($donVi as $key => $dv) {
                     $dexuat = new DeXuatModel();
-                    $dexuat->FK_User = $value['taiKhoan'];
+                    $dexuat->FK_User = $currentUser->PK_MaTaiKhoan;
                     $dexuat->FK_MaHoiDong = $request->mahoidong;
-                    $dexuat->iSoNguoiBau = $value['soPhieu'];
+                    $dexuat->iSoNguoiBau = $dv['soPhieu'];
                     $dexuat->sLink = '';
                     $dexuat->dNgayTao = now();
-                    $dexuat->FK_MaDanhHieu = $key;
+                    $dexuat->FK_MaDanhHieu = $dv['id'];
                     $dexuat->save();
                 }
             }
-
-            $donVi = json_decode($request->dexuatdonvi, true);
-            foreach ($donVi as $key => $dv) {
-                $dexuat = new DeXuatModel();
-                $dexuat->FK_User = $currentUser->PK_MaTaiKhoan;
-                $dexuat->FK_MaHoiDong = $request->mahoidong;
-                $dexuat->iSoNguoiBau = $dv['soPhieu'];
-                $dexuat->sLink = '';
-                $dexuat->dNgayTao = now();
-                $dexuat->FK_MaDanhHieu = $dv['id'];
-                $dexuat->save();
+        } else {
+            $existingHoiDong->update([
+                'FK_MaTaiKhoan' => $currentUser->PK_MaTaiKhoan,
+                'dNgayTao' => getDateNow(),
+                'FK_ChuTri' => $request->machutri,
+                'FK_ThuKy' => $request->mathuky,
+                'dThoiGianHop' => $request->thoigian,
+                'sDiaChi' => $request->diadiem,
+                'iSoNguoiThamDu' => $request->songuoithamdu,
+                'iSoThanhVien' => $request->sothanhvien,
+                'sSoHD' => $request->sohd,
+                'sGhiChu' => $request->ghichu
+            ]);
+            if ($request->hasFile('bienban')) {
+                if (Storage::exists($existingHoiDong->sDuongDan)) {
+                    Storage::delete($existingHoiDong->sDuongDan);
+                }
+                $file = $request->file('bienban');
+                $filePath = $file->store('vanBanHoiDong/' . $request->madot);
+                $existingHoiDong->sDuongDanBienBan = $filePath;
+                $existingHoiDong->sTenBienBan = $file->getClientOriginalName();
+                $existingHoiDong->save();
             }
         }
     }
     public function themHoiDongTruong(Request $request, $currentUser)
     {
 
-        $file = $request->file('fileDinhKem');
-        $folderDot = $request->madot;
-        $filePath = $file->store('vanBanHoiDong/' . $folderDot);
+        $existingHoiDong = HoiDongModel::where('PK_MaHoiDong', $request->maHoiDong)->first();
+        if (!$existingHoiDong) {
+            $fileBienBan = $request->file('fileBienBan');
+            $folderDot = $request->madot;
+            $filePathBienBan = $fileBienBan->store('vanBanHoiDong/' . $folderDot);
 
-        $hoiDong = new HoiDongModel();
-        $hoiDong->PK_MaHoiDong = $request->maHoiDong;
-        $hoiDong->FK_MaDot = $request->maDot;
-        $hoiDong->FK_MaTaiKhoan = $currentUser->PK_MaTaiKhoan;
-        $hoiDong->dNgayTao = getDateNow();
-        $hoiDong->FK_ChuTri = $request->chuTichId;
-        $hoiDong->FK_ThuKy = $request->thuKyId;
-        $hoiDong->dThoiGianHop = $request->thoiGian;
-        $hoiDong->sDiaChi = $request->diaChi;
-        $hoiDong->iSoNguoiThamDu = $request->soNguoiCoMat;
-        $hoiDong->iSoThanhVien = $request->tongNguoiTrieuTap;
-        // $hoiDong->FK_ChiTietHD = $chiTietHD->PK_MaChiTietHD;
-        $hoiDong->sDuongDan = $filePath;
-        $hoiDong->sTenFile = $file->getClientOriginalName();
-        $hoiDong->sSoHD = $request->huongDanSo;
-        $hoiDong->sGhiChu = $request->ghiChu;
-        $hoiDong->FK_PhoChuTich = $request->phoChuTichId;
-        $hoiDong->FK_PhoChuTichTT = $request->phoThuongTrucId;
-        $hoiDong->FK_MaLoaiHD = 2;
-        $hoiDong->FK_MaHinhThuc = 1;
-        $hoiDong->save();
+            $fileKiemPhieu = $request->file('fileKiemPhieu');
+            $filePathKiemPhieu = $fileKiemPhieu->store('vanBanHoiDong/' . $folderDot);
+
+
+            $hoiDong = new HoiDongModel();
+            $hoiDong->PK_MaHoiDong = $request->maHoiDong;
+            $hoiDong->FK_MaDot = $request->maDot;
+            $hoiDong->FK_MaTaiKhoan = $currentUser->PK_MaTaiKhoan;
+            $hoiDong->dNgayTao = getDateNow();
+            $hoiDong->FK_ChuTri = $request->chuTichId;
+            $hoiDong->FK_ThuKy = $request->thuKyId;
+            $hoiDong->dThoiGianHop = $request->thoiGian;
+            $hoiDong->sDiaChi = $request->diaChi;
+            $hoiDong->iSoNguoiThamDu = $request->soNguoiCoMat;
+            $hoiDong->iSoThanhVien = $request->tongNguoiTrieuTap;
+            // $hoiDong->FK_ChiTietHD = $chiTietHD->PK_MaChiTietHD;
+            $hoiDong->sDuongDanBienBan = $filePathBienBan;
+            $hoiDong->sTenBienBan = $fileBienBan->getClientOriginalName();
+            $hoiDong->sDuongDanKiemPhieu = $filePathKiemPhieu;
+            $hoiDong->sTenKiemPhieu = $fileKiemPhieu->getClientOriginalName();
+            $hoiDong->sSoHD = $request->huongDanSo;
+            $hoiDong->sGhiChu = $request->ghiChu;
+            $hoiDong->FK_PhoChuTich = $request->phoChuTichId;
+            $hoiDong->FK_PhoChuTichTT = $request->phoThuongTrucId;
+            $hoiDong->FK_MaLoaiHD = 2;
+            $hoiDong->FK_MaHinhThuc = 1;
+            $hoiDong->save();
+        } else {
+            $existingHoiDong->update([
+                'FK_MaTaiKhoan' => $currentUser->PK_MaTaiKhoan,
+                'dNgayTao' => getDateNow(),
+                'FK_ChuTri' => $request->chuTichId,
+                'FK_ThuKy' => $request->thuKyId,
+                'dThoiGianHop' => $request->thoiGian,
+                'sDiaChi' => $request->diaChi,
+                'iSoNguoiThamDu' => $request->soNguoiCoMat,
+                'iSoThanhVien' => $request->tongNguoiTrieuTap,
+                'sSoHD' => $request->huongDanSo,
+                'sGhiChu' => $request->ghiChu,
+                'FK_PhoChuTich' => $request->phoChuTichId,
+                'FK_PhoChuTichTT' => $request->phoThuongTrucId
+            ]);
+            if ($request->hasFile('fileBienBan')) {
+                if ($existingHoiDong->sDuongDanBienBan != null) {
+                    if (Storage::exists($existingHoiDong->sDuongDanBienBan)) {
+                        Storage::delete($existingHoiDong->sDuongDanBienBan);
+                    }
+                }
+                $file = $request->file('fileBienBan');
+                $filePath = $file->store('vanBanHoiDong/' . $request->maDot);
+                $existingHoiDong->sDuongDanBienBan = $filePath;
+                $existingHoiDong->sTenBienBan = $file->getClientOriginalName();
+                $existingHoiDong->save();
+            }
+            if ($request->hasFile('fileKiemPhieu')) {
+                if ($existingHoiDong->sDuongDanKiemPhieu != null) {
+                    if (Storage::exists($existingHoiDong->sDuongDanKiemPhieu)) {
+                        Storage::delete($existingHoiDong->sDuongDanKiemPhieu);
+                    }
+                }
+                $file = $request->file('fileKiemPhieu');
+                $filePath = $file->store('vanBanHoiDong/' . $request->maDot);
+                $existingHoiDong->sDuongDanKiemPhieu = $filePath;
+                $existingHoiDong->sTenKiemPhieu = $file->getClientOriginalName();
+                $existingHoiDong->save();
+            }
+        }
     }
 
     public function capNhatHoiDong(Request $request)
@@ -248,5 +324,56 @@ class HoiDongController extends Controller
         ], 200);
     }
 
-    
+    public function layThongTinHoiDong()
+    {
+        $currentUser = auth()->user();
+        $dotActive = DotTDKTModel::where('bTrangThai', 1)->first();
+        if (!$dotActive) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy đợt thi đua'
+            ], 404);
+        }
+        $hoidong = HoiDongModel::where('FK_MaTaiKhoan', $currentUser->PK_MaTaiKhoan)
+            ->with(['dexuat' => function ($query) {
+                $query->with(['danhhieu']);
+            }, 'dexuat.taiKhoan' => function ($query) {
+                $query->with(['caNhan']);
+            }])
+            ->where('FK_MaDot', $dotActive->PK_MaDot)
+            ->first();
+
+        if (!$hoidong) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy hội đồng'
+            ], 404);
+        }
+
+        // Organize proposals into individual and organizational categories
+        $deXuatCaNhan = [];
+        $deXuatDonVi = [];
+
+        if ($hoidong->dexuat && count($hoidong->dexuat) > 0) {
+            foreach ($hoidong->dexuat as $deXuat) {
+                if ($deXuat->danhhieu) {
+                    // Check if the award is for individual or organization
+                    if ($deXuat->danhhieu->FK_MaLoaiDanhHieu == 1) { // Assuming 1 is for individual
+                        $deXuatCaNhan[] = $deXuat;
+                    } else if ($deXuat->danhhieu->FK_MaLoaiDanhHieu == 2) { // Assuming 2 is for organization
+                        $deXuatDonVi[] = $deXuat;
+                    }
+                }
+            }
+        }
+
+        // Add the categorized proposals to the response data
+        $hoidong->deXuatCaNhan = $deXuatCaNhan;
+        $hoidong->deXuatDonVi = $deXuatDonVi;
+
+        return response()->json([
+            'success' => true,
+            'data' => $hoidong
+        ], 200);
+    }
 }

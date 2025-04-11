@@ -36,4 +36,7 @@ class DeXuatModel extends Model
         return $this->belongsTo(AccountModel::class, 'FK_User', 'PK_MaTaiKhoan');
     }
     
+    public function ketQua() {
+        return $this->hasOne(KetQuaModel::class, 'FK_MaDeXuat', 'PK_MaDeXuat');
+    }
 }

@@ -127,8 +127,14 @@
                                                         {{ individual.name }}
                                                     </label>
                                                     <div class="col-8">
-                                                        <input type="number" :id="individual.id" class="form-control"
-                                                            placeholder="Số phiếu bầu" v-model="individual.soPhieu">
+                                                        <div class="input-group">
+                                                            <input type="number" :id="individual.id" class="form-control"
+                                                                placeholder="Số phiếu bầu" v-model="individual.soPhieu">
+                                                            <span class="input-group-text fw-bold" 
+                                                                :class="{'bg-success text-white': (individual.soPhieu / formData.soCoMat * 100) >= 50}">
+                                                                {{ formData.soCoMat > 0 ? ((individual.soPhieu / formData.soCoMat) * 100).toFixed(1) : 0 }}%
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -166,9 +172,15 @@
                                                             {{ award.name }}
                                                         </label>
                                                         <div class="col-8">
-                                                            <input type="number" :id="award.id" class="form-control"
-                                                                placeholder="Số phiếu bầu"
-                                                                v-model="selectedUnitAwards[index]['soPhieu']" required>
+                                                            <div class="input-group">
+                                                                <input type="number" :id="award.id" class="form-control"
+                                                                    placeholder="Số phiếu bầu"
+                                                                    v-model="selectedUnitAwards[index]['soPhieu']" required>
+                                                                <span class="input-group-text fw-bold"
+                                                                    :class="{'bg-success text-white': (selectedUnitAwards[index]['soPhieu'] / formData.soCoMat * 100) >= 50}">
+                                                                    {{ formData.soCoMat > 0 ? ((selectedUnitAwards[index]['soPhieu'] / formData.soCoMat) * 100).toFixed(1) : 0 }}%
+                                                                </span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -184,6 +196,10 @@
                                 </div>
                                 <div class="card-body">
                                     <input type="file" class="form-control" @change="handleFileUpload($event)">
+                                    <p v-if="formData.tenFile" class="mt-2 fst-italic">
+                                        <i class="fas fa-file-alt me-1"></i> File đã tải lên: <strong>{{
+                                            formData.tenFile }}</strong>
+                                    </p>
                                 </div>
                             </div>
 
@@ -206,7 +222,6 @@ import { ref, computed, onMounted, reactive } from 'vue';
 import { watch } from 'vue';
 import Multiselect from 'vue-multiselect';
 import Swal from 'sweetalert2';
-import { remove } from 'jszip';
 
 const individuals = ref([]);
 
@@ -241,7 +256,8 @@ const formData = ref({
         giayKhen: {
             soPhieu: 0
         }
-    }
+    },
+    tenFile: ''
 });
 
 const handleFileUpload = (event) => {
@@ -284,7 +300,6 @@ const madot = ref('');
 const watchSoNguoi = () => {
     formData.value.soVang = soVang.value;
 };
-
 
 // Gửi form
 const submitForm = async () => {
@@ -353,7 +368,7 @@ const submitForm = async () => {
                 showConfirmButton: false,
                 position: 'top-end'
             });
-            resetForm();
+            // resetForm();
         }
         else {
             console.error('Lỗi khi lưu biên bản:', response);
@@ -389,11 +404,72 @@ const setupWatchers = () => {
     });
 };
 
+const getHoiDongDeXuat = async () => {
+    const response = await axios.get(`api/hoidong/thongtinhoidong`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    });
+
+    if (response.status === 200) {
+
+        const data = response.data.data;
+        if (data) {
+            formData.value.soHuongDan = data.sSoHD;
+            formData.value.thoiGian = data.dThoiGianHop;
+            formData.value.diaChi = data.sDiaChi;
+            formData.value.tongSoNguoi = data.iSoThanhVien;
+            formData.value.soTrieuTap = data.iSoNguoiThamDu;
+            formData.value.soCoMat = data.iSoNguoiThamDu;
+            formData.value.soVang = data.iSoNguoiThamDu - data.iSoNguoiThamDu;
+            formData.value.chuTri = data.FK_ChuTri;
+            formData.value.thuKy = data.FK_ThuKy;
+            formData.value.ghiChu = data.sGhiChu;
+            formData.value.namHoc = data.FK_MaDot;
+            formData.value.tenFile = data.sTenFile;
+        }
+
+        // formData.value.bienBan = data.sBienBan;
+
+        // console.log(data);
+        data.deXuatCaNhan.forEach(item => {
+            const maDanhHieu = item.danhhieu.PK_MaDanhHieu;
+            if (!selectedIndividuals[maDanhHieu]) {
+                selectedIndividuals[maDanhHieu] = [];
+            }
+
+            selectedIndividuals[maDanhHieu].push({
+                id: item.tai_khoan.ca_nhan.PK_MaCaNhan,
+                taiKhoan: item.tai_khoan.PK_MaTaiKhoan,
+                name: item.tai_khoan.ca_nhan.sTenCaNhan,
+                displayName: `${item.tai_khoan.ca_nhan.PK_MaCaNhan} - ${item.tai_khoan.ca_nhan.sTenCaNhan}`,
+                soPhieu: item.iSoNguoiBau
+            });
+        });
+
+        data.deXuatDonVi.forEach(item => {
+            const maDanhHieu = item.danhhieu.PK_MaDanhHieu;
+            if (!selectedUnitAwards.value) {
+                selectedUnitAwards.value = [];
+            }
+
+            selectedUnitAwards.value.push({
+                id: maDanhHieu,
+                name: item.danhhieu.sTenDanhHieu,
+                soPhieu: item.iSoNguoiBau
+            });
+        });
+
+        console.log(selectedIndividuals);
+    }
+}
+
 onMounted(() => {
     setupWatchers();
     getCaNhanTrongDonVi();
     getDotActive();
     getListDanhHieu();
+    getHoiDongDeXuat();
 });
 
 const getListDanhHieu = async () => {

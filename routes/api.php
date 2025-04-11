@@ -65,7 +65,9 @@ Route::middleware('auth.api')->group(function () {
         Route::get('/list-hinh-thuc', [HoiDongController::class, 'layDanhSachHinhThucHD']);
         Route::get('/list-loai-hoi-dong', [HoiDongController::class, 'layDanhSachLoaiHD']);
         Route::post('/cap-nhat-hoi-dong', [HoiDongController::class, 'capNhatHoiDong']);
+        Route::get('/thongtinhoidong', [HoiDongController::class, 'layThongTinHoiDong']);
     });
+
     Route::prefix('donvi')->group(function () {
         Route::get('/list-ca-nhan/{id}', [DonViController::class, 'layDanhSachCaNhan']);
     });

@@ -1,5 +1,5 @@
 <template>
-    <div class="card my-3">
+    <div class="card m-4">
         <div class="card-header">
             <h3 class="card-title">Danh sách đợt thi đua khen thưởng</h3>
             <div class="card-tools">
@@ -23,8 +23,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, index) in listDot" :key="index">
-                        <td class="text-center">{{ index + 1 }}</td>
+                    <tr v-for="(item, index) in paginatedList" :key="index">
+                        <td class="text-center">{{ calculateItemNumber(index) }}</td>
                         <td class="text-center">{{ item.iNamBatDau }}</td>
                         <td class="text-center">{{ item.iNamKetThuc }}</td>
                         <td class="text-center">
@@ -52,6 +52,52 @@
                     </tr>
                 </tbody>
             </table>
+
+            <!-- Pagination controls -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div>
+                    <span>Hiển thị {{ Math.min(itemsPerPage, filteredList.length) }} / {{ filteredList.length }}
+                        mục</span>
+                </div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination mb-0">
+                        <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                            <a class="page-link" href="#" @click.prevent="changePage(1)">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                            <a class="page-link" href="#" @click.prevent="changePage(currentPage - 1)">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                        <li v-for="page in displayedPages" :key="page" class="page-item"
+                            :class="{ active: currentPage === page }">
+                            <a class="page-link" href="#" @click.prevent="changePage(page)">{{ page }}</a>
+                        </li>
+                        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                            <a class="page-link" href="#" @click.prevent="changePage(currentPage + 1)">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                            <a class="page-link" href="#" @click.prevent="changePage(totalPages)">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <div>
+                    <div class="input-group">
+                        <span class="input-group-text">Hiển thị</span>
+                        <select v-model="itemsPerPage" class="form-select" style="width: auto;">
+                            <option v-for="size in pageSizes" :key="size" :value="size">{{ size }}</option>
+                        </select>
+                        <span class="input-group-text">Hiển thị</span>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
         <div class="modal fade" id="dotModal" tabindex="-1" aria-hidden="true">
@@ -108,11 +154,8 @@
 
 <script setup>
 
-import { computed, onMounted, reactive, ref, warn } from 'vue';
+import { computed, onMounted, reactive, ref, warn, watch } from 'vue';
 import Swal from 'sweetalert2';
-
-
-
 
 const currentDot = reactive({
     iNamBatDau: '',
@@ -141,6 +184,98 @@ const namKetThuc = computed(() => {
     return currentDot.iNamBatDau + 1;
 })
 
+// Pagination state
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+const pageSizes = ref([5, 10, 20, 50, 100]);
+
+// Computed properties for pagination
+const filteredList = computed(() => {
+    return listDot.value;
+});
+
+const totalPages = computed(() => {
+    return Math.ceil(filteredList.value.length / itemsPerPage.value);
+});
+
+const paginatedList = computed(() => {
+    const startIndex = (currentPage.value - 1) * itemsPerPage.value;
+    const endIndex = startIndex + itemsPerPage.value;
+    return filteredList.value.slice(startIndex, endIndex);
+});
+
+const displayedPages = computed(() => {
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages.value <= maxVisiblePages) {
+        // If we have fewer pages than maximum to display, show all
+        for (let i = 1; i <= totalPages.value; i++) {
+            pages.push(i);
+        }
+    } else {
+        // Always include first page
+        pages.push(1);
+
+        // Calculate range around current page
+        let startPage = Math.max(2, currentPage.value - 1);
+        let endPage = Math.min(totalPages.value - 1, startPage + 2);
+
+        // Adjust if we're near the end
+        if (endPage === totalPages.value - 1) {
+            startPage = Math.max(2, endPage - 2);
+        }
+
+        // Add ellipsis after first page if needed
+        if (startPage > 2) {
+            pages.push('...');
+        }
+
+        // Add pages in range
+        for (let i = startPage; i <= endPage; i++) {
+            pages.push(i);
+        }
+
+        // Add ellipsis before last page if needed
+        if (endPage < totalPages.value - 1) {
+            pages.push('...');
+        }
+
+        // Always include last page
+        pages.push(totalPages.value);
+    }
+
+    return pages;
+});
+
+// Pagination methods
+const changePage = (page) => {
+    if (typeof page === 'number' && page >= 1 && page <= totalPages.value) {
+        currentPage.value = page;
+    }
+};
+
+const calculateItemNumber = (index) => {
+    return (currentPage.value - 1) * itemsPerPage.value + index + 1;
+};
+
+// Reset to first page when items per page changes
+const resetPageWhenNeeded = () => {
+    if (currentPage.value > totalPages.value) {
+        currentPage.value = 1;
+    }
+};
+
+// Watch for changes that would require pagination reset
+watch(itemsPerPage, () => {
+    resetPageWhenNeeded();
+});
+
+watch(filteredList, () => {
+    resetPageWhenNeeded();
+});
+
+// Make sure currentPage is reset when data is reloaded
 const loadDotList = () => {
     axios.get('/api/dotthiduakhenthuong/list', {
         headers: {
@@ -149,6 +284,7 @@ const loadDotList = () => {
     }).then(response => {
         if (response.status == 200) {
             listDot.value = response.data.data;
+            currentPage.value = 1; // Reset to first page when data changes
         }
     }).catch(error => {
         console.log(error);
@@ -312,7 +448,7 @@ const confirmDelete = (dot) => {
                 }
             }).catch(error => {
                 toastError('Không thể xóa đợt!');
-                if(error.response) {
+                if (error.response) {
                     if (error.response.status === 422) {
                         const errors = error.response.data.error
                         const errorMessages = Object.values(errors).flat().join('<br>')

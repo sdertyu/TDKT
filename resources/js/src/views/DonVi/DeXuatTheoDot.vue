@@ -18,6 +18,7 @@
                                 <th class="text-center" width="80">STT</th>
                                 <th>Tên danh hiệu</th>
                                 <th class="text-center" width="180">Ngày tạo</th>
+                                <th class="text-center">Trạng thái</th>
                                 <th class="text-center">Thao tác</th>
                             </tr>
                         </thead>
@@ -27,6 +28,11 @@
                                 <td class="text-center fw-bold">{{ index + 1 }}</td>
                                 <td>{{ item.tenDanhHieu }}</td>
                                 <td class="text-center">{{ formatDate(item.NgayTao) }}</td>
+                                <td class="text-center">
+                                    <span v-if="item.trangThai === 1" class="badge bg-success">Được duyệt</span>
+                                    <span v-else-if="item.trangThai === 0" class="badge bg-danger">Từ chối</span>
+                                    <span v-else class="badge bg-secondary">Chưa duyệt</span>
+                                </td>
                                 <td class="text-center">
                                     <button class="btn btn-sm btn-primary" @click="themMinhChung(item)"
                                         title="Thêm minh chứng">

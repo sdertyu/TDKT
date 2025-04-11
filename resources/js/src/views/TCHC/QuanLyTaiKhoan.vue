@@ -1,23 +1,8 @@
 <template>
-    <div class="content-wrapper">
-        <div class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1 class="m-0">Quản lý tài khoản</h1>
-                    </div>
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-end">
-                            <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
-                            <li class="breadcrumb-item active">Quản lý tài khoản</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="content-wrapper m-4">
 
         <div class="content">
-            <div class="container-fluid">
+            <div class="">
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Danh sách tài khoản</h3>
@@ -54,7 +39,7 @@
                                         <td class="text-center">
                                             <span :class="getStatusBadgeClass(account.bTrangThai)">{{
                                                 account.bTrangThai == 1 ? "Hoạt động" : "Tạm ngưng"
-                                            }}</span>
+                                                }}</span>
                                         </td>
                                         <td class="text-center">
                                             <button class="btn btn-sm btn-warning me-1" @click="openEditModal(account)"
@@ -64,7 +49,8 @@
                                             <button class="btn btn-secondary btn-sm me-2"
                                                 :class="account.bTrangThai == 0 ? 'bg-blend-color' : 'bg-success'"
                                                 @click="toggleAccountStatus(account)">
-                                                <i :class="account.bTrangThai == 0 ? 'fas fa-lock-open' : 'fas fa-lock'"></i>
+                                                <i
+                                                    :class="account.bTrangThai == 0 ? 'fas fa-lock-open' : 'fas fa-lock'"></i>
                                             </button>
                                             <button class="btn btn-sm btn-danger" @click="confirmDelete(account)"
                                                 title="Xóa">
@@ -99,7 +85,7 @@
                                         :class="['page-item', { active: currentPage === page }]">
                                         <a class="page-link" href="#" @click.prevent="changePage(page)">{{
                                             page
-                                        }}</a>
+                                            }}</a>
                                     </li>
 
                                     <li :class="['page-item', { disabled: currentPage === totalPages }]">

@@ -2,7 +2,9 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./src/router";
-import { createPinia } from 'pinia'
+import { createPinia } from "pinia";
+import PrimeVue from "primevue/config";
+import Aura from "@primeuix/themes/aura";
 
 import $ from "jquery";
 window.$ = window.jQuery = $;
@@ -22,7 +24,12 @@ router.beforeEach((to, from, next) => {
 });
 
 app.use(router);
-app.use(createPinia())
+app.use(PrimeVue, {
+    theme: {
+        preset: Aura,
+    },
+});
+app.use(createPinia());
 app.mount("#app");
 
 import "./bootstrap";
