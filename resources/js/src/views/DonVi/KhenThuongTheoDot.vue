@@ -473,7 +473,7 @@ onMounted(() => {
 });
 
 const getListDanhHieu = async () => {
-    const response = await axios.get(`api/danhhieu/list`, {
+    const response = await axios.get(`api/danhhieu/listdanhhieutheodot`, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('api_token')}`
         }

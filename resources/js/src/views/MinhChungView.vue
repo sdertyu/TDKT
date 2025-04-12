@@ -1,7 +1,7 @@
 <template>
-    <div class="container py-4">
+    <div class="m-4">
         <!-- Main Card -->
-        <div class="card border-0 shadow">
+        <div class="card my-4 shadow-sm">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">

@@ -11,17 +11,13 @@ use App\Models\KetQuaModel;
 use App\Models\LoaiDanhHieuModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class DanhHieuController extends Controller
 {
     public function index()
     {
-        // $listDanhHieu = DanhHieuModel::with([
-        //     'chiTietDanhHieus' => function ($query) {
-        //         $query->with(['hinhThuc:PK_MaHinhThuc,sTenHinhThuc', 'loaiDanhHieu:PK_MaLoaiDanhHieu,sTenLoaiDanhhieu']);
-        //     }
-        // ])->get();
 
         $listDanhHieu = DB::table('tbldanhhieu')
             // ->join('tblchitietdanhhieu', 'tbldanhhieu.FK_MaChiTiet', '=', 'tblchitietdanhhieu.PK_MaChiTiet')
@@ -39,6 +35,37 @@ class DanhHieuController extends Controller
                 'tblcapdanhhieu.PK_MaCap',
                 'tblcapdanhhieu.sTenCap'
             )
+            ->get();
+
+
+        // $listDanhHieu = DanhHieuModel::all();
+
+        return response()->json([
+            'data' => $listDanhHieu
+        ], 200);
+    }
+
+    public function layDanhSachDanhHieuTheoDot()
+    {
+        $listDanhHieu = DB::table('tbldanhhieu')
+            // ->join('tblchitietdanhhieu', 'tbldanhhieu.FK_MaChiTiet', '=', 'tblchitietdanhhieu.PK_MaChiTiet')
+            ->join('tblhinhthuc', 'tbldanhhieu.FK_MaHinhThuc', '=', 'tblhinhthuc.PK_MaHinhThuc', 'left')
+            ->join('tblloaidanhhieu', 'tbldanhhieu.FK_MaLoaiDanhHieu', '=', 'tblloaidanhhieu.PK_MaLoaiDanhHieu', 'left')
+            ->join('tblcapdanhhieu', 'tbldanhhieu.FK_MaCap', '=', 'tblcapdanhhieu.PK_MaCap', 'left')
+            ->select(
+                'tbldanhhieu.PK_MaDanhHieu',
+                'tbldanhhieu.sTenDanhHieu',
+                'tbldanhhieu.bTrangThai',
+                'tblhinhthuc.sTenHinhThuc',
+                'tblhinhthuc.PK_MaHinhThuc',
+                'tblloaidanhhieu.sTenLoaiDanhHieu',
+                'tblloaidanhhieu.PK_MaLoaiDanhHieu',
+                'tblcapdanhhieu.PK_MaCap',
+                'tblcapdanhhieu.sTenCap'
+            )
+            ->where('tbldanhhieu.FK_MaHinhThuc', 1)
+            ->where('tbldanhhieu.bTrangThai', 1)
+            ->where('tbldanhhieu.FK_MaCap', 1)
             ->get();
 
 
@@ -71,6 +98,7 @@ class DanhHieuController extends Controller
             $danhHieu->FK_MaLoaiDanhHieu = $request->loaidanhhieu;
             $danhHieu->FK_MaHinhThuc = $request->hinhthuc;
             $danhHieu->FK_MaCap = $request->capdanhhieu;
+            $danhHieu->bTrangThai = 1; // Mặc định trạng thái là 1 (có hiệu lực)
             $danhHieu->save();
 
             return response()->json([
@@ -90,7 +118,7 @@ class DanhHieuController extends Controller
             'id' => 'required|exists:tbldanhhieu,PK_MaDanhHieu',
             'tendanhhieu' => 'required',
             'loaidanhhieu' => 'required|exists:tblloaidanhhieu,PK_MaLoaiDanhHieu',
-            'hinhthuc' => 'required|exists:tblhinhthuckhenthuong,PK_MaHinhThuc',
+            'hinhthuc' => 'required|exists:tblhinhthuc,PK_MaHinhThuc',
         ]);
 
         if ($validator->fails()) {
@@ -195,6 +223,36 @@ class DanhHieuController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function layDanhSachDanhHieuDotXuat()
+    {
+
+        try {
+            $danhHieu = DanhHieuModel::where('FK_MaHinhThuc', 2)->where('bTrangThai', 1)->get();
+            Log::info($danhHieu);
+
+            $caNhan = [];
+            $donVi = [];
+            foreach ($danhHieu as $dh) {
+                if ($dh->FK_MaLoaiDanhHieu == 1) {
+                    $caNhan[] = $dh;
+                } else {
+                    $donVi[] = $dh;
+                }
+            }
+
+            return response()->json([
+                'data' => [
+                    'caNhan' => $caNhan,
+                    'donVi' => $donVi
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Lỗi khi lấy danh sách danh hiệu: ' . $e->getMessage()
             ], 500);
         }
     }

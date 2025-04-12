@@ -11,6 +11,7 @@ import ThongKeCaNhan from "../views/TCHC/ThongKeCaNhan.vue";
 import ThongKeDonVi from "../views/TCHC/ThongKeDonVi.vue";
 import QuanLyVBDK from "../views/TCHC/QuanLyVBDK.vue";
 import QuanLyThongBao from "../views/TCHC/QuanLyThongBao.vue"; // Trang lỗi 403
+import DotDotXuat from "../views/TCHC/DotDotXuat.vue";
 
 //đơn vị
 import KhenThuongTheoDot from "../views/DonVi/KhenThuongTheoDot.vue";
@@ -87,6 +88,12 @@ const router = createRouter({
                     component: QuanLyThongBao,
                     meta: { roles: [2] , title: 'Quản lý thông báo'},
 
+                },
+
+                {
+                    path: "dotdotxuat/:id",
+                    component: DotDotXuat,
+                    meta: { roles: [2] , title: 'Đợt khen thưởng đột xuất'},
                 },
 
                 //đơn vị

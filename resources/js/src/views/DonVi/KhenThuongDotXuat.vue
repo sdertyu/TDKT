@@ -103,10 +103,6 @@
 
                                     <!-- Action buttons -->
                                     <div class="text-right mt-4">
-                                        <button type="button" @click="handleResetIndividual"
-                                            class="btn btn-default mr-2">
-                                            <i class="fas fa-redo mr-1"></i> Làm mới
-                                        </button>
                                         <button type="button" @click="handleSubmitIndividual" class="btn btn-primary">
                                             <i class="fas fa-paper-plane mr-1"></i> Gửi đề xuất
                                         </button>
@@ -156,9 +152,6 @@
 
                                     <!-- Action buttons -->
                                     <div class="text-right mt-4">
-                                        <button type="button" @click="handleResetUnit" class="btn btn-default mr-2">
-                                            <i class="fas fa-redo mr-1"></i> Làm mới
-                                        </button>
                                         <button type="button" @click="handleSubmitUnit" class="btn btn-primary">
                                             <i class="fas fa-paper-plane mr-1"></i> Gửi đề xuất
                                         </button>
@@ -174,6 +167,7 @@
 </template>
 
 <script setup>
+import { get } from 'jquery';
 import { ref, reactive, onMounted, computed } from 'vue';
 import Multiselect from 'vue-multiselect';
 
@@ -181,28 +175,13 @@ import Multiselect from 'vue-multiselect';
 const activeTab = ref('individual');
 
 // Danh sách cá nhân (giả lập dữ liệu)
-const individuals = ref([
-    { id: 1, code: 'NV001', name: 'Nguyễn Văn A', displayName: 'NV001 - Nguyễn Văn A' },
-    { id: 2, code: 'NV002', name: 'Trần Thị B', displayName: 'NV002 - Trần Thị B' },
-    { id: 3, code: 'NV003', name: 'Lê Văn C', displayName: 'NV003 - Lê Văn C' },
-    { id: 4, code: 'NV004', name: 'Phạm Thị D', displayName: 'NV004 - Phạm Thị D' },
-    { id: 5, code: 'NV005', name: 'Hoàng Văn E', displayName: 'NV005 - Hoàng Văn E' },
-    { id: 6, code: 'NV006', name: 'Nguyễn Văn A', displayName: 'NV006 - Nguyễn Văn A' } // Trùng tên với NV001
-]);
+const individuals = ref([]);
 
 // Danh sách danh hiệu cá nhân
-const individualAwards = ref([
-    { id: 'chien_si_thi_dua', name: 'Chiến sĩ thi đua' },
-    { id: 'lao_dong_tien_tien', name: 'Lao động tiên tiến' },
-    { id: 'bang_khen', name: 'Bằng khen' }
-]);
+const individualAwards = ref([]);
 
 // Danh sách danh hiệu đơn vị
-const unitAwards = ref([
-    { id: 'tap_the_lao_dong_xuat_sac', name: 'Tập thể lao động xuất sắc' },
-    { id: 'co_thi_dua', name: 'Cờ thi đua' },
-    { id: 'bang_khen_tap_the', name: 'Bằng khen tập thể' }
-]);
+const unitAwards = ref([]);
 
 // Form state cho cá nhân
 const selectedAwardsObjects = ref([]);
@@ -279,7 +258,7 @@ const removeAward = (awardId) => {
 };
 
 // Xử lý gửi form cá nhân
-const handleSubmitIndividual = () => {
+const handleSubmitIndividual = async () => {
     if (selectedAwardsObjects.value.length === 0) {
         alert('Vui lòng chọn ít nhất một danh hiệu');
         return;
@@ -305,12 +284,26 @@ const handleSubmitIndividual = () => {
 
     if (!isValid) return;
 
-    console.log('Gửi đề xuất khen thưởng cá nhân:', nominations);
-    // Gọi API để gửi dữ liệu
-    // axios.post('/api/khen-thuong/ca-nhan', nominations)...
+    try {
+        const response = await axios.post('/api/dexuat/themdexuatdotxuat', {
+            deXuat: nominations.map(nomination => ({
+                danhHieu: nomination.award.id,
+                caNhan: nomination.individuals.map(individual => individual.id),
+            }))
+        }, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            }
+        });
 
-    alert('Đã gửi đề xuất khen thưởng cá nhân thành công!');
-    handleResetIndividual();
+        if (response.status === 200) {
+            toastSuccess('Đã gửi đề xuất khen thưởng cá nhân thành công!');
+        }
+    } catch (error) {
+        toastError('Có lỗi xảy ra khi gửi đề xuất khen thưởng cá nhân!');
+    }
+
+    // handleResetIndividual();
 };
 
 // Xử lý gửi form đơn vị
@@ -335,16 +328,6 @@ const handleSubmitUnit = () => {
     handleResetUnit();
 };
 
-// Reset form cá nhân
-const handleResetIndividual = () => {
-    selectedAwardsObjects.value = [];
-    Object.keys(awardIndividuals).forEach(key => {
-        delete awardIndividuals[key];
-    });
-    Object.keys(awardReasons).forEach(key => {
-        delete awardReasons[key];
-    });
-};
 
 // Reset form đơn vị
 const handleResetUnit = () => {
@@ -352,9 +335,90 @@ const handleResetUnit = () => {
     unitReason.value = '';
 };
 
+const getThongTinDeXuatDotXuat = async () => {
+    const response = await axios.get('/api/dexuat/thongtindexuatdotxuat', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    });
+
+    if (response.status === 200) {
+        if (response.data.data) {
+            let caNhan = response.data.data.caNhan;
+            let donVi = response.data.data.donVi;
+            caNhan.forEach(item => {
+                if (!selectedAwardsObjects.value.some(award => award.id === item.danhHieu.maDanhHieu)) {
+                    selectedAwardsObjects.value.push({
+                        id: item.danhHieu.maDanhHieu,
+                        name: item.danhHieu.tenDanhHieu
+                    });
+                }
+                if (!awardIndividuals[item.danhHieu.maDanhHieu]) {
+                    awardIndividuals[item.danhHieu.maDanhHieu] = []; // Khởi tạo mảng nếu chưa tồn tại
+                }
+                awardIndividuals[item.danhHieu.maDanhHieu].push({
+                    id: item.caNhan.taiKhoan,
+                    code: item.caNhan.maCaNhan,
+                    name: item.caNhan.tenCaNhan
+                });
+
+
+            });
+        }
+    } else {
+        console.error('Lỗi khi lấy thông tin đề xuất đột xuất:', response.statusText);
+    }
+
+}
+
+const getListDanhHieuDotXuat = async () => {
+    const list = await axios.get('/api/danhhieu/listdanhhieudotxuat', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    });
+
+    if (list.status === 200) {
+        individualAwards.value = list.data.data.caNhan.map(item => ({
+            id: item.PK_MaDanhHieu,
+            name: item.sTenDanhHieu
+        }));
+        unitAwards.value = list.data.data.donVi.map(item => ({
+            id: item.PK_MaDanhHieu,
+            name: item.sTenDanhHieu
+        }));
+    } else {
+        console.error('Lỗi khi lấy danh hiệu đột xuất:', list.statusText);
+    }
+}
+
+const getCaNhanTrongDonVi = async () => {
+    // console.log(localStorage);
+    const response = await axios.get(`api/taikhoan/caNhanTrongDonVi/${localStorage.getItem('maDonVi')}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    });
+
+    if (response.status === 200) {
+        const data = response.data.data;
+        individuals.value = data.map(item => ({
+            id: item.FK_MaTaiKhoan,
+            code: item.PK_MaCaNhan,
+            name: item.sTenCaNhan,
+            displayName: `${item.PK_MaCaNhan} - ${item.sTenCaNhan}`
+        }));
+    }
+    else {
+        console.error('Lỗi khi lấy danh sách cá nhân:', response);
+    }
+}
+
 // Khởi tạo sau khi component được mount
 onMounted(() => {
-    // Không cần khởi tạo select2 khi sử dụng vue-multiselect
+    getThongTinDeXuatDotXuat();
+    getListDanhHieuDotXuat();
+    getCaNhanTrongDonVi();
 });
 </script>
 
@@ -366,8 +430,6 @@ onMounted(() => {
 .table-responsive {
     overflow-x: auto;
 }
-
-
 </style>
 
 <style src="vue-multiselect/dist/vue-multiselect.css"></style>

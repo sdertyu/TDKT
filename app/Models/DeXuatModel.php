@@ -22,7 +22,7 @@ class DeXuatModel extends Model
         'dNgayTao' => 'datetime:H:i:s d/m/y',
     ];
 
-    protected $fillable = ['FK_User', 'FK_MaHoiDong', 'iSoNguoiBau', 'sLink', 'dNgayTao', 'FK_MaHoiDong'];
+    protected $fillable = ['FK_User', 'FK_MaHoiDong', 'iSoNguoiBau', 'sLink', 'dNgayTao', 'FK_MaHoiDong', 'FK_MaDanhHieu', 'FK_MaDotXuat', 'FK_NguoiTao'];
 
     public function hoiDong() {
         return $this->belongsTo(HoiDongModel::class, 'FK_MaHoiDong', 'PK_MaHoiDong');

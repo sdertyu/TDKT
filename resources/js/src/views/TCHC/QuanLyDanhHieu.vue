@@ -11,6 +11,7 @@
                     <DataTable v-model:filters="filters" :value="danhSachDanhHieu" :paginator="true" :rows="10"
                         :rowsPerPageOptions="[5, 10, 15, 20]" responsiveLayout="scroll" stripedRows
                         class="p-datatable-sm"
+                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                         :globalFilterFields="['sTenDanhHieu', 'sTenLoaiDanhHieu', 'sTenHinhThuc', 'sTenCap']">
                         <template #header>
                             <div class="d-flex justify-content-between align-items-center">
@@ -20,8 +21,8 @@
                                     </InputIcon>
                                     <InputText v-model="filters['global'].value" placeholder="Tìm kiếm" />
                                 </IconField>
-                                <button type="button" class="btn btn-primary" @click="showAddModal" data-bs-target="#danhHieuModal"
-                                    data-bs-toggle="modal">
+                                <button type="button" class="btn btn-primary" @click="showAddModal"
+                                    data-bs-target="#danhHieuModal" data-bs-toggle="modal">
                                     <i class="fas fa-plus"></i> Thêm danh hiệu mới
                                 </button>
                             </div>
@@ -63,6 +64,7 @@
                                 </button>
                             </template>
                         </Column>
+
                     </DataTable>
 
 
@@ -135,7 +137,7 @@ import Column from 'primevue/column';
 import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
+import { FilterMatchMode } from '@primevue/core/api';
 
 
 const filters = ref(

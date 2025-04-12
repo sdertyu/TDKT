@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DeXuatModel;
 use App\Models\DotTDKTModel;
+use App\Models\DotXuatModel;
 use App\Models\HoiDongModel;
 use App\Models\KetQuaModel;
 use Illuminate\Http\Request;
@@ -340,5 +341,107 @@ class DeXuatController extends Controller
                 'message' => 'Lỗi khi cập nhật trạng thái: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function themDeXuatDotDotXuat(Request $request)
+    {
+        Log::info($request->all());
+        $validator = Validator::make($request->all(), [
+            'deXuat.*.danhHieu' => 'required',
+            'deXuat.*.caNhan'   => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()
+            ], 422);
+        }
+
+        
+        $deXuat = $request->deXuat;
+        $user = auth()->user();
+        $dotXuat = DotXuatModel::where('bTrangThai', 1)->first();
+
+        DeXuatModel::where('FK_MaDotXuat', $dotXuat->PK_MaDotXuat)
+            ->where('FK_NguoiTao', $user->PK_MaTaiKhoan)
+            ->delete();
+
+
+        foreach ($deXuat as $dx) {
+            foreach ($dx['caNhan'] as $item) {
+                $deXuatModel = DeXuatModel::create([
+                    'FK_User' => $item,
+                    'FK_MaDanhHieu' => $dx['danhHieu'],
+                    'dNgayTao' => getDateNow(),
+                    'FK_MaDotXuat' => $dotXuat->PK_MaDotXuat,
+                    'FK_NguoiTao' => $user->PK_MaTaiKhoan,
+                ]);
+            }
+            Log::info($dx);
+        }
+
+
+        return response()->json([
+            'message' => 'Thêm đề xuất thành công',
+        ], 200);
+    }
+
+    public function layThongTinDeXuatDotXuat()
+    {
+        $user = auth()->user();
+        $dotDotXuat = DotXuatModel::where('bTrangThai', 1)->first();
+        if (!$dotDotXuat) {
+            return response()->json([
+                'message' => 'Không có đợt đề xuất nào đang hoạt động'
+            ], 404);
+        }
+        $deXuat = DeXuatModel::where('FK_MaDotXuat', $dotDotXuat->PK_MaDotXuat)
+            ->with([
+                'danhHieu',
+                'taiKhoan',
+                'taiKhoan.donVi',
+                'taiKhoan.caNhan',
+                'taiKhoan.donVi.caNhan'
+            ])
+            ->where('FK_NguoiTao', $user->PK_MaTaiKhoan)
+            ->get();
+
+        if ($deXuat->isEmpty()) {
+            return response()->json([
+                'message' => 'Không có đề xuất nào trong đợt thi đua khen thưởng này'
+            ], 404);
+        }
+        $caNhan = [];
+        $donVi = [];
+        foreach ($deXuat as $dx) {
+            if ($dx->danhHieu->FK_MaLoaiDanhHieu === 1) {
+                $caNhan[] = [
+                    'maDeXuat' => $dx->PK_MaDeXuat,
+                    'danhHieu' => [
+                        'maDanhHieu' => $dx->FK_MaDanhHieu,
+                        'tenDanhHieu' => $dx->danhHieu ? $dx->danhHieu->sTenDanhHieu : null,
+                    ],
+                    'caNhan' => [
+                        'taiKhoan' => $dx->FK_User,
+                        'maCaNhan' => $dx->taiKhoan->caNhan->PK_MaCaNhan,
+                        'tenCaNhan' => $dx->taiKhoan->caNhan->sTenCaNhan,
+                    ],
+                ];
+            } else {
+                $donVi[] = [
+                    'maDeXuat' => $dx->PK_MaDeXuat,
+                    'danhHieu' => $dx->danhHieu ? $dx->danhHieu->sTenDanhHieu : null,
+                ];
+            }
+        }
+
+        return response()->json([
+            'message' => 'Lấy danh sách đề xuất thành công',
+            'data' => [
+                'caNhan' => $caNhan,
+                'donVi' => $donVi,
+                'dotXuat' => $deXuat,
+            ]
+        ], 200);
     }
 }

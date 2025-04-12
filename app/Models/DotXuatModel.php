@@ -19,10 +19,21 @@ class DotXuatModel extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'PK_MaDotXuat',
         'dNgayBatDau',
         'dNgayKetThuc',
         'FK_MaDot',
         'dHanNopMinhChung',
+        'dHanNopDeXuat',
         'dHanBienBanHoiDong',
+        'bTrangThai',
+        'FK_NguoiTao'
     ];
+
+    // protected $casts = [
+    //     'dNgayBatDau' => 'date:d/m/Y',
+    //     'dNgayKetThuc' => 'date:d/m/Y',
+    //     'dHanNopMinhChung' => 'date:d/m/Y',
+    //     'dHanBienBanHoiDong' => 'date:d/m/Y',
+    // ];
 }
