@@ -182,7 +182,7 @@ class DotTDKTController extends Controller
                 }
             }
 
-            
+
             // Gán dữ liệu mới
             $dotTDKT->dHanBienBanDonVi = $request->dHanBienBanDonVi;
             $dotTDKT->dHanNopMinhChung = $request->dHanNopMinhChung;
@@ -534,5 +534,211 @@ class DotTDKTController extends Controller
             'Content-Type' => 'application/octet-stream',
             'Content-Disposition' => 'attachment; filename="' . $zipName . '"',
         ]);
+    }
+
+    //đợt
+    public function layDanhSachDotDotXuat($maDot)
+    {
+        try {
+            $listDotTDKT = DotXuatModel::where('FK_MaDot', $maDot)
+                ->orderBy("dNgayBatDau", "DESC")->get();
+            return response()->json([
+                'status' => 'success',
+                'data' => $listDotTDKT
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Lỗi khi lấy danh sách đợt đột xuất: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function themDotDotXuat(Request $request)
+    {
+        $this->messages = [
+            'maDot.required' => 'Bạn chưa chọn đợt thi đua',
+            'maDot.exists' => 'Đợt thi đua không tồn tại',
+
+            'ngayBatDau.required' => 'Bạn chưa chọn ngày bắt đầu',
+            'ngayBatDau.date' => 'Ngày bắt đầu không hợp lệ',
+            'ngayBatDau.after_or_equal' => 'Ngày bắt đầu phải lớn hơn hoặc bằng ngày hiện tại',
+
+            'ngayKetThuc.required' => 'Bạn chưa chọn ngày kết thúc',
+            'ngayKetThuc.date' => 'Ngày kết thúc không hợp lệ',
+            'ngayKetThuc.after_or_equal' => 'Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu',
+
+            'hanNopMinhChung.required' => 'Bạn chưa chọn hạn nộp minh chứng',
+            'hanNopMinhChung.date' => 'Hạn nộp minh chứng không hợp lệ',
+
+            'hanNopBienBan.required' => 'Bạn chưa chọn hạn nộp biên bản',
+            'hanNopBienBan.date' => 'Hạn nộp biên bản không hợp lệ',
+
+            'hanNopDeXuat.required' => 'Bạn chưa chọn hạn nộp đề xuất',
+            'hanNopDeXuat.date' => 'Hạn nộp đề xuất không hợp lệ',
+        ];
+
+
+        $validator = Validator::make($request->all(), [
+            'maDot' => 'required|exists:tbldotthiduakhenthuong,PK_MaDot',
+            'ngayBatDau' => 'required|date|after_or_equal:today',
+            'ngayKetThuc' => 'required|date|after_or_equal:ngayBatDau',
+            'hanNopMinhChung' => 'required|date',
+            'hanNopBienBan' => 'required|date',
+            'hanNopDeXuat' => 'required|date',
+        ], $this->messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $dotTDKT = DotXuatModel::create([
+                'PK_MaDotXuat' => $request->maDot . '-' . $request->ngayBatDau,
+                'FK_MaDot' => $request->maDot,
+                'dNgayBatDau' => $request->ngayBatDau,
+                'dNgayKetThuc' => $request->ngayKetThuc,
+                'dHanNopMinhChung' => $request->hanNopMinhChung,
+                'dHanNopDeXuat' => $request->hanNopDeXuat,
+                'dHanBienBanHoiDong' => $request->hanNopBienBan,
+                'bTrangThai' => 0,
+            ]);
+
+            return response()->json([
+                'message' => 'Thêm đợt đột xuất thành công',
+                'data' => $dotTDKT
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Lỗi khi thêm đợt đột xuất: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function suaDotDotXuat($maDotXuat, Request $request)
+    {
+        $dotDotXuat = DotXuatModel::find($maDotXuat);
+        if (!$dotDotXuat) {
+            return response()->json([
+                'message' => 'Không tìm thấy đợt đột xuất'
+            ], 404);
+        }
+        $validator = Validator::make($request->all(), [
+            'ngayBatDau' => 'required|date|after_or_equal:today',
+            'ngayKetThuc' => 'required|date|after_or_equal:ngayBatDau',
+            'hanNopMinhChung' => 'required|date',
+            'hanNopBienBan' => 'required|date',
+            'hanNopDeXuat' => 'required|date',
+        ], $this->messages);
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()
+            ], 422);
+        }
+        try {
+            $dotDotXuat->dNgayBatDau = $request->ngayBatDau;
+            $dotDotXuat->dNgayKetThuc = $request->ngayKetThuc;
+            $dotDotXuat->dHanNopMinhChung = $request->hanNopMinhChung;
+            $dotDotXuat->dHanNopDeXuat = $request->hanNopDeXuat;
+            $dotDotXuat->dHanBienBanHoiDong = $request->hanNopBienBan;
+            $dotDotXuat->save();
+
+            return response()->json([
+                'message' => 'Cập nhật đợt đột xuất thành công',
+                'data' => $dotDotXuat
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Lỗi khi cập nhật đợt đột xuất: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function xoaDotDotXuat($maDotXuat)
+    {
+        $dotDotXuat = DotXuatModel::find($maDotXuat);
+        if (!$dotDotXuat) {
+            return response()->json([
+                'message' => 'Không tìm thấy đợt đột xuất'
+            ], 404);
+        }
+
+        try {
+            $dotDotXuat->delete();
+
+            return response()->json([
+                'message' => 'Đã xóa đợt đột xuất thành công'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Lỗi khi xóa đợt đột xuất: '
+            ], 500);
+        }
+    }
+
+    public function capNhatTrangThaiDotDotXuat($id, Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'trangThai' => 'required|integer|in:0,1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()
+            ], 422);
+        }
+
+        $dotDotXuat = DotXuatModel::find($id);
+        if (!$dotDotXuat) {
+            return response()->json([
+                'message' => 'Không tìm thấy đợt đột xuất'
+            ], 404);
+        }
+        try {
+            if ($request->trangThai == 1) {
+                $currentActive = DotXuatModel::where('bTrangThai', '=', 1)->first();
+                if ($currentActive) {
+                    $currentActive->bTrangThai = 0;
+                    $currentActive->save();
+                }
+            }
+
+            $checkDotTDKT = DotTDKTModel::where('PK_MaDot', '=', $dotDotXuat->FK_MaDot)->first()->bTrangThai;
+            if ($checkDotTDKT !== 1) {
+                return response()->json([
+                    'message' => 'Đợt thi đua khen thưởng chưa được mở'
+                ], 404);
+            }
+
+            $dotDotXuat->bTrangThai = $request->trangThai;
+            $dotDotXuat->save();
+
+
+            return response()->json([
+                'message' => 'Cập nhật trạng thái thành công',
+                'data' => $dotDotXuat
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Lỗi khi cập nhật trạng thái đợt đột xuất: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function layThongTinDotDotXuatActive()
+    {
+        $dotDotXuat = DotXuatModel::where('bTrangThai', '=', 1)->first();
+        if ($dotDotXuat) {
+            return response()->json([
+                'message' => 'Thành công',
+                'data' => $dotDotXuat
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Không tìm thấy đợt đột xuất nào đang hoạt động',
+            ], 404);
+        }
     }
 }

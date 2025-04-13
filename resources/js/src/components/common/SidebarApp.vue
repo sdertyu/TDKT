@@ -66,7 +66,7 @@ switch (role.value) {
             },
             {
                 title: 'Báo cáo thống kê',
-                icon: 'bi bi-file-earmark-text',
+                icon: 'bi bi-bar-chart-line-fill',
                 isActive: false,
                 isOpen: false,
                 children: [
@@ -92,9 +92,23 @@ switch (role.value) {
             },
             {
                 title: 'thông tin minh chứng',
-                icon: 'bi-archive',
-                link: '/thongtinminhchung',
-                isActive: false
+                icon: 'bi bi-bag-check-fill',
+                isActive: false,
+                isOpen: false,
+                children: [
+                    {
+                        title: 'Theo đợt',
+                        icon: 'bi bi-file-earmark-text',
+                        link: '/minhchungtheodot',
+                        isActive: false
+                    },
+                    {
+                        title: 'Đột xuất',
+                        icon: 'bi bi-file-earmark-plus',
+                        link: '/minhchungdotxuat',
+                        isActive: false
+                    }
+                ]
             },
             // {
             //     title: 'Widgets',
@@ -135,15 +149,43 @@ switch (role.value) {
             {
                 title: 'Hội đồng TĐKT',
                 icon: 'bi bi-person-rolodex',
-                link: '/hoidongtdkt',
-                isActive: false
+                isActive: false,
+                isOpen: false,
+                children: [
+                    {
+                        title: 'Hội đồng theo đợt',
+                        icon: 'bi bi-people',
+                        link: '/hoidongtdkttheodot',
+                        isActive: false
+                    },
+                    {
+                        title: 'Hội đồng đột xuất',
+                        icon: 'bi bi-person-check-fill',
+                        link: '/hoidongtdktdotxuat',
+                        isActive: false
+                    }
+                ]
             },
             {
                 title: 'thông tin minh chứng',
-                icon: 'bi-archive',
-                link: '/thongtinminhchung',
-                isActive: false
-            }
+                icon: 'bi bi-bag-check-fill',
+                isActive: false,
+                isOpen: false,
+                children: [
+                    {
+                        title: 'Theo đợt',
+                        icon: 'bi bi-file-earmark-text',
+                        link: '/minhchungtheodot',
+                        isActive: false
+                    },
+                    {
+                        title: 'Đột xuất',
+                        icon: 'bi bi-file-earmark-plus',
+                        link: '/minhchungdotxuat',
+                        isActive: false
+                    }
+                ]
+            },
         ];
         break;
     case '4':
@@ -193,6 +235,12 @@ switch (role.value) {
                         isActive: false
                     }
                 ]
+            },
+            {
+                title: 'Thành tích của tôi',
+                icon: 'bi bi-award-fill',
+                isActive: false,
+                link: '/thanhtichcuatoi',
             }
         ];
         break;
@@ -223,6 +271,12 @@ switch (role.value) {
                         isActive: false
                     }
                 ]
+            },
+            {
+                title: 'Thành tích của tôi',
+                icon: 'bi bi-award-fill',
+                isActive: false,
+                link: '/thanhtichcuatoi',
             }
 
         ];

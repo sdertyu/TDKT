@@ -1,63 +1,73 @@
 <template>
-    <div class="container">
+    <div class="m-4">
         <!-- Card for danh hiệu management -->
         <div class="card my-4 shadow-sm">
             <div class="card-header">
                 <h1 class="card-title">Quản lý danh hiệu</h1>
             </div>
             <div class="card-body">
-                <!-- Button thêm danh hiệu mới -->
-                <div class="mb-3">
-                    <button class="btn btn-primary" @click="showAddModal" data-bs-target="#danhHieuModal"
-                        data-bs-toggle="modal">
-                        <i class="fas fa-plus"></i> Thêm danh hiệu mới
-                    </button>
-                </div>
-
                 <!-- Bảng danh hiệu -->
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>STT</th>
-                                <th>Tên danh hiệu</th>
-                                <th>Dành cho</th>
-                                <th>Hình thức</th>
-                                <th>Cấp danh hiệu</th>
-                                <th>Trạng thái</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(danhhieu, index) in danhSachDanhHieu" :key="danhhieu.id">
-                                <td class="text-center">{{ ++index }}</td>
-                                <td>{{ danhhieu.sTenDanhHieu }}</td>
-                                <td>{{ danhhieu.sTenLoaiDanhHieu }}</td>
-                                <td>{{ danhhieu.sTenHinhThuc }}</td>
-                                <td>{{ danhhieu.sTenCap }}</td>
-                                <td class="text-center">
-                                    <span :class="danhhieu.bTrangThai == 1 ? 'badge bg-success' : 'badge bg-secondary'">{{
-                                        danhhieu.bTrangThai == 1 ? "Hoạt động" : "Tạm ngưng"
-                                    }}</span>
-                                </td>
-                                <!-- <td>{{  }}</td> -->
-                                <td class="text-center">
-                                    <button class="btn btn-warning btn-sm me-2" @click="showEditModal(danhhieu)"
-                                        data-bs-toggle="modal" data-bs-target="#danhHieuModal">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-secondary btn-sm me-2"
-                                        :class="danhhieu.bTrangThai == 0 ? 'bg-blend-color' : 'bg-success'"
-                                        @click="changeStatus(danhhieu)">
-                                        <i :class="danhhieu.bTrangThai == 0 ? 'fas fa-lock-open' : 'fas fa-lock'"></i>
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" @click="confirmDelete(danhhieu)">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <DataTable v-model:filters="filters" :value="danhSachDanhHieu" :paginator="true" :rows="10"
+                        :rowsPerPageOptions="[5, 10, 15, 20]" responsiveLayout="scroll" stripedRows
+                        class="p-datatable-sm"
+                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+                        :globalFilterFields="['sTenDanhHieu', 'sTenLoaiDanhHieu', 'sTenHinhThuc', 'sTenCap']">
+                        <template #header>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <IconField>
+                                    <InputIcon>
+                                        <i class="pi pi-search" />
+                                    </InputIcon>
+                                    <InputText v-model="filters['global'].value" placeholder="Tìm kiếm" />
+                                </IconField>
+                                <button type="button" class="btn btn-primary" @click="showAddModal"
+                                    data-bs-target="#danhHieuModal" data-bs-toggle="modal">
+                                    <i class="fas fa-plus"></i> Thêm danh hiệu mới
+                                </button>
+                            </div>
+                        </template>
+                        <Column header="STT" bodyStyle="text-align: center"
+                            :pt="{ columnHeaderContent: 'justify-content-center' }">
+                            <template #body="slotProps">
+                                {{ slotProps.index + 1 }}
+                            </template>
+                        </Column>
+                        <Column field="sTenDanhHieu" header="Tên danh hiệu" sortable />
+                        <Column field="sTenLoaiDanhHieu" header="Dành cho" />
+                        <Column field="sTenHinhThuc" header="Hình thức" />
+                        <Column field="sTenCap" header="Cấp danh hiệu" />
+
+                        <Column header="Trạng thái" bodyStyle="text-align: center"
+                            :pt="{ columnHeaderContent: 'justify-content-center' }">
+                            <template #body="slotProps">
+                                <span
+                                    :class="slotProps.data.bTrangThai == 0 ? 'badge bg-secondary' : 'badge bg-success'">
+                                    {{ slotProps.data.bTrangThai == 0 ? 'Tạm ngưng' : 'Hoạt động' }}
+                                </span>
+                            </template>
+                        </Column>
+                        <Column header="Thao tác" class="text-center"
+                            :pt="{ columnHeaderContent: 'justify-content-center' }">
+                            <template #body="slotProps">
+                                <button class="btn btn-warning btn-sm me-2" @click="showEditModal(slotProps.data)"
+                                    data-bs-toggle="modal" data-bs-target="#danhHieuModal">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-secondary btn-sm me-2"
+                                    :class="slotProps.data.bTrangThai == 0 ? 'bg-blend-color' : 'bg-success'"
+                                    @click="changeStatus(slotProps.data)">
+                                    <i :class="slotProps.data.bTrangThai == 0 ? 'fas fa-lock-open' : 'fas fa-lock'"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm" @click="confirmDelete(slotProps.data)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </template>
+                        </Column>
+
+                    </DataTable>
+
+
                 </div>
             </div>
         </div>
@@ -98,7 +108,8 @@
                                 <select class="form-select" v-model="currentDanhHieu.capdanhhieu" required>
                                     <option value="" disabled selected>- Chọn hình thức -</option>
                                     <option v-for="(cap) in listCapDanhHieu" :key="cap.PK_MaHinhThuc"
-                                        :value="cap.PK_MaCap">{{ cap.sTenCap }}</option>
+                                        :value="cap.PK_MaCap">{{
+                                            cap.sTenCap }}</option>
                                 </select>
                             </div>
 
@@ -120,7 +131,21 @@ import { ref, onMounted, reactive } from 'vue'
 
 import Swal from 'sweetalert2'
 import { toastSuccess, toastError } from '@/utils/toast'
-import { isArray } from 'chart.js/helpers'
+
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import InputText from 'primevue/inputtext'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import { FilterMatchMode } from '@primevue/core/api';
+
+
+const filters = ref(
+    {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    }
+);
+
 
 const currentDanhHieu = reactive({
     id: null,
@@ -319,7 +344,7 @@ const changeStatus = async (danhhieu) => {
         }
     } catch (error) {
         if (error.response) {
-            if(error.response.status === 422) {
+            if (error.response.status === 422) {
                 const errors = error.response.data.errors;
                 let errorMessage = Object.values(errors).flat().join('<br>')
                 toastError(errorMessage)

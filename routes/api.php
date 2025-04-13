@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\BaoCaoThongKeController;
 use App\Http\Controllers\DanhHieuController;
 use App\Http\Controllers\DeXuatController;
 use App\Http\Controllers\DonViController;
@@ -58,6 +59,15 @@ Route::middleware('auth.api')->group(function () {
         Route::get('/downloadVbdk/{id}', [DotTDKTController::class, 'downloadVbdk']);
         Route::get('/downloadZip/{id}', [DotTDKTController::class, 'downloadZipVanBan']);
 
+        //ĐỢt đột xuất
+        Route::get('/getdotdotxuatactive', [DotTDKTController::class, 'layThongTinDotDotXuatActive']);
+        Route::get('/listdotdotxuat/{id}', [DotTDKTController::class, 'layDanhSachDotDotXuat']);
+        Route::post('/adddotdotxuat', [DotTDKTController::class, 'themDotDotXuat']);
+        Route::put('/updatedotdotxuat/{id}', [DotTDKTController::class, 'suaDotDotXuat']);
+        Route::delete('/deletedotdotxuat/{id}', [DotTDKTController::class, 'xoaDotDotXuat']);
+        Route::delete('/updatedotdotxuat/{id}', [DotTDKTController::class, 'xoaDotDotXuat']);
+        Route::put('/updatetrangthaidotdotxuat/{id}', [DotTDKTController::class, 'capNhatTrangThaiDotDotXuat']);
+
     });
     Route::prefix('hoidong')->group(function () {
         Route::get('/list', [HoiDongController::class, 'index']);
@@ -65,16 +75,20 @@ Route::middleware('auth.api')->group(function () {
         Route::get('/list-hinh-thuc', [HoiDongController::class, 'layDanhSachHinhThucHD']);
         Route::get('/list-loai-hoi-dong', [HoiDongController::class, 'layDanhSachLoaiHD']);
         Route::post('/cap-nhat-hoi-dong', [HoiDongController::class, 'capNhatHoiDong']);
+        Route::get('/thongtinhoidong', [HoiDongController::class, 'layThongTinHoiDong']);
     });
+
     Route::prefix('donvi')->group(function () {
         Route::get('/list-ca-nhan/{id}', [DonViController::class, 'layDanhSachCaNhan']);
     });
     Route::prefix('danhhieu')->group(function () {
         Route::get('/list', [DanhHieuController::class, 'index']);
+        Route::get('/listdanhhieutheodot', [DanhHieuController::class, 'layDanhSachDanhHieuTheoDot']);
         Route::post('/add',[DanhHieuController::class, 'themDanhHieu']);
         Route::put('/update',[DanhHieuController::class, 'suaDanhHieu']);
         Route::put('/updatestatus/{id}',[DanhHieuController::class, 'suaTrangThai']);
         Route::delete('/delete/{id}',[DanhHieuController::class, 'xoaDanhHieu']);
+        Route::get('/listdanhhieudotxuat',[DanhHieuController::class, 'layDanhSachDanhHieuDotXuat']);
     });
 
     Route::prefix('loaidanhhieu')->group(function () {
@@ -95,9 +109,14 @@ Route::middleware('auth.api')->group(function () {
 
     Route::prefix('dexuat')->group(function () {
         Route::get('/getlisttheodot', [DeXuatController::class, 'getListDeXuatTheoDot']);
-        Route::get('/getalldexuat', [DeXuatController::class, 'getAllDeXuatTheoDot']);
+        Route::get('/getalldexuattheodot', [DeXuatController::class, 'getAllDeXuatTheoDot']);
+        Route::get('/getalldexuatdotxuat', [DeXuatController::class, 'getAllDeXuatTheoDotDotXuat']);
         Route::get('/getlistdexuatxetduyet', [DeXuatController::class, 'getListDeXuatXetDuyet']);
+        Route::get('/getlistdexuatxetduyetdotxuat', [DeXuatController::class, 'getListDeXuatXetDuyetDotXuat']);
+        Route::get('/getlisttheodotdotxuat', [DeXuatController::class, 'getListDeXuatTheoDotDotXuat']);
         Route::post('/xetduyetdexuat',[DeXuatController::class, 'xetDuyetDeXuat']);
+        Route::post('/themdexuatdotxuat', [DeXuatController::class, 'themDeXuatDotDotXuat']);
+        Route::get('/thongtindexuatdotxuat', [DeXuatController::class, 'layThongTinDeXuatDotXuat']);
 
     });
 
@@ -107,5 +126,9 @@ Route::middleware('auth.api')->group(function () {
         Route::get('/download/{id}', [MinhChungController::class, 'downloadMinhChung']);
         Route::post('/delete/{id}', [MinhChungController::class, 'deleteMinhChung']);
         Route::get('/preview/{id}', [MinhChungController::class, 'viewMinhChung']);
+    });
+
+    Route::prefix('baocaothongke')->group(function () {
+        Route::get('thanhtichcuatoi', [BaoCaoThongKeController::class, 'thongKeThanhTichCuaToi']);
     });
 });

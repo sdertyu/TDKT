@@ -1,7 +1,7 @@
 <template>
-    <div class="container py-4">
+    <div class="m-4">
         <!-- Main Card -->
-        <div class="card border-0 shadow">
+        <div class="card my-4 shadow-sm">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">
@@ -164,9 +164,8 @@
 </template>
 
 <script setup>
-import { get } from 'jquery';
 import Swal from 'sweetalert2';
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 
@@ -179,7 +178,7 @@ const isDragging = ref(false);
 const showUploadModal = ref(false);
 const showToast = ref(true);
 const maDeXuat = useRoute().params.id;
-const role = ref([2,3].includes(Number(localStorage.getItem('role'))));
+const role = ref([2, 3].includes(Number(localStorage.getItem('role'))));
 const pdfUrl = ref('')
 
 onMounted(() => {
@@ -218,6 +217,7 @@ const onFileChange = async (event) => {
     formData.append('madexuat', maDeXuat);
 
     try {
+        showUploadModal.value = false;
         const response = await axios.post('/api/minhchung/upload', formData, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('api_token')}`,
@@ -241,8 +241,6 @@ const onFileChange = async (event) => {
         }
     } catch (error) {
         toastError('Lưu minh chứng thất bại');
-    } finally {
-        showUploadModal.value = false;
     }
 };
 
@@ -395,7 +393,7 @@ const getFileIconClass = (fileName) => {
     border-top-right-radius: 8px;
 }
 
-.modal {
+/* .modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -403,7 +401,7 @@ const getFileIconClass = (fileName) => {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-}
+} */
 
 .modal-content {
     background: white;
@@ -416,10 +414,10 @@ const getFileIconClass = (fileName) => {
     overflow: hidden;
 }
 
-.modal-dialog {
+/* .modal-dialog {
     width: 95vw !important;
     height: 95vh;
-}
+} */
 
 .modal-content {
     height: 100%;
