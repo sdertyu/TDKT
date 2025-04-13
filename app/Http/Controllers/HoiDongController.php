@@ -51,6 +51,8 @@ class HoiDongController extends Controller
     {
         $currentUser = auth()->user();
 
+        Log::info($request->all());
+
         if ($currentUser->FK_MaQuyen == 3) {
             $validator = Validator::make($request->all(), [
                 'maHoiDong' => 'required',
@@ -67,6 +69,7 @@ class HoiDongController extends Controller
                 'thuKyId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
                 'fileBienBan' => 'nullable|file',
                 'fileKiemPhieu' => 'nullable|file',
+                'maDotXuat' => 'nullable|exists:tbldotxuat,PK_MaDotXuat',
             ], $this->messages);
 
             if ($validator->fails()) {
@@ -221,6 +224,7 @@ class HoiDongController extends Controller
             $hoiDong->FK_PhoChuTichTT = $request->phoThuongTrucId;
             $hoiDong->FK_MaLoaiHD = 2;
             $hoiDong->FK_MaHinhThuc = 1;
+            $hoiDong->FK_MaDotXuat = $request->maDotXuat;
             $hoiDong->save();
         } else {
             $existingHoiDong->update([

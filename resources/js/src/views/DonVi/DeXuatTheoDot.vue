@@ -29,8 +29,8 @@
                                 <td>{{ item.tenDanhHieu }}</td>
                                 <td class="text-center">{{ formatDate(item.NgayTao) }}</td>
                                 <td class="text-center">
-                                    <span v-if="item.trangThai === 1" class="badge bg-success">Được duyệt</span>
-                                    <span v-else-if="item.trangThai === 0" class="badge bg-danger">Từ chối</span>
+                                    <span v-if="item.trangThai === 1" class="badge bg-success">Đạt</span>
+                                    <span v-else-if="item.trangThai === 0" class="badge bg-danger">Không đạt</span>
                                     <span v-else class="badge bg-secondary">Chưa duyệt</span>
                                 </td>
                                 <td class="text-center">

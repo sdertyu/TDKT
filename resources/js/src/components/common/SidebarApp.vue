@@ -135,8 +135,22 @@ switch (role.value) {
             {
                 title: 'Hội đồng TĐKT',
                 icon: 'bi bi-person-rolodex',
-                link: '/hoidongtdkt',
-                isActive: false
+                isActive: false,
+                isOpen: false,
+                children: [
+                    {
+                        title: 'Hội đồng theo đợt',
+                        icon: 'bi bi-people',
+                        link: '/hoidongtdkttheodot',
+                        isActive: false
+                    },
+                    {
+                        title: 'Hội đồng đột xuất',
+                        icon: 'bi bi-person-check-fill',
+                        link: '/hoidongtdktdotxuat',
+                        isActive: false
+                    }
+                ]
             },
             {
                 title: 'thông tin minh chứng',

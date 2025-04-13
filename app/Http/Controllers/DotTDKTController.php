@@ -726,4 +726,19 @@ class DotTDKTController extends Controller
             ], 500);
         }
     }
+
+    public function layThongTinDotDotXuatActive()
+    {
+        $dotDotXuat = DotXuatModel::where('bTrangThai', '=', 1)->first();
+        if ($dotDotXuat) {
+            return response()->json([
+                'message' => 'Thành công',
+                'data' => $dotDotXuat
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Không tìm thấy đợt đột xuất nào đang hoạt động',
+            ], 404);
+        }
+    }
 }

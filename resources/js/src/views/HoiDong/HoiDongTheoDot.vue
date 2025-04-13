@@ -2,7 +2,7 @@
     <div class="container-fluid mt-4">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Thông tin Hội đồng Thi đua Khen thưởng</h4>
+                <h4 class="card-title">Thông tin Hội đồng Thi đua Khen thưởng năm học {{ madot }}</h4>
             </div>
             <div class="card-body">
                 <form @submit.prevent="saveHoiDong">
@@ -157,10 +157,10 @@
             <div class="card-body">
                 <div class="d-flex justify-content-end mb-3">
                     <button type="button" class="btn btn-outline-success me-2" @click="setAllCaNhanStatus('1')">
-                        <i class="fas fa-check me-1"></i> Duyệt tất cả
+                        <i class="fas fa-check me-1"></i> Đạt
                     </button>
                     <button type="button" class="btn btn-outline-danger" @click="setAllCaNhanStatus('0')">
-                        <i class="fas fa-times me-1"></i> Từ chối tất cả
+                        <i class="fas fa-times me-1"></i> Không đạt
                     </button>
                 </div>
                 <div class="table-responsive">
@@ -191,8 +191,8 @@
                                 </td>
                                 <td>
                                     <select v-model="deXuat.trang_thai" class="form-select">
-                                        <option value="1">Duyệt</option>
-                                        <option value="0">Không duyệt</option>
+                                        <option value="1">Đạt</option>
+                                        <option value="0">Không đạt</option>
                                     </select>
                                 </td>
                             </tr>
@@ -212,10 +212,10 @@
             <div class="card-body">
                 <div class="d-flex justify-content-end mb-3">
                     <button type="button" class="btn btn-outline-success me-2" @click="setAllDonViStatus('1')">
-                        <i class="fas fa-check me-1"></i> Duyệt tất cả
+                        <i class="fas fa-check me-1"></i> Đạt
                     </button>
                     <button type="button" class="btn btn-outline-danger" @click="setAllDonViStatus('0')">
-                        <i class="fas fa-times me-1"></i> Từ chối tất cả
+                        <i class="fas fa-times me-1"></i> Không đạt
                     </button>
                 </div>
                 <div class="table-responsive">
@@ -244,8 +244,8 @@
                                 </td>
                                 <td>
                                     <select v-model="deXuat.trang_thai" class="form-select">
-                                        <option value="1">Duyệt</option>
-                                        <option value="0">Không duyệt</option>
+                                        <option value="1">Đạt</option>
+                                        <option value="0">Không đạt</option>
                                     </select>
                                 </td>
                             </tr>

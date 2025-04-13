@@ -29,4 +29,8 @@ class HoiDongModel extends Model
     {
         return $this->belongsTo(DotTDKTModel::class, 'FK_MaDot', 'PK_MaDot');
     }
+
+    public function dotXuat() {
+        return $this->belongsTo(DotTDKTModel::class, 'FK_MaDotXuat', 'PK_MaDotXuat');
+    }
 }

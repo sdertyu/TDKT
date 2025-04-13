@@ -14,149 +14,128 @@
         <!-- Main content -->
         <section class="content">
             <div class="container-fluid">
-                <!-- Tabs để chuyển đổi giữa khen thưởng cá nhân và đơn vị -->
-                <div class="card">
-                    <div class="card-header p-2">
-                        <ul class="nav nav-tabs">
-                            <li class="nav-item">
-                                <a class="nav-link" :class="{ active: activeTab === 'individual' }" href="#"
-                                    @click.prevent="activeTab = 'individual'">
-                                    <i class="fas fa-user-award mr-1"></i> Khen thưởng cá nhân
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" :class="{ active: activeTab === 'unit' }" href="#"
-                                    @click.prevent="activeTab = 'unit'">
-                                    <i class="fas fa-building mr-1"></i> Khen thưởng đơn vị
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="card-body">
-                        <!-- Form khen thưởng cá nhân -->
-                        <div v-if="activeTab === 'individual'">
-                            <div class="card card-primary">
-                                <div class="card-header">
-                                    <h3 class="card-title">
-                                        <i class="fas fa-user-award mr-2"></i>
-                                        Đề xuất khen thưởng cá nhân
-                                    </h3>
-                                </div>
-                                <div class="card-body">
-                                    <!-- Danh sách danh hiệu đã chọn -->
-                                    <div class="form-group">
-                                        <label>Danh hiệu đề xuất</label>
-                                        <multiselect v-model="selectedAwardsObjects" :options="individualAwards"
-                                            :multiple="true" track-by="id" label="name" placeholder="Chọn danh hiệu"
-                                            @input="handleSelectedAwardsChange"></multiselect>
-                                        <small class="form-text text-muted">Chọn một hoặc nhiều danh hiệu</small>
-                                    </div>
-
-                                    <!-- Hiển thị form cho từng danh hiệu đã chọn -->
-                                    <div v-for="award in selectedAwardsObjects" :key="award.id"
-                                        class="card card-outline card-info mb-4">
-                                        <div class="card-header">
-                                            <h3 class="card-title">{{ award.name }}</h3>
-                                            <div class="card-tools">
-                                                <button type="button" class="btn btn-tool"
-                                                    @click="removeAward(award.id)">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            <!-- Chọn cá nhân cho danh hiệu này -->
-                                            <div class="form-group">
-                                                <label>Chọn cá nhân</label>
-                                                <multiselect v-model="awardIndividuals[award.id]" :options="individuals"
-                                                    :multiple="true" track-by="id" label="displayName"
-                                                    placeholder="Chọn cá nhân" :custom-label="customLabel"
-                                                    :searchable="true" :internal-search="false"
-                                                    @search-change="searchIndividuals"></multiselect>
-                                                <small class="form-text text-muted">Có thể chọn nhiều cá nhân, tìm kiếm
-                                                    theo mã hoặc tên</small>
-                                            </div>
-
-                                            <!-- Danh sách cá nhân đã chọn cho danh hiệu này -->
-                                            <div v-if="awardIndividuals[award.id] && awardIndividuals[award.id].length > 0"
-                                                class="table-responsive">
-                                                <table class="table table-bordered table-sm">
-                                                    <thead>
-                                                        <tr>
-                                                            <th style="width: 10px">STT</th>
-                                                            <th class="text-center">Mã NV</th>
-                                                            <th class="text-center">Cá nhân</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr v-for="(individual, index) in awardIndividuals[award.id]"
-                                                            :key="individual.id">
-                                                            <td class="text-center">{{ index + 1 }}</td>
-                                                            <td>{{ individual.code }}</td>
-                                                            <td>{{ individual.name }}</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Action buttons -->
-                                    <div class="text-right mt-4">
-                                        <button type="button" @click="handleSubmitIndividual" class="btn btn-primary">
-                                            <i class="fas fa-paper-plane mr-1"></i> Gửi đề xuất
-                                        </button>
-                                    </div>
-                                </div>
+                <div class="row">
+                    <!-- Khen thưởng cá nhân -->
+                    <div class="col-md-7">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-user-award mr-2"></i>
+                                    Đề xuất khen thưởng cá nhân
+                                </h3>
                             </div>
-                        </div>
-
-                        <!-- Form khen thưởng đơn vị -->
-                        <div v-if="activeTab === 'unit'">
-                            <div class="card card-success">
-                                <div class="card-header">
-                                    <h3 class="card-title">
-                                        <i class="fas fa-building mr-2"></i>
-                                        Đề xuất khen thưởng đơn vị
-                                    </h3>
+                            <div class="card-body">
+                                <!-- Danh sách danh hiệu đã chọn -->
+                                <div class="form-group">
+                                    <label>Danh hiệu đề xuất</label>
+                                    <multiselect v-model="selectedAwardsObjects" :options="individualAwards"
+                                        :multiple="true" track-by="id" label="name" placeholder="Chọn danh hiệu"
+                                        @input="handleSelectedAwardsChange"></multiselect>
+                                    <small class="form-text text-muted">Chọn một hoặc nhiều danh hiệu</small>
                                 </div>
-                                <div class="card-body">
-                                    <!-- Danh hiệu đề xuất cho đơn vị -->
-                                    <div class="form-group">
-                                        <label>Danh hiệu đề xuất cho đơn vị</label>
-                                        <multiselect v-model="selectedUnitAwards" :options="unitAwards" :multiple="true"
-                                            track-by="id" label="name" placeholder="Chọn danh hiệu"></multiselect>
-                                        <small class="form-text text-muted">Có thể chọn nhiều danh hiệu</small>
-                                    </div>
 
-                                    <!-- Danh sách danh hiệu đã chọn -->
-                                    <div class="form-group" v-if="selectedUnitAwards.length > 0">
-                                        <label>Danh sách danh hiệu đã chọn</label>
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered table-striped">
+                                <!-- Hiển thị form cho từng danh hiệu đã chọn -->
+                                <div v-for="award in selectedAwardsObjects" :key="award.id"
+                                    class="card card-outline card-info mb-4">
+                                    <div class="card-header">
+                                        <h3 class="card-title">{{ award.name }}</h3>
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool" @click="removeAward(award.id)">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Chọn cá nhân cho danh hiệu này -->
+                                        <div class="form-group">
+                                            <label>Chọn cá nhân</label>
+                                            <multiselect v-model="awardIndividuals[award.id]" :options="individuals"
+                                                :multiple="true" track-by="id" label="displayName"
+                                                placeholder="Chọn cá nhân" :custom-label="customLabel"
+                                                :searchable="true" :internal-search="false"
+                                                @search-change="searchIndividuals"></multiselect>
+                                            <small class="form-text text-muted">Có thể chọn nhiều cá nhân, tìm kiếm
+                                                theo mã hoặc tên</small>
+                                        </div>
+
+                                        <!-- Danh sách cá nhân đã chọn cho danh hiệu này -->
+                                        <div v-if="awardIndividuals[award.id] && awardIndividuals[award.id].length > 0"
+                                            class="table-responsive">
+                                            <table class="table table-bordered table-sm">
                                                 <thead>
                                                     <tr>
                                                         <th style="width: 10px">STT</th>
-                                                        <th>Danh hiệu</th>
+                                                        <th class="text-center">Mã NV</th>
+                                                        <th class="text-center">Cá nhân</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr v-for="(award, index) in selectedUnitAwards" :key="award.id">
-                                                        <td>{{ index + 1 }}</td>
-                                                        <td>{{ award.name }}</td>
+                                                    <tr v-for="(individual, index) in awardIndividuals[award.id]"
+                                                        :key="individual.id">
+                                                        <td class="text-center">{{ index + 1 }}</td>
+                                                        <td>{{ individual.code }}</td>
+                                                        <td>{{ individual.name }}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                                    <!-- Action buttons -->
-                                    <div class="text-right mt-4">
-                                        <button type="button" @click="handleSubmitUnit" class="btn btn-primary">
-                                            <i class="fas fa-paper-plane mr-1"></i> Gửi đề xuất
-                                        </button>
+                    <!-- Khen thưởng đơn vị -->
+                    <div class="col-md-5">
+                        <div class="card card-success">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-building mr-2"></i>
+                                    Đề xuất khen thưởng đơn vị
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <!-- Danh hiệu đề xuất cho đơn vị -->
+                                <div class="form-group">
+                                    <label>Danh hiệu đề xuất cho đơn vị</label>
+                                    <multiselect v-model="selectedUnitAwards" :options="unitAwards" :multiple="true"
+                                        track-by="id" label="name" placeholder="Chọn danh hiệu"></multiselect>
+                                    <small class="form-text text-muted">Có thể chọn nhiều danh hiệu</small>
+                                </div>
+
+                                <!-- Danh sách danh hiệu đã chọn -->
+                                <div class="form-group" v-if="selectedUnitAwards.length > 0">
+                                    <label>Danh sách danh hiệu đã chọn</label>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 10px">STT</th>
+                                                    <th>Danh hiệu</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(award, index) in selectedUnitAwards" :key="award.id">
+                                                    <td>{{ index + 1 }}</td>
+                                                    <td>{{ award.name }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unified action buttons -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <button type="button" @click="handleSubmitAll" class="btn btn-lg btn-primary">
+                                    <i class="fas fa-paper-plane mr-1"></i> Gửi đề xuất
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -170,9 +149,6 @@
 import { get } from 'jquery';
 import { ref, reactive, onMounted, computed } from 'vue';
 import Multiselect from 'vue-multiselect';
-
-// Tab active
-const activeTab = ref('individual');
 
 // Danh sách cá nhân (giả lập dữ liệu)
 const individuals = ref([]);
@@ -361,8 +337,14 @@ const getThongTinDeXuatDotXuat = async () => {
                     code: item.caNhan.maCaNhan,
                     name: item.caNhan.tenCaNhan
                 });
-
-
+            });
+            donVi.forEach(item => {
+                if (!selectedUnitAwards.value.some(award => award.id === item.danhHieu.maDanhHieu)) {
+                    selectedUnitAwards.value.push({
+                        id: item.danhHieu.maDanhHieu,
+                        name: item.danhHieu.tenDanhHieu
+                    });
+                }
             });
         }
     } else {
@@ -413,6 +395,77 @@ const getCaNhanTrongDonVi = async () => {
         console.error('Lỗi khi lấy danh sách cá nhân:', response);
     }
 }
+
+// Xử lý gửi cả hai form cùng lúc
+const handleSubmitAll = async () => {
+    const hasIndividualAwards = selectedAwardsObjects.value.length > 0;
+    const hasUnitAwards = selectedUnitAwards.value.length > 0;
+
+    // Kiểm tra xem có bất kỳ đề xuất nào không
+    if (!hasIndividualAwards && !hasUnitAwards) {
+        alert('Vui lòng chọn ít nhất một danh hiệu cho cá nhân hoặc đơn vị');
+        return;
+    }
+
+    let isValid = true;
+    const individualNominations = [];
+    let unitNomination = null;
+
+    // Xử lý và kiểm tra dữ liệu cho khen thưởng cá nhân
+    if (hasIndividualAwards) {
+        selectedAwardsObjects.value.forEach(award => {
+            if (!awardIndividuals[award.id] || awardIndividuals[award.id].length === 0) {
+                alert(`Vui lòng chọn ít nhất một cá nhân cho danh hiệu "${award.name}"`);
+                isValid = false;
+                return;
+            }
+
+            individualNominations.push({
+                award: award,
+                individuals: awardIndividuals[award.id],
+                reason: awardReasons[award.id]
+            });
+        });
+    }
+
+    // Xử lý dữ liệu cho khen thưởng đơn vị
+    if (hasUnitAwards) {
+        unitNomination = {
+            awards: selectedUnitAwards.value,
+            reason: unitReason.value
+        };
+    }
+
+    if (!isValid) return;
+
+    try {
+        // Gửi đề xuất khen thưởng cá nhân nếu có
+        if (hasIndividualAwards) {
+            const individualResponse = await axios.post('/api/dexuat/themdexuatdotxuat', {
+                caNhan: individualNominations.map(nomination => ({
+                    danhHieu: nomination.award.id,
+                    caNhan: nomination.individuals.map(individual => individual.id),
+                })),
+                donVi: selectedUnitAwards.value,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                }
+            });
+
+            if (individualResponse.status !== 200) {
+                throw new Error('Lỗi khi gửi đề xuất khen thưởng cá nhân');
+            }
+        }
+
+        // Thông báo thành công nếu mọi thứ đều ổn
+        toastSuccess('Đã gửi đề xuất khen thưởng thành công!');
+
+    } catch (error) {
+        console.error(error);
+        toastError('Có lỗi xảy ra khi gửi đề xuất khen thưởng!');
+    }
+};
 
 // Khởi tạo sau khi component được mount
 onMounted(() => {

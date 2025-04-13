@@ -51,6 +51,44 @@ class DeXuatController extends Controller
         ], 200);
     }
 
+    public function getListDeXuatTheoDotDotXuat()
+    {
+        $user = auth()->user();
+
+        $dotDotXuat = DotXuatModel::where('bTrangThai', 1)->first();
+        if (!$dotDotXuat) {
+            return response()->json([
+                'message' => 'Không có đợt thi đua khen thưởng nào đang hoạt động'
+            ], 404);
+        }
+
+        $hoiDong = DeXuatModel::whereHas('danhHieu', function ($query) {
+            $query->where('FK_MaHinhThuc', 2); // HoiDong có FK_MaDot
+        })
+            ->with(['ketQua'])
+            ->where('FK_User', $user->PK_MaTaiKhoan)
+            ->get()
+            ->map(function ($deXuat) {
+                return [
+                    'PK_MaDeXuat' => $deXuat->PK_MaDeXuat,
+                    'NgayTao' => formatDate($deXuat->dNgayTao),
+                    'tenDanhHieu' => $deXuat->danhHieu->sTenDanhHieu,
+                    'trangThai' => $deXuat->ketQua->bDuyet ?? null,
+                ];
+            });
+
+
+        if ($hoiDong->isEmpty()) {
+            return response()->json([
+                'message' => 'Không có đề xuất nào trong đợt thi đua khen thưởng này'
+            ], 404);
+        }
+        return response()->json([
+            'message' => 'Lấy danh sách đề xuất thành công',
+            'data' => $hoiDong
+        ], 200);
+    }
+
     public function getAllDeXuatTheoDot()
     {
         $dotActive = DotTDKTModel::where('bTrangThai', 1)->first();
@@ -286,6 +324,135 @@ class DeXuatController extends Controller
         ], 200);
     }
 
+    public function getListDeXuatXetDuyetDotXuat()
+    {
+        $user = auth()->user();
+
+        $dotDotXuat = DotXuatModel::where('bTrangThai', 1)->first();
+        if (!$dotDotXuat) {
+            return response()->json([
+                'message' => 'Không có đợt thi đua khen thưởng nào đang hoạt động'
+            ], 404);
+        }
+
+        $deXuat = DeXuatModel::whereHas('danhHieu', function ($query) {
+            $query->where('FK_MaHinhThuc', 2); // HoiDong có FK_MaDot
+        })
+            ->with([
+                'danhHieu',
+                'taiKhoan',
+                'taiKhoan.donVi',
+                'taiKhoan.caNhan',
+                'taiKhoan.donVi.caNhan',
+                'ketQua'
+            ])
+
+            ->get();
+
+        $deXuatDonVi = [];
+        $deXuatCaNhan = [];
+
+        if (!$deXuat->isEmpty()) {
+
+            foreach ($deXuat as $dx) {
+                $tk = $dx->taiKhoan;
+                if (!$tk) continue;
+
+                $quyen = $tk->FK_MaQuyen;
+
+                // Đề xuất từ đơn vị (quyền 4)
+                if ($quyen == 4 && $tk->donVi) {
+                    $deXuatDonVi[] = [
+                        'ma_de_xuat' => $dx->PK_MaDeXuat,
+                        'danh_hieu' => $dx->danhHieu ? $dx->danhHieu->sTenDanhHieu : null,
+                        'don_vi' => [
+                            'ma_don_vi' => $tk->donVi->PK_MaDonVi,
+                            'ten_don_vi' => $tk->donVi->sTenDonVi
+                        ],
+                        'ngay_tao' => $dx->dNgayTao,
+                        'trang_thai' => $dx->ketQua->bDuyet ?? null,
+                        'so_nguoi_bau' => $dx->ketQua->iSoNguoiBau ?? null,
+                        // Thêm các thông tin khác nếu cần
+                    ];
+                }
+
+                // Đề xuất từ cá nhân (quyền 5)
+                if ($quyen == 5 && $tk->caNhan) {
+                    $deXuatCaNhan[] = [
+                        'ma_de_xuat' => $dx->PK_MaDeXuat,
+                        'danh_hieu' => $dx->danhHieu ? $dx->danhHieu->sTenDanhHieu : null,
+                        'ca_nhan' => [
+                            'ma_ca_nhan' => $tk->caNhan->PK_MaCaNhan,
+                            'ten_ca_nhan' => $tk->caNhan->sTenCaNhan,
+                            'chuc_vu' => $tk->caNhan->sTenChucVu,
+                            'don_vi' => $tk->caNhan->donVi->sTenDonVi
+                        ],
+                        'ngay_tao' => $dx->dNgayTao,
+                        'trang_thai' => $dx->ketQua->bDuyet ?? null,
+                        'so_nguoi_bau' => $dx->ketQua->iSoNguoiBau ?? null,
+                        // Thêm các thông tin khác nếu cần
+                    ];
+                }
+            }
+
+            // ...existing code...
+
+            // Sắp xếp mảng đề xuất đơn vị theo tên đơn vị tăng dần
+            usort($deXuatDonVi, function ($a, $b) {
+                return strcmp($a['don_vi']['ten_don_vi'], $b['don_vi']['ten_don_vi']);
+            });
+
+            usort($deXuatCaNhan, function ($a, $b) {
+                // So sánh tên đơn vị giảm dần (B->A)
+                $donViCompare = strcmp($a['ca_nhan']['don_vi'], $b['ca_nhan']['don_vi']);
+
+                // Nếu đơn vị khác nhau, trả về kết quả
+                if ($donViCompare !== 0) {
+                    return $donViCompare;
+                }
+
+                // Nếu cùng đơn vị, sắp xếp theo tên cá nhân
+                $nameParts_a = explode(' ', trim($a['ca_nhan']['ten_ca_nhan']));
+                $nameParts_b = explode(' ', trim($b['ca_nhan']['ten_ca_nhan']));
+
+                // Lấy phần tử cuối cùng (tên)
+                $lastName_a = end($nameParts_a);
+                $lastName_b = end($nameParts_b);
+
+                // So sánh tên
+                $result = strcmp($lastName_a, $lastName_b);
+
+                // Nếu tên giống nhau, so sánh toàn bộ họ tên
+                if ($result === 0) {
+                    return strcmp($a['ca_nhan']['ten_ca_nhan'], $b['ca_nhan']['ten_ca_nhan']);
+                }
+
+                return $result;
+            });
+        }
+
+        $hoiDong = HoiDongModel::where('FK_MaDotXuat', $dotDotXuat->PK_MaDotXuat)
+            ->where('FK_MaTaiKhoan', $user->PK_MaTaiKhoan)
+            ->first();
+
+
+
+        if ($deXuat->isEmpty()) {
+            return response()->json([
+                'message' => 'Không có đề xuất nào trong đợt thi đua khen thưởng này'
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Lấy danh sách đề xuất thành công',
+            'data' => [
+                'de_xuat_don_vi' => $deXuatDonVi,
+                'de_xuat_ca_nhan' => $deXuatCaNhan,
+                'hoi_dong' => $hoiDong,
+            ]
+        ], 200);
+    }
+
 
     public function xetDuyetDeXuat(Request $request)
     {
@@ -346,19 +513,20 @@ class DeXuatController extends Controller
     public function themDeXuatDotDotXuat(Request $request)
     {
         Log::info($request->all());
-        $validator = Validator::make($request->all(), [
-            'deXuat.*.danhHieu' => 'required',
-            'deXuat.*.caNhan'   => 'required',
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'caNhan.*.danhHieu' => 'required',
+        //     'caNhan.*.caNhan'   => 'required',
+        // ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => $validator->errors()
-            ], 422);
-        }
+        // if ($validator->fails()) {
+        //     return response()->json([
+        //         'error' => $validator->errors()
+        //     ], 422);
+        // }
 
-        
-        $deXuat = $request->deXuat;
+
+        $caNhan = $request->caNhan;
+        $donVi = $request->donVi;
         $user = auth()->user();
         $dotXuat = DotXuatModel::where('bTrangThai', 1)->first();
 
@@ -367,9 +535,9 @@ class DeXuatController extends Controller
             ->delete();
 
 
-        foreach ($deXuat as $dx) {
+        foreach ($caNhan as $dx) {
             foreach ($dx['caNhan'] as $item) {
-                $deXuatModel = DeXuatModel::create([
+                DeXuatModel::create([
                     'FK_User' => $item,
                     'FK_MaDanhHieu' => $dx['danhHieu'],
                     'dNgayTao' => getDateNow(),
@@ -378,6 +546,15 @@ class DeXuatController extends Controller
                 ]);
             }
             Log::info($dx);
+        }
+        foreach ($donVi as $dx) {
+            DeXuatModel::create([
+                'FK_User' => $user->PK_MaTaiKhoan,
+                'FK_MaDanhHieu' => $dx['id'],
+                'dNgayTao' => getDateNow(),
+                'FK_MaDotXuat' => $dotXuat->PK_MaDotXuat,
+                'FK_NguoiTao' => $user->PK_MaTaiKhoan,
+            ]);
         }
 
 
@@ -429,8 +606,10 @@ class DeXuatController extends Controller
                 ];
             } else {
                 $donVi[] = [
-                    'maDeXuat' => $dx->PK_MaDeXuat,
-                    'danhHieu' => $dx->danhHieu ? $dx->danhHieu->sTenDanhHieu : null,
+                    'danhHieu' => [
+                        'maDanhHieu' => $dx->FK_MaDanhHieu,
+                        'tenDanhHieu' => $dx->danhHieu ? $dx->danhHieu->sTenDanhHieu : null,
+                    ],
                 ];
             }
         }

@@ -59,6 +59,7 @@ Route::middleware('auth.api')->group(function () {
         Route::get('/downloadZip/{id}', [DotTDKTController::class, 'downloadZipVanBan']);
 
         //ĐỢt đột xuất
+        Route::get('/getdotdotxuatactive', [DotTDKTController::class, 'layThongTinDotDotXuatActive']);
         Route::get('/listdotdotxuat/{id}', [DotTDKTController::class, 'layDanhSachDotDotXuat']);
         Route::post('/adddotdotxuat', [DotTDKTController::class, 'themDotDotXuat']);
         Route::put('/updatedotdotxuat/{id}', [DotTDKTController::class, 'suaDotDotXuat']);
@@ -109,6 +110,8 @@ Route::middleware('auth.api')->group(function () {
         Route::get('/getlisttheodot', [DeXuatController::class, 'getListDeXuatTheoDot']);
         Route::get('/getalldexuat', [DeXuatController::class, 'getAllDeXuatTheoDot']);
         Route::get('/getlistdexuatxetduyet', [DeXuatController::class, 'getListDeXuatXetDuyet']);
+        Route::get('/getlistdexuatxetduyetdotxuat', [DeXuatController::class, 'getListDeXuatXetDuyetDotXuat']);
+        Route::get('/getlisttheodotdotxuat', [DeXuatController::class, 'getListDeXuatTheoDotDotXuat']);
         Route::post('/xetduyetdexuat',[DeXuatController::class, 'xetDuyetDeXuat']);
         Route::post('/themdexuatdotxuat', [DeXuatController::class, 'themDeXuatDotDotXuat']);
         Route::get('/thongtindexuatdotxuat', [DeXuatController::class, 'layThongTinDeXuatDotXuat']);

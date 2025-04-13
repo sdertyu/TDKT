@@ -23,7 +23,8 @@ import VanBanDinhKem from "../views/DonVi/VanBan.vue";
 
 //hội đồng
 import ThongTinMinhChung from "../views/HoiDong/ThongTinMinhChung.vue";
-import HoiDongTDKT from "../views/HoiDong/HoiDongTDKT.vue";
+import HoiDongTheoDot from "../views/HoiDong/HoiDongTheoDot.vue";
+import HoiDongDotXuat from "../views/HoiDong/HoiDongDotXuat.vue";
 
 
 //all
@@ -146,8 +147,13 @@ const router = createRouter({
                     meta: { roles: [3, 4, 5] , title: 'Thêm minh chứng'},
                 },
                 {
-                    path: "hoidongtdkt",
-                    component: HoiDongTDKT,
+                    path: "hoidongtdkttheodot",
+                    component: HoiDongTheoDot,
+                    meta: { roles: [3] , title: 'Hội đồng thi đua khen thưởng'},
+                },
+                {
+                    path: "hoidongtdktdotxuat",
+                    component: HoiDongDotXuat,
                     meta: { roles: [3] , title: 'Hội đồng thi đua khen thưởng'},
                 }
             ],
