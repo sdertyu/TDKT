@@ -400,7 +400,7 @@ const saveDeXuat = async () => {
             formData.append('deXuat[]', JSON.stringify(item));
         });
 
-        let maHD = localStorage.getItem('user_name') + '-' + madot.value
+        let maHD = localStorage.getItem('user_name') + '-' + maDotDotXuat.value
         formData.append('maHoiDong', maHD); // Include maHoiDong if exists
         for (let [key, value] of formData.entries()) {
             console.log(`${key}:`, value);

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\BaoCaoThongKeController;
 use App\Http\Controllers\DanhHieuController;
 use App\Http\Controllers\DeXuatController;
 use App\Http\Controllers\DonViController;
@@ -108,7 +109,8 @@ Route::middleware('auth.api')->group(function () {
 
     Route::prefix('dexuat')->group(function () {
         Route::get('/getlisttheodot', [DeXuatController::class, 'getListDeXuatTheoDot']);
-        Route::get('/getalldexuat', [DeXuatController::class, 'getAllDeXuatTheoDot']);
+        Route::get('/getalldexuattheodot', [DeXuatController::class, 'getAllDeXuatTheoDot']);
+        Route::get('/getalldexuatdotxuat', [DeXuatController::class, 'getAllDeXuatTheoDotDotXuat']);
         Route::get('/getlistdexuatxetduyet', [DeXuatController::class, 'getListDeXuatXetDuyet']);
         Route::get('/getlistdexuatxetduyetdotxuat', [DeXuatController::class, 'getListDeXuatXetDuyetDotXuat']);
         Route::get('/getlisttheodotdotxuat', [DeXuatController::class, 'getListDeXuatTheoDotDotXuat']);
@@ -124,5 +126,9 @@ Route::middleware('auth.api')->group(function () {
         Route::get('/download/{id}', [MinhChungController::class, 'downloadMinhChung']);
         Route::post('/delete/{id}', [MinhChungController::class, 'deleteMinhChung']);
         Route::get('/preview/{id}', [MinhChungController::class, 'viewMinhChung']);
+    });
+
+    Route::prefix('baocaothongke')->group(function () {
+        Route::get('thanhtichcuatoi', [BaoCaoThongKeController::class, 'thongKeThanhTichCuaToi']);
     });
 });

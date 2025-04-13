@@ -22,7 +22,8 @@ import DeXuatDotXuat from "../views/DonVi/DeXuatDotXuat.vue";
 import VanBanDinhKem from "../views/DonVi/VanBan.vue";
 
 //hội đồng
-import ThongTinMinhChung from "../views/HoiDong/ThongTinMinhChung.vue";
+import MinhChungTheoDot from "../views/HoiDong/MinhChungTheoDot.vue";
+import MinhChungDotXuat from "../views/HoiDong/MinhChungDotXuat.vue";
 import HoiDongTheoDot from "../views/HoiDong/HoiDongTheoDot.vue";
 import HoiDongDotXuat from "../views/HoiDong/HoiDongDotXuat.vue";
 
@@ -30,6 +31,7 @@ import HoiDongDotXuat from "../views/HoiDong/HoiDongDotXuat.vue";
 //all
 import ThongBaoView from "../views/ThongBaoView.vue";
 import ThemMinhChung from "../views/MinhChungView.vue";
+import ThanhTichCuaToi from "../views/ThanhTichCuaToi.vue";
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -131,9 +133,14 @@ const router = createRouter({
 
                 //Hội đồng
                 {
-                    path: 'thongtinminhchung',
-                    component: ThongTinMinhChung,
-                    meta: { roles: [2, 3] , title: 'Thông tin minh chứng'},
+                    path: 'minhchungtheodot',
+                    component: MinhChungTheoDot,
+                    meta: { roles: [2, 3] , title: 'Minh chứng theo đợt'},
+                },
+                {
+                    path: 'minhchungdotxuat',
+                    component: MinhChungDotXuat,
+                    meta: { roles: [2, 3] , title: 'Minh chứng đột xuất'},
                 },
                 //chung
                 {
@@ -155,6 +162,11 @@ const router = createRouter({
                     path: "hoidongtdktdotxuat",
                     component: HoiDongDotXuat,
                     meta: { roles: [3] , title: 'Hội đồng thi đua khen thưởng'},
+                },
+                {
+                    path: "thanhtichcuatoi",
+                    component: ThanhTichCuaToi,
+                    meta: { roles: [4, 5] , title: 'Thành tích của tôi'},
                 }
             ],
         },

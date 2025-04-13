@@ -97,7 +97,7 @@ const listDeXuat = ref([]);
 
 const getAllDeXuat = () => {
     axios
-        .get("/api/dexuat/getalldexuat", {
+        .get("/api/dexuat/getalldexuattheodot", {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("api_token")}`,
             },

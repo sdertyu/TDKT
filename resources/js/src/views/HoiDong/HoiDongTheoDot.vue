@@ -334,14 +334,12 @@ const saveHoiDong = async () => {
         // Create FormData for file upload
         const formData = new FormData();
         for (const key in hoiDong.value) {
-            // console.log(hoiDong.value[key]);
-            if (key === 'fileBienBan' && hoiDong.value[key] != null) {
-                formData.append('fileBienBan', hoiDong.value[key] == null ? '' : hoiDong.value[key]);
-            }
-            else if (key === 'fileKiemPhieu' && hoiDong.value[key] != null) {
-                formData.append('fileKiemPhieu', hoiDong.value[key] == null ? '' : hoiDong.value[key]);
-            } else {
-                formData.append(key, hoiDong.value[key]);
+            const value = hoiDong.value[key];
+
+            if ((key === 'fileBienBan' || key === 'fileKiemPhieu') && value) {
+                formData.append(key, value); // Chỉ append nếu có file
+            } else if (key !== 'fileBienBan' && key !== 'fileKiemPhieu') {
+                formData.append(key, value);
             }
         }
 

@@ -145,7 +145,6 @@ class HoiDongController extends Controller
                         $dexuat->FK_User = $value['taiKhoan'];
                         $dexuat->FK_MaHoiDong = $request->mahoidong;
                         $dexuat->iSoNguoiBau = $value['soPhieu'];
-                        $dexuat->sLink = '';
                         $dexuat->dNgayTao = now();
                         $dexuat->FK_MaDanhHieu = $key;
                         $dexuat->save();
@@ -158,7 +157,6 @@ class HoiDongController extends Controller
                     $dexuat->FK_User = $currentUser->PK_MaTaiKhoan;
                     $dexuat->FK_MaHoiDong = $request->mahoidong;
                     $dexuat->iSoNguoiBau = $dv['soPhieu'];
-                    $dexuat->sLink = '';
                     $dexuat->dNgayTao = now();
                     $dexuat->FK_MaDanhHieu = $dv['id'];
                     $dexuat->save();
@@ -177,9 +175,39 @@ class HoiDongController extends Controller
                 'sSoHD' => $request->sohd,
                 'sGhiChu' => $request->ghichu
             ]);
+
+            DeXuatModel::where('FK_MaHoiDong', $existingHoiDong->PK_MaHoiDong)->delete();
+            $caNhan = json_decode($request->dexuatcanhan, true);
+            foreach ($caNhan as $key => $cn) {
+                foreach ($cn as $key2 => $value) {
+                    // Log::info($value);
+                    $dexuat = new DeXuatModel();
+                    $dexuat->FK_User = $value['taiKhoan'];
+                    $dexuat->FK_MaHoiDong = $request->mahoidong;
+                    $dexuat->iSoNguoiBau = $value['soPhieu'];
+                    $dexuat->dNgayTao = now();
+                    $dexuat->FK_MaDanhHieu = $key;
+                    $dexuat->save();
+                }
+            }
+
+            $donVi = json_decode($request->dexuatdonvi, true);
+            foreach ($donVi as $key => $dv) {
+                $dexuat = new DeXuatModel();
+                $dexuat->FK_User = $currentUser->PK_MaTaiKhoan;
+                $dexuat->FK_MaHoiDong = $request->mahoidong;
+                $dexuat->iSoNguoiBau = $dv['soPhieu'];
+                $dexuat->dNgayTao = now();
+                $dexuat->FK_MaDanhHieu = $dv['id'];
+                $dexuat->save();
+            }
+
+
             if ($request->hasFile('bienban')) {
-                if (Storage::exists($existingHoiDong->sDuongDan)) {
-                    Storage::delete($existingHoiDong->sDuongDan);
+                if($existingHoiDong->sDuongDan != null) {
+                    if (Storage::exists($existingHoiDong->sDuongDan)) {
+                        Storage::delete($existingHoiDong->sDuongDan);
+                    }
                 }
                 $file = $request->file('bienban');
                 $filePath = $file->store('vanBanHoiDong/' . $request->madot);

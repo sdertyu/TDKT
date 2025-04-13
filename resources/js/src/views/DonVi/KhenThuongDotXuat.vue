@@ -1,18 +1,13 @@
 <template>
-    <div class="content-wrapper">
+    <div class="card m-4">
         <!-- Content Header -->
-        <section class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1>Khen thưởng đột xuất</h1>
-                    </div>
-                </div>
-            </div>
-        </section>
+
+        <div class="card-header">
+            <h1 class="card-title">Khen thưởng đột xuất</h1>
+        </div>
 
         <!-- Main content -->
-        <section class="content">
+        <section class="content mt-3">
             <div class="container-fluid">
                 <div class="row">
                     <!-- Khen thưởng cá nhân -->

@@ -13,7 +13,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <IconField>
                             <InputIcon>
-                                <i class="pi pi-search" />
+                                <i class="bi bi-search" />
                             </InputIcon>
                             <InputText v-model="filters['global'].value" placeholder="Tìm kiếm" />
                         </IconField>

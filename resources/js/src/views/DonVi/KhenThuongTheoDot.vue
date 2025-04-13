@@ -359,22 +359,22 @@ const submitForm = async () => {
             });
 
         if (response.status === 200) {
-            Swal.fire({
-                icon: 'success',
-                text: 'Lưu biên bản thành công!',
-                toast: true,
-                timer: 3000,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                position: 'top-end'
-            });
-            // resetForm();
-        }
-        else {
-            console.error('Lỗi khi lưu biên bản:', response);
+            toastSuccess('Lưu biên bản thành công');
         }
     } catch (error) {
-
+        if(error.response) {
+            if (error.response.status === 422) {
+                const errors = error.response.data.error;
+                let errorMessage = Object.values(errors).flat().join('<br>')
+                console.log(errors);
+                toastError(errorMessage)
+            } else {
+                toastError(error.response.data.message)
+            }
+        }
+        else {
+            toastError('Có lỗi xảy ra khi gửi form');
+        }
     }
 };
 

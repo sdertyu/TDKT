@@ -36,4 +36,9 @@ class DotXuatModel extends Model
     //     'dHanNopMinhChung' => 'date:d/m/Y',
     //     'dHanBienBanHoiDong' => 'date:d/m/Y',
     // ];
+
+    public function dot()
+    {
+        return $this->belongsTo(DotTDKTModel::class, 'FK_MaDot', 'PK_MaDot');
+    }
 }

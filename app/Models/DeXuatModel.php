@@ -22,7 +22,7 @@ class DeXuatModel extends Model
         'dNgayTao' => 'datetime:H:i:s d/m/y',
     ];
 
-    protected $fillable = ['FK_User', 'FK_MaHoiDong', 'iSoNguoiBau', 'sLink', 'dNgayTao', 'FK_MaHoiDong', 'FK_MaDanhHieu', 'FK_MaDotXuat', 'FK_NguoiTao'];
+    protected $fillable = ['FK_User', 'FK_MaHoiDong', 'iSoNguoiBau', 'dNgayTao', 'FK_MaHoiDong', 'FK_MaDanhHieu', 'FK_MaDotXuat', 'FK_NguoiTao'];
 
     public function hoiDong() {
         return $this->belongsTo(HoiDongModel::class, 'FK_MaHoiDong', 'PK_MaHoiDong');
@@ -38,5 +38,9 @@ class DeXuatModel extends Model
     
     public function ketQua() {
         return $this->hasOne(KetQuaModel::class, 'FK_MaDeXuat', 'PK_MaDeXuat');
+    }
+
+    public function dotXuat() {
+        return $this->belongsTo(DotXuatModel::class, 'FK_MaDotXuat', 'PK_MaDotXuat');
     }
 }
