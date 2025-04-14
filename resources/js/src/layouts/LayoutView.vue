@@ -1,11 +1,11 @@
 <template>
-  <div class="app-wrapper">
-    <HeaderApp />
-    <SidebarApp />
-    <ContentApp />
-    <FooterApp />
-    <LoadingView v-if="loadingStore.loading" />
-  </div>
+    <div class="app-wrapper">
+        <HeaderApp />
+        <SidebarApp />
+        <ContentApp />
+        <FooterApp />
+        <LoadingView v-if="loadingStore.loading" />
+    </div>
 </template>
 
 <script setup>
@@ -19,8 +19,26 @@ import { onMounted } from 'vue'
 
 const loadingStore = useGlobalStore()
 
+const getDotActive = async () => {
+    const response = await axios.get(`api/dotthiduakhenthuong/dot-active`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    });
+
+    if (response.status === 200) {
+        if (response.data.data) {
+            useGlobalStore().setDot(response.data.data.PK_MaDot);
+        }
+    }
+    else {
+        console.error('Lỗi khi lấy danh sách cá nhân:', response);
+    }
+}
+
 onMounted(async () => {
-  const adminlte = await import('admin-lte/dist/js/adminlte.min.js');
+    const adminlte = await import('admin-lte/dist/js/adminlte.min.js');
+    getDotActive();
 });
 
 </script>

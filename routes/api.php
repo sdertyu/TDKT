@@ -130,5 +130,9 @@ Route::middleware('auth.api')->group(function () {
 
     Route::prefix('baocaothongke')->group(function () {
         Route::get('thanhtichcuatoi', [BaoCaoThongKeController::class, 'thongKeThanhTichCuaToi']);
+        Route::get('danhsachnamhoc', [BaoCaoThongKeController::class, 'danhSachNamHoc']);
+        Route::get('danhsachdanhhieu', [BaoCaoThongKeController::class, 'danhSachDanhHieu']);
+        Route::get('danhsachcapdanhhieu', [BaoCaoThongKeController::class, 'danhSachCapDanhHieu']);
+        Route::get('datathongkedanhhieu', [BaoCaoThongKeController::class, 'dataThongKeDanhHieu']);
     });
 });
