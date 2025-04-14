@@ -1,0 +1,220 @@
+-- INSERT INTO `tbltaikhoan` (`PK_MaTaiKhoan`, `sUsername`, `sPassword`, `api_token`, `FK_MaQuyen`, `bTrangThai`, `sEmail`) VALUES
+-- ('dv_tienganh', 'dv_tienganh', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 4, 1, 'tienganh@hou.edu.vn'),
+-- ('dv_tiengtrung', 'dv_tiengtrung', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 4, 1, 'tiengtrung@hou.edu.vn'),
+-- ('dv_diendientu', 'dv_diendientu', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 4, 1, 'diendientu@hou.edu.vn'),
+-- ('dv_congnghesinhhoc', 'dv_congnghesinhhoc', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 4, 1, 'congnghesinhhoc@hou.edu.vn'),
+-- ('dv_luat', 'dv_luat', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 4, 1, 'luat@hou.edu.vn');
+-- 
+-- -- Insert new faculties into tbldonvi
+-- INSERT INTO `tbldonvi` (`PK_MaDonVi`, `sTenDonVi`, `FK_MaTaiKhoan`) VALUES
+-- ('tienganh', 'Khoa Tiếng Anh', 'dv_tienganh'),
+-- ('tiengtrung', 'Khoa Tiếng Trung Quốc', 'dv_tiengtrung'),
+-- ('diendientu', 'Khoa Điện Điện Tử', 'dv_diendientu'),
+-- ('congnghesinhhoc', 'Khoa Công Nghệ Sinh Học', 'dv_congnghesinhhoc'),
+-- ('luat', 'Khoa Luật', 'dv_luat');
+-- 
+
+-- Insert personal accounts for Khoa Tiếng Anh
+-- INSERT INTO `tbltaikhoan` (`PK_MaTaiKhoan`, `sUsername`, `sPassword`, `api_token`, `FK_MaQuyen`, `bTrangThai`, `sEmail`) VALUES
+-- ('ta_cn01', 'ta_cn01', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'ta_cn01@gmail.com'),
+-- ('ta_cn02', 'ta_cn02', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'ta_cn02@gmail.com'),
+-- ('ta_cn03', 'ta_cn03', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'ta_cn03@gmail.com'),
+-- ('ta_cn04', 'ta_cn04', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'ta_cn04@gmail.com'),
+-- ('ta_cn05', 'ta_cn05', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'ta_cn05@gmail.com');
+-- 
+-- -- Insert personal records for Khoa Tiếng Anh
+-- INSERT INTO `tblcanhan` (`PK_MaCaNhan`, `FK_MaDonVi`, `sTenCaNhan`, `sTenChucVu`, `bGioiTinh`, `FK_MaTaiKhoan`) VALUES
+-- ('TA0001', 'tienganh', 'Nguyễn Văn Anh', 'Giảng viên', 1, 'ta_cn01'),
+-- ('TA0002', 'tienganh', 'Trần Thị Bích', 'Giảng viên', 0, 'ta_cn02'),
+-- ('TA0003', 'tienganh', 'Lê Minh Châu', 'Trợ giảng', 1, 'ta_cn03'),
+-- ('TA0004', 'tienganh', 'Phạm Quốc Đạt', 'Giảng viên', 1, 'ta_cn04'),
+-- ('TA0005', 'tienganh', 'Hoàng Thị E', 'Giảng viên', 0, 'ta_cn05');
+-- 
+-- -- Insert personal accounts for Khoa Tiếng Trung Quốc
+-- INSERT INTO `tbltaikhoan` (`PK_MaTaiKhoan`, `sUsername`, `sPassword`, `api_token`, `FK_MaQuyen`, `bTrangThai`, `sEmail`) VALUES
+-- ('tq_cn01', 'tq_cn01', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'tq_cn01@gmail.com'),
+-- ('tq_cn02', 'tq_cn02', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'tq_cn02@gmail.com'),
+-- ('tq_cn03', 'tq_cn03', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'tq_cn03@gmail.com'),
+-- ('tq_cn04', 'tq_cn04', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'tq_cn04@gmail.com'),
+-- ('tq_cn05', 'tq_cn05', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'tq_cn05@gmail.com');
+-- 
+-- -- Insert personal records for Khoa Tiếng Trung Quốc
+-- INSERT INTO `tblcanhan` (`PK_MaCaNhan`, `FK_MaDonVi`, `sTenCaNhan`, `sTenChucVu`, `bGioiTinh`, `FK_MaTaiKhoan`) VALUES
+-- ('TQ0001', 'tiengtrung', 'Nguyễn Thị Hoa', 'Giảng viên', 0, 'tq_cn01'),
+-- ('TQ0002', 'tiengtrung', 'Trần Văn Hùng', 'Giảng viên', 1, 'tq_cn02'),
+-- ('TQ0003', 'tiengtrung', 'Lê Thị Kim', 'Trợ giảng', 0, 'tq_cn03'),
+-- ('TQ0004', 'tiengtrung', 'Phạm Văn Long', 'Giảng viên', 1, 'tq_cn04'),
+-- ('TQ0005', 'tiengtrung', 'Hoàng Minh Nam', 'Giảng viên', 1, 'tq_cn05');
+-- 
+-- -- Insert personal accounts for Khoa Điện Điện Tử
+-- INSERT INTO `tbltaikhoan` (`PK_MaTaiKhoan`, `sUsername`, `sPassword`, `api_token`, `FK_MaQuyen`, `bTrangThai`, `sEmail`) VALUES
+-- ('ddt_cn01', 'ddt_cn01', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'ddt_cn01@gmail.com'),
+-- ('ddt_cn02', 'ddt_cn02', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'ddt_cn02@gmail.com'),
+-- ('ddt_cn03', 'ddt_cn03', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'ddt_cn03@gmail.com'),
+-- ('ddt_cn04', 'ddt_cn04', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'ddt_cn04@gmail.com'),
+-- ('ddt_cn05', 'ddt_cn05', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'ddt_cn05@gmail.com');
+-- 
+-- -- Insert personal records for Khoa Điện Điện Tử
+-- INSERT INTO `tblcanhan` (`PK_MaCaNhan`, `FK_MaDonVi`, `sTenCaNhan`, `sTenChucVu`, `bGioiTinh`, `FK_MaTaiKhoan`) VALUES
+-- ('DDT0001', 'diendientu', 'Nguyễn Văn Phong', 'Giảng viên', 1, 'ddt_cn01'),
+-- ('DDT0002', 'diendientu', 'Trần Thị Quyên', 'Giảng viên', 0, 'ddt_cn02'),
+-- ('DDT0003', 'diendientu', 'Lê Minh Sơn', 'Trợ giảng', 1, 'ddt_cn03'),
+-- ('DDT0004', 'diendientu', 'Phạm Thị Thảo', 'Giảng viên', 0, 'ddt_cn04'),
+-- ('DDT0005', 'diendientu', 'Hoàng Văn Tú', 'Giảng viên', 1, 'ddt_cn05');
+-- 
+-- -- Insert personal accounts for Khoa Công Nghệ Sinh Học
+-- INSERT INTO `tbltaikhoan` (`PK_MaTaiKhoan`, `sUsername`, `sPassword`, `api_token`, `FK_MaQuyen`, `bTrangThai`, `sEmail`) VALUES
+-- ('cnsh_cn01', 'cnsh_cn01', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'cnsh_cn01@gmail.com'),
+-- ('cnsh_cn02', 'cnsh_cn02', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'cnsh_cn02@gmail.com'),
+-- ('cnsh_cn03', 'cnsh_cn03', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'cnsh_cn03@gmail.com'),
+-- ('cnsh_cn04', 'cnsh_cn04', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'cnsh_cn04@gmail.com'),
+-- ('cnsh_cn05', 'cnsh_cn05', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'cnsh_cn05@gmail.com');
+-- 
+-- -- Insert personal records for Khoa Công Nghệ Sinh Học
+-- INSERT INTO `tblcanhan` (`PK_MaCaNhan`, `FK_MaDonVi`, `sTenCaNhan`, `sTenChucVu`, `bGioiTinh`, `FK_MaTaiKhoan`) VALUES
+-- ('CNSH0001', 'congnghesinhhoc', 'Nguyễn Thị Uyên', 'Giảng viên', 0, 'cnsh_cn01'),
+-- ('CNSH0002', 'congnghesinhhoc', 'Trần Văn Vũ', 'Giảng viên', 1, 'cnsh_cn02'),
+-- ('CNSH0003', 'congnghesinhhoc', 'Lê Thị Xuân', 'Trợ giảng', 0, 'cnsh_cn03'),
+-- ('CNSH0004', 'congnghesinhhoc', 'Phạm Minh Ý', 'Giảng viên', 1, 'cnsh_cn04'),
+-- ('CNSH0005', 'congnghesinhhoc', 'Hoàng Thị Z', 'Giảng viên', 0, 'cnsh_cn05');
+-- 
+-- -- Insert personal accounts for Khoa Luật
+-- INSERT INTO `tbltaikhoan` (`PK_MaTaiKhoan`, `sUsername`, `sPassword`, `api_token`, `FK_MaQuyen`, `bTrangThai`, `sEmail`) VALUES
+-- ('luat_cn01', 'luat_cn01', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'luat_cn01@gmail.com'),
+-- ('luat_cn02', 'luat_cn02', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'luat_cn02@gmail.com'),
+-- ('luat_cn03', 'luat_cn03', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'luat_cn03@gmail.com'),
+-- ('luat_cn04', 'luat_cn04', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'luat_cn04@gmail.com'),
+-- ('luat_cn05', 'luat_cn05', '$2y$12$5k4zqwNrpcRgapv7bGWVb.7S7w2nJECYbDrKrD.0dInUuJpBDMxl6', NULL, 5, 1, 'luat_cn05@gmail.com');
+-- 
+-- -- Insert personal records for Khoa Luật
+-- INSERT INTO `tblcanhan` (`PK_MaCaNhan`, `FK_MaDonVi`, `sTenCaNhan`, `sTenChucVu`, `bGioiTinh`, `FK_MaTaiKhoan`) VALUES
+-- ('LUAT0001', 'luat', 'Nguyễn Văn An', 'Giảng viên', 1, 'luat_cn01'),
+-- ('LUAT0002', 'luat', 'Trần Thị Bình', 'Giảng viên', 0, 'luat_cn02'),
+-- ('LUAT0003', 'luat', 'Lê Minh Chính', 'Trợ giảng', 1, 'luat_cn03'),
+-- ('LUAT0004', 'luat', 'Phạm Thị Dung', 'Giảng viên', 0, 'luat_cn04'),
+-- ('LUAT0005', 'luat', 'Hoàng Văn Em', 'Giảng viên', 1, 'luat_cn05');
+
+-- Insert council meeting for Khoa Tiếng Anh (2023-2024)
+-- INSERT INTO `tblhoidong` (`PK_MaHoiDong`, `FK_MaTaiKhoan`, `FK_MaDot`, `dNgayTao`, `FK_ChuTri`, `FK_ThuKy`, `dThoiGianHop`, `sDiaChi`, `iSoNguoiThamDu`, `iSoThanhVien`, `sDuongDanBienBan`, `sTenBienBan`, `sSoHD`, `sGhiChu`, `FK_MaLoaiHD`, `FK_MaHinhThuc`, `FK_MaDotXuat`, `FK_PhoChuTich`, `FK_PhoChuTichTT`, `sDuongDanKiemPhieu`, `sTenKiemPhieu`) VALUES
+-- ('tienganh-2023-2024', 'dv_tienganh', '2023-2024', '2024-04-10 10:00:00', 'ta_cn01', 'ta_cn02', '2024-04-15 14:00:00', 'Phòng họp A1', 10, 8, 'vanBanHoiDong/2023-2024/tienganh_bienban.docx', 'BienBan_TiengAnh_2023-2024.docx', 'TA2023-001', 'Bình xét thi đua năm học 2023-2024', '1', 1, NULL, NULL, NULL, NULL, NULL);
+-- 
+-- -- Insert council meeting for Khoa Tiếng Anh (2024-2025)
+-- INSERT INTO `tblhoidong` (`PK_MaHoiDong`, `FK_MaTaiKhoan`, `FK_MaDot`, `dNgayTao`, `FK_ChuTri`, `FK_ThuKy`, `dThoiGianHop`, `sDiaChi`, `iSoNguoiThamDu`, `iSoThanhVien`, `sDuongDanBienBan`, `sTenBienBan`, `sSoHD`, `sGhiChu`, `FK_MaLoaiHD`, `FK_MaHinhThuc`, `FK_MaDotXuat`, `FK_PhoChuTich`, `FK_PhoChuTichTT`, `sDuongDanKiemPhieu`, `sTenKiemPhieu`) VALUES
+-- ('tienganh-2024-2025', 'dv_tienganh', '2024-2025', '2025-04-10 10:00:00', 'ta_cn01', 'ta_cn02', '2025-04-15 14:00:00', 'Phòng họp A1', 10, 8, 'vanBanHoiDong/2024-2025/tienganh_bienban.docx', 'BienBan_TiengAnh_2024-2025.docx', 'TA2024-001', 'Bình xét thi đua năm học 2024-2025', '1', 1, NULL, NULL, NULL, NULL, NULL);
+-- 
+-- -- Insert council meeting for Khoa Tiếng Trung Quốc (2023-2024)
+-- INSERT INTO `tblhoidong` (`PK_MaHoiDong`, `FK_MaTaiKhoan`, `FK_MaDot`, `dNgayTao`, `FK_ChuTri`, `FK_ThuKy`, `dThoiGianHop`, `sDiaChi`, `iSoNguoiThamDu`, `iSoThanhVien`, `sDuongDanBienBan`, `sTenBienBan`, `sSoHD`, `sGhiChu`, `FK_MaLoaiHD`, `FK_MaHinhThuc`, `FK_MaDotXuat`, `FK_PhoChuTich`, `FK_PhoChuTichTT`, `sDuongDanKiemPhieu`, `sTenKiemPhieu`) VALUES
+-- ('tiengtrung-2023-2024', 'dv_tiengtrung', '2023-2024', '2024-04-12 09:00:00', 'tq_cn01', 'tq_cn02', '2024-04-17 15:00:00', 'Phòng họp B1', 10, 8, 'vanBanHoiDong/2023-2024/tiengtrung_bienban.docx', 'BienBan_TiengTrung_2023-2024.docx', 'TQ2023-001', 'Bình xét thi đua năm học 2023-2024', '1', 1, NULL, NULL, NULL, NULL, NULL);
+-- 
+-- -- Insert council meeting for Khoa Tiếng Trung Quốc (2024-2025)
+-- INSERT INTO `tblhoidong` (`PK_MaHoiDong`, `FK_MaTaiKhoan`, `FK_MaDot`, `dNgayTao`, `FK_ChuTri`, `FK_ThuKy`, `dThoiGianHop`, `sDiaChi`, `iSoNguoiThamDu`, `iSoThanhVien`, `sDuongDanBienBan`, `sTenBienBan`, `sSoHD`, `sGhiChu`, `FK_MaLoaiHD`, `FK_MaHinhThuc`, `FK_MaDotXuat`, `FK_PhoChuTich`, `FK_PhoChuTichTT`, `sDuongDanKiemPhieu`, `sTenKiemPhieu`) VALUES
+-- ('tiengtrung-2024-2025', 'dv_tiengtrung', '2024-2025', '2025-04-12 09:00:00', 'tq_cn01', 'tq_cn02', '2025-04-17 15:00:00', 'Phòng họp B1', 10, 8, 'vanBanHoiDong/2024-2025/tiengtrung_bienban.docx', 'BienBan_TiengTrung_2024-2025.docx', 'TQ2024-001', 'Bình xét thi đua năm học 2024-2025', '1', 1, NULL, NULL, NULL, NULL, NULL);
+-- 
+-- -- Insert council meeting for Khoa Điện Điện Tử (2023-2024)
+-- INSERT INTO `tblhoidong` (`PK_MaHoiDong`, `FK_MaTaiKhoan`, `FK_MaDot`, `dNgayTao`, `FK_ChuTri`, `FK_ThuKy`, `dThoiGianHop`, `sDiaChi`, `iSoNguoiThamDu`, `iSoThanhVien`, `sDuongDanBienBan`, `sTenBienBan`, `sSoHD`, `sGhiChu`, `FK_MaLoaiHD`, `FK_MaHinhThuc`, `FK_MaDotXuat`, `FK_PhoChuTich`, `FK_PhoChuTichTT`, `sDuongDanKiemPhieu`, `sTenKiemPhieu`) VALUES
+-- ('diendientu-2023-2024', 'dv_diendientu', '2023-2024', '2024-04-14 08:00:00', 'ddt_cn01', 'ddt_cn02', '2024-04-19 13:00:00', 'Phòng họp C1', 15, 12, 'vanBanHoiDong/2023-2024/diendientu_bienban.docx', 'BienBan_DienDienTu_2023-2024.docx', 'DDT2023-001', 'Bình xét thi đua năm học 2023-2024', '1', 1, NULL, NULL, NULL, NULL, NULL);
+-- 
+-- -- Insert council meeting for Khoa Điện Điện Tử (2024-2025)
+-- INSERT INTO `tblhoidong` (`PK_MaHoiDong`, `FK_MaTaiKhoan`, `FK_MaDot`, `dNgayTao`, `FK_ChuTri`, `FK_ThuKy`, `dThoiGianHop`, `sDiaChi`, `iSoNguoiThamDu`, `iSoThanhVien`, `sDuongDanBienBan`, `sTenBienBan`, `sSoHD`, `sGhiChu`, `FK_MaLoaiHD`, `FK_MaHinhThuc`, `FK_MaDotXuat`, `FK_PhoChuTich`, `FK_PhoChuTichTT`, `sDuongDanKiemPhieu`, `sTenKiemPhieu`) VALUES
+-- ('diendientu-2024-2025', 'dv_diendientu', '2024-2025', '2025-04-14 08:00:00', 'ddt_cn01', 'ddt_cn02', '2025-04-19 13:00:00', 'Phòng họp C1', 15, 12, 'vanBanHoiDong/2024-2025/diendientu_bienban.docx', 'BienBan_DienDienTu_2024-2025.docx', 'DDT2024-001', 'Bình xét thi đua năm học 2024-2025', '1', 1, NULL, NULL, NULL, NULL, NULL);
+-- 
+-- -- Insert council meeting for Khoa Công Nghệ Sinh Học (2023-2024)
+-- INSERT INTO `tblhoidong` (`PK_MaHoiDong`, `FK_MaTaiKhoan`, `FK_MaDot`, `dNgayTao`, `FK_ChuTri`, `FK_ThuKy`, `dThoiGianHop`, `sDiaChi`, `iSoNguoiThamDu`, `iSoThanhVien`, `sDuongDanBienBan`, `sTenBienBan`, `sSoHD`, `sGhiChu`, `FK_MaLoaiHD`, `FK_MaHinhThuc`, `FK_MaDotXuat`, `FK_PhoChuTich`, `FK_PhoChuTichTT`, `sDuongDanKiemPhieu`, `sTenKiemPhieu`) VALUES
+-- ('congnghesinhhoc-2023-2024', 'dv_congnghesinhhoc', '2023-2024', '2024-04-16 11:00:00', 'cnsh_cn01', 'cnsh_cn02', '2024-04-21 10:00:00', 'Phòng họp D1', 10, 8, 'vanBanHoiDong/2023-2024/congnghesinhhoc_bienban.docx', 'BienBan_CNSH_2023-2024.docx', 'CNSH2023-001', 'Bình xét thi đua năm học 2023-2024', '1', 1, NULL, NULL, NULL, NULL, NULL);
+-- 
+-- -- Insert council meeting for Khoa Công Nghệ Sinh Học (2024-2025)
+-- INSERT INTO `tblhoidong` (`PK_MaHoiDong`, `FK_MaTaiKhoan`, `FK_MaDot`, `dNgayTao`, `FK_ChuTri`, `FK_ThuKy`, `dThoiGianHop`, `sDiaChi`, `iSoNguoiThamDu`, `iSoThanhVien`, `sDuongDanBienBan`, `sTenBienBan`, `sSoHD`, `sGhiChu`, `FK_MaLoaiHD`, `FK_MaHinhThuc`, `FK_MaDotXuat`, `FK_PhoChuTich`, `FK_PhoChuTichTT`, `sDuongDanKiemPhieu`, `sTenKiemPhieu`) VALUES
+-- ('congnghesinhhoc-2024-2025', 'dv_congnghesinhhoc', '2024-2025', '2025-04-16 11:00:00', 'cnsh_cn01', 'cnsh_cn02', '2025-04-21 10:00:00', 'Phòng họp D1', 10, 8, 'vanBanHoiDong/2024-2025/congnghesinhhoc_bienban.docx', 'BienBan_CNSH_2024-2025.docx', 'CNSH2024-001', 'Bình xét thi đua năm học 2024-2025', '1', 1, NULL, NULL, NULL, NULL, NULL);
+-- 
+-- -- Insert council meeting for Khoa Luật (2023-2024)
+-- INSERT INTO `tblhoidong` (`PK_MaHoiDong`, `FK_MaTaiKhoan`, `FK_MaDot`, `dNgayTao`, `FK_ChuTri`, `FK_ThuKy`, `dThoiGianHop`, `sDiaChi`, `iSoNguoiThamDu`, `iSoThanhVien`, `sDuongDanBienBan`, `sTenBienBan`, `sSoHD`, `sGhiChu`, `FK_MaLoaiHD`, `FK_MaHinhThuc`, `FK_MaDotXuat`, `FK_PhoChuTich`, `FK_PhoChuTichTT`, `sDuongDanKiemPhieu`, `sTenKiemPhieu`) VALUES
+-- ('luat-2023-2024', 'dv_luat', '2023-2024', '2024-04-18 09:00:00', 'luat_cn01', 'luat_cn02', '2024-04-23 11:00:00', 'Phòng họp E1', 12, 10, 'vanBanHoiDong/2023-2024/luat_bienban.docx', 'BienBan_Luat_2023-2024.docx', 'LUAT2023-001', 'Bình xét thi đua năm học 2023-2024', '1', 1, NULL, NULL, NULL, NULL, NULL);
+-- 
+-- -- Insert council meeting for Khoa Luật (2024-2025)
+-- INSERT INTO `tblhoidong` (`PK_MaHoiDong`, `FK_MaTaiKhoan`, `FK_MaDot`, `dNgayTao`, `FK_ChuTri`, `FK_ThuKy`, `dThoiGianHop`, `sDiaChi`, `iSoNguoiThamDu`, `iSoThanhVien`, `sDuongDanBienBan`, `sTenBienBan`, `sSoHD`, `sGhiChu`, `FK_MaLoaiHD`, `FK_MaHinhThuc`, `FK_MaDotXuat`, `FK_PhoChuTich`, `FK_PhoChuTichTT`, `sDuongDanKiemPhieu`, `sTenKiemPhieu`) VALUES
+-- ('luat-2024-2025', 'dv_luat', '2024-2025', '2025-04-18 09:00:00', 'luat_cn01', 'luat_cn02', '2025-04-23 11:00:00', 'Phòng họp E1', 12, 10, 'vanBanHoiDong/2024-2025/luat_bienban.docx', 'BienBan_Luat_2024-2025.docx', 'LUAT2024-001', 'Bình xét thi đua năm học 2024-2025', '1', 1, NULL, NULL, NULL, NULL, NULL);
+
+-- Proposals for Khoa Tiếng Anh (5 individuals: ta_cn01 to ta_cn05)
+-- 2023-2024 Council Meeting (tienganh-2023-2024)
+INSERT INTO `tbldexuat` (`PK_MaDeXuat`, `FK_User`, `FK_MaHoiDong`, `FK_MaDanhHieu`, `iSoNguoiBau`, `dNgayTao`, `FK_MaDotXuat`, `FK_NguoiTao`) VALUES
+(100, 'ta_cn01', 'tienganh-2023-2024', 1, 10, '2024-04-10 10:00:00', NULL, NULL), -- Lao động tiên tiến
+(101, 'ta_cn02', 'tienganh-2023-2024', 2, 10, '2024-04-10 10:00:00', NULL, NULL), -- Chiến sĩ thi đua cơ sở
+(102, 'ta_cn03', 'tienganh-2023-2024', 3, 10, '2024-04-10 10:00:00', NULL, NULL), -- Giấy khen của hiệu trưởng
+(103, 'ta_cn04', 'tienganh-2023-2024', 1, 10, '2024-04-10 10:00:00', NULL, NULL), -- Lao động tiên tiến
+(104, 'ta_cn05', 'tienganh-2023-2024', 2, 10, '2024-04-10 10:00:00', NULL, NULL); -- Chiến sĩ thi đua cơ sở
+
+-- 2024-2025 Council Meeting (tienganh-2024-2025)
+INSERT INTO `tbldexuat` (`PK_MaDeXuat`, `FK_User`, `FK_MaHoiDong`, `FK_MaDanhHieu`, `iSoNguoiBau`, `dNgayTao`, `FK_MaDotXuat`, `FK_NguoiTao`) VALUES
+(105, 'ta_cn01', 'tienganh-2024-2025', 3, 10, '2025-04-10 10:00:00', NULL, NULL), -- Giấy khen của hiệu trưởng
+(106, 'ta_cn02', 'tienganh-2024-2025', 1, 10, '2025-04-10 10:00:00', NULL, NULL), -- Lao động tiên tiến
+(107, 'ta_cn03', 'tienganh-2024-2025', 2, 10, '2025-04-10 10:00:00', NULL, NULL), -- Chiến sĩ thi đua cơ sở
+(108, 'ta_cn04', 'tienganh-2024-2025', 3, 10, '2025-04-10 10:00:00', NULL, NULL), -- Giấy khen của hiệu trưởng
+(109, 'ta_cn05', 'tienganh-2024-2025', 1, 10, '2025-04-10 10:00:00', NULL, NULL); -- Lao động tiên tiến
+
+-- Proposals for Khoa Tiếng Trung Quốc (5 individuals: tq_cn01 to tq_cn05)
+-- 2023-2024 Council Meeting (tiengtrung-2023-2024)
+INSERT INTO `tbldexuat` (`PK_MaDeXuat`, `FK_User`, `FK_MaHoiDong`, `FK_MaDanhHieu`, `iSoNguoiBau`, `dNgayTao`, `FK_MaDotXuat`, `FK_NguoiTao`) VALUES
+(110, 'tq_cn01', 'tiengtrung-2023-2024', 2, 10, '2024-04-12 09:00:00', NULL, NULL), -- Chiến sĩ thi đua cơ sở
+(111, 'tq_cn02', 'tiengtrung-2023-2024', 3, 10, '2024-04-12 09:00:00', NULL, NULL), -- Giấy khen của hiệu trưởng
+(112, 'tq_cn03', 'tiengtrung-2023-2024', 1, 10, '2024-04-12 09:00:00', NULL, NULL), -- Lao động tiên tiến
+(113, 'tq_cn04', 'tiengtrung-2023-2024', 2, 10, '2024-04-12 09:00:00', NULL, NULL), -- Chiến sĩ thi đua cơ sở
+(114, 'tq_cn05', 'tiengtrung-2023-2024', 3, 10, '2024-04-12 09:00:00', NULL, NULL); -- Giấy khen của hiệu trưởng
+
+-- 2024-2025 Council Meeting (tiengtrung-2024-2025)
+INSERT INTO `tbldexuat` (`PK_MaDeXuat`, `FK_User`, `FK_MaHoiDong`, `FK_MaDanhHieu`, `iSoNguoiBau`, `dNgayTao`, `FK_MaDotXuat`, `FK_NguoiTao`) VALUES
+(115, 'tq_cn01', 'tiengtrung-2024-2025', 1, 10, '2025-04-12 09:00:00', NULL, NULL), -- Lao động tiên tiến
+(116, 'tq_cn02', 'tiengtrung-2024-2025', 2, 10, '2025-04-12 09:00:00', NULL, NULL), -- Chiến sĩ thi đua cơ sở
+(117, 'tq_cn03', 'tiengtrung-2024-2025', 3, 10, '2025-04-12 09:00:00', NULL, NULL), -- Giấy khen của hiệu trưởng
+(118, 'tq_cn04', 'tiengtrung-2024-2025', 1, 10, '2025-04-12 09:00:00', NULL, NULL), -- Lao động tiên tiến
+(119, 'tq_cn05', 'tiengtrung-2024-2025', 2, 10, '2025-04-12 09:00:00', NULL, NULL); -- Chiến sĩ thi đua cơ sở
+
+-- Proposals for Khoa Điện Điện Tử (5 individuals: ddt_cn01 to ddt_cn05)
+-- 2023-2024 Council Meeting (diendientu-2023-2024)
+INSERT INTO `tbldexuat` (`PK_MaDeXuat`, `FK_User`, `FK_MaHoiDong`, `FK_MaDanhHieu`, `iSoNguoiBau`, `dNgayTao`, `FK_MaDotXuat`, `FK_NguoiTao`) VALUES
+(120, 'ddt_cn01', 'diendientu-2023-2024', 3, 15, '2024-04-14 08:00:00', NULL, NULL), -- Giấy khen của hiệu trưởng
+(121, 'ddt_cn02', 'diendientu-2023-2024', 1, 15, '2024-04-14 08:00:00', NULL, NULL), -- Lao động tiên tiến
+(122, 'ddt_cn03', 'diendientu-2023-2024', 2, 15, '2024-04-14 08:00:00', NULL, NULL), -- Chiến sĩ thi đua cơ sở
+(123, 'ddt_cn04', 'diendientu-2023-2024', 3, 15, '2024-04-14 08:00:00', NULL, NULL), -- Giấy khen của hiệu trưởng
+(124, 'ddt_cn05', 'diendientu-2023-2024', 1, 15, '2024-04-14 08:00:00', NULL, NULL); -- Lao động tiên tiến
+
+-- 2024-2025 Council Meeting (diendientu-2024-2025)
+INSERT INTO `tbldexuat` (`PK_MaDeXuat`, `FK_User`, `FK_MaHoiDong`, `FK_MaDanhHieu`, `iSoNguoiBau`, `dNgayTao`, `FK_MaDotXuat`, `FK_NguoiTao`) VALUES
+(125, 'ddt_cn01', 'diendientu-2024-2025', 2, 15, '2025-04-14 08:00:00', NULL, NULL), -- Chiến sĩ thi đua cơ sở
+(126, 'ddt_cn02', 'diendientu-2024-2025', 3, 15, '2025-04-14 08:00:00', NULL, NULL), -- Giấy khen của hiệu trưởng
+(127, 'ddt_cn03', 'diendientu-2024-2025', 1, 15, '2025-04-14 08:00:00', NULL, NULL), -- Lao động tiên tiến
+(128, 'ddt_cn04', 'diendientu-2024-2025', 2, 15, '2025-04-14 08:00:00', NULL, NULL), -- Chiến sĩ thi đua cơ sở
+(129, 'ddt_cn05', 'diendientu-2024-2025', 3, 15, '2025-04-14 08:00:00', NULL, NULL); -- Giấy khen của hiệu trưởng
+
+-- Proposals for Khoa Công Nghệ Sinh Học (5 individuals: cnsh_cn01 to cnsh_cn05)
+-- 2023-2024 Council Meeting (congnghesinhhoc-2023-2024)
+INSERT INTO `tbldexuat` (`PK_MaDeXuat`, `FK_User`, `FK_MaHoiDong`, `FK_MaDanhHieu`, `iSoNguoiBau`, `dNgayTao`, `FK_MaDotXuat`, `FK_NguoiTao`) VALUES
+(130, 'cnsh_cn01', 'congnghesinhhoc-2023-2024', 1, 10, '2024-04-16 11:00:00', NULL, NULL), -- Lao động tiên tiến
+(131, 'cnsh_cn02', 'congnghesinhhoc-2023-2024', 2, 10, '2024-04-16 11:00:00', NULL, NULL), -- Chiến sĩ thi đua cơ sở
+(132, 'cnsh_cn03', 'congnghesinhhoc-2023-2024', 3, 10, '2024-04-16 11:00:00', NULL, NULL), -- Giấy khen của hiệu trưởng
+(133, 'cnsh_cn04', 'congnghesinhhoc-2023-2024', 1, 10, '2024-04-16 11:00:00', NULL, NULL), -- Lao động tiên tiến
+(134, 'cnsh_cn05', 'congnghesinhhoc-2023-2024', 2, 10, '2024-04-16 11:00:00', NULL, NULL); -- Chiến sĩ thi đua cơ sở
+
+-- 2024-2025 Council Meeting (congnghesinhhoc-2024-2025)
+INSERT INTO `tbldexuat` (`PK_MaDeXuat`, `FK_User`, `FK_MaHoiDong`, `FK_MaDanhHieu`, `iSoNguoiBau`, `dNgayTao`, `FK_MaDotXuat`, `FK_NguoiTao`) VALUES
+(135, 'cnsh_cn01', 'congnghesinhhoc-2024-2025', 3, 10, '2025-04-16 11:00:00', NULL, NULL), -- Giấy khen của hiệu trưởng
+(136, 'cnsh_cn02', 'congnghesinhhoc-2024-2025', 1, 10, '2025-04-16 11:00:00', NULL, NULL), -- Lao động tiên tiến
+(137, 'cnsh_cn03', 'congnghesinhhoc-2024-2025', 2, 10, '2025-04-16 11:00:00', NULL, NULL), -- Chiến sĩ thi đua cơ sở
+(138, 'cnsh_cn04', 'congnghesinhhoc-2024-2025', 3, 10, '2025-04-16 11:00:00', NULL, NULL), -- Giấy khen của hiệu trưởng
+(139, 'cnsh_cn05', 'congnghesinhhoc-2024-2025', 1, 10, '2025-04-16 11:00:00', NULL, NULL); -- Lao động tiên tiến
+
+-- Proposals for Khoa Luật (5 individuals: luat_cn01 to luat_cn05)
+-- 2023-2024 Council Meeting (luat-2023-2024)
+INSERT INTO `tbldexuat` (`PK_MaDeXuat`, `FK_User`, `FK_MaHoiDong`, `FK_MaDanhHieu`, `iSoNguoiBau`, `dNgayTao`, `FK_MaDotXuat`, `FK_NguoiTao`) VALUES
+(140, 'luat_cn01', 'luat-2023-2024', 2, 12, '2024-04-18 09:00:00', NULL, NULL), -- Chiến sĩ thi đua cơ sở
+(141, 'luat_cn02', 'luat-2023-2024', 3, 12, '2024-04-18 09:00:00', NULL, NULL), -- Giấy khen của hiệu trưởng
+(142, 'luat_cn03', 'luat-2023-2024', 1, 12, '2024-04-18 09:00:00', NULL, NULL), -- Lao động tiên tiến
+(143, 'luat_cn04', 'luat-2023-2024', 2, 12, '2024-04-18 09:00:00', NULL, NULL), -- Chiến sĩ thi đua cơ sở
+(144, 'luat_cn05', 'luat-2023-2024', 3, 12, '2024-04-18 09:00:00', NULL, NULL); -- Giấy khen của hiệu trưởng
+
+-- 2024-2025 Council Meeting (luat-2024-2025)
+INSERT INTO `tbldexuat` (`PK_MaDeXuat`, `FK_User`, `FK_MaHoiDong`, `FK_MaDanhHieu`, `iSoNguoiBau`, `dNgayTao`, `FK_MaDotXuat`, `FK_NguoiTao`) VALUES
+(145, 'luat_cn01', 'luat-2024-2025', 1, 12, '2025-04-18 09:00:00', NULL, NULL), -- Lao động tiên tiến
+(146, 'luat_cn02', 'luat-2024-2025', 2, 12, '2025-04-18 09:00:00', NULL, NULL), -- Chiến sĩ thi đua cơ sở
+(147, 'luat_cn03', 'luat-2024-2025', 3, 12, '2025-04-18 09:00:00', NULL, NULL), -- Giấy khen của hiệu trưởng
+(148, 'luat_cn04', 'luat-2024-2025', 1, 12, '2025-04-18 09:00:00', NULL, NULL), -- Lao động tiên tiến
+(149, 'luat_cn05', 'luat-2024-2025', 2, 12, '2025-04-18 09:00:00', NULL, NULL); -- Chiến sĩ thi đua cơ sở

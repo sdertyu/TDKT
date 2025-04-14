@@ -294,7 +294,7 @@ const danhSachCanhan = ref([]);
 const danhSachDeXuatCaNhan = ref([]);
 const danhSachDeXuatDonVi = ref([]);
 
-const madot = ref('');
+const madot = ref(useGlobalStore().dotActive);
 
 // Handle file upload
 const handleFileUpload = (type, event) => {
@@ -394,6 +394,7 @@ const saveDeXuat = async () => {
         });
 
         let maHD = localStorage.getItem('user_name') + '-' + madot.value
+   
         formData.append('maHoiDong', maHD); // Include maHoiDong if exists
         for (let [key, value] of formData.entries()) {
             console.log(`${key}:`, value);
@@ -586,7 +587,7 @@ const setAllDonViStatus = (status) => {
 // Fetch data when component mounted
 onMounted(async () => {
     try {
-        madot.value = useGlobalStore().dotActive;
+        // madot.value = useGlobalStore().dotActive;
         // Fetch hội đồng data if exists
         // const response = await axios.get('/api/hoi-dong');
         // hoiDong.value = response.data;
