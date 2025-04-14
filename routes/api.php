@@ -133,6 +133,9 @@ Route::middleware('auth.api')->group(function () {
         Route::get('danhsachnamhoc', [BaoCaoThongKeController::class, 'danhSachNamHoc']);
         Route::get('danhsachdanhhieu', [BaoCaoThongKeController::class, 'danhSachDanhHieu']);
         Route::get('danhsachcapdanhhieu', [BaoCaoThongKeController::class, 'danhSachCapDanhHieu']);
+        Route::get('danhsachdonvi', [BaoCaoThongKeController::class, 'danhSachDonVi']);
         Route::get('datathongkedanhhieu', [BaoCaoThongKeController::class, 'dataThongKeDanhHieu']);
+        Route::get('datathongkecanhan', [BaoCaoThongKeController::class, 'dataThongKeCaNhan']);
+        Route::get('datathongkedonvi', [BaoCaoThongKeController::class, 'dataThongKeDonVi']);
     });
 });

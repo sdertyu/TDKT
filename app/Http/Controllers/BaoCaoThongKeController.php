@@ -7,6 +7,7 @@ use App\Models\ChiTietDHModel;
 use App\Models\ChiTietHDModel;
 use App\Models\DanhHieuModel;
 use App\Models\DeXuatModel;
+use App\Models\DonViModel;
 use App\Models\DotTDKTModel;
 use App\Models\KetQuaModel;
 use App\Models\LoaiDanhHieuModel;
@@ -108,7 +109,8 @@ class BaoCaoThongKeController extends Controller
         }
     }
 
-    public function dataThongKeDanhHieu() {
+    public function dataThongKeDanhHieu()
+    {
         try {
             $user = auth()->user();
             $id = $user->PK_MaTaiKhoan;
@@ -135,9 +137,6 @@ class BaoCaoThongKeController extends Controller
                         'capDanhHieu' => $item->danhHieu->capDanhHieu->sTenCap,
                         'loai' => $item->danhHieu->loaiDanhHieu->sTenLoaiDanhHieu,
                         'doiTuong' => $item->taiKhoan->caNhan == null ? 'Đơn vị' : 'Cá nhân',
-                        // 'dot' => $item->hoiDong == null ? $item->dotXuat->dot->PK_MaDot : $item->hoiDong->dot->PK_MaDot,
-                        // 'hinhThuc' => $item->danhHieu->hinhThuc->sTenHinhThuc,
-                        // 'capDanhHieu' => $item->danhHieu->capDanhHieu->sTenCap,
                     ];
                 });
 
@@ -148,6 +147,119 @@ class BaoCaoThongKeController extends Controller
             Log::error('Lỗi khi lấy dữ liệu thống kê danh hiệu: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Có lỗi xảy ra khi lấy dữ liệu thống kê danh hiệu'
+            ], 500);
+        }
+    }
+
+    public function dataThongKeCaNhan()
+    {
+        try {
+            $user = auth()->user();
+            $id = $user->PK_MaTaiKhoan;
+            $data = DeXuatModel::whereHas('ketQua', function ($query) {
+                return $query->where('bDuyet', 1);
+            })
+                ->whereHas('taiKhoan.caNhan.donVi',)
+                ->with([
+                    'danhHieu',
+                    'danhHieu.capDanhHieu',
+                    'danhHieu.loaiDanhHieu',
+                    'danhHieu.hinhThuc',
+                    'hoiDong.dot',
+                    'dotXuat.dot',
+                ])
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'hoTen' => $item->taiKhoan->caNhan->sTenCaNhan,
+                        'donVi' => $item->taiKhoan->caNhan->donVi->sTenDonVi,
+                        'danhHieu' => $item->danhHieu->sTenDanhHieu,
+                        'namHoc' => $item->hoiDong == null ? $item->dotXuat->dot->PK_MaDot : $item->hoiDong->dot->PK_MaDot,
+                        'hinhThuc' => $item->danhHieu->hinhThuc->sTenHinhThuc,
+                        'capDanhHieu' => $item->danhHieu->capDanhHieu->sTenCap,
+                        'loai' => $item->danhHieu->loaiDanhHieu->sTenLoaiDanhHieu,
+                    ];
+                });
+
+            return response()->json([
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi lấy dữ liệu thống kê danh hiệu: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Có lỗi xảy ra khi lấy dữ liệu thống kê danh hiệu'
+            ], 500);
+        }
+    }
+
+    public function dataThongKeDonVi()
+    {
+        try {
+
+            $data = DeXuatModel::whereHas('ketQua', function ($query) {
+                return $query->where('bDuyet', 1);
+            })
+                ->whereHas('taiKhoan.donVi.caNhan')
+                ->with([
+                    'danhHieu',
+                    'danhHieu.capDanhHieu',
+                    'danhHieu.loaiDanhHieu',
+                    'danhHieu.hinhThuc',
+                    'hoiDong.dot',
+                    'dotXuat.dot',
+
+                ])
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'tenDonVi' => $item->taiKhoan->donVi->sTenDonVi,
+                        'danhHieu' => $item->danhHieu->sTenDanhHieu,
+                        'namHoc' => $item->hoiDong == null ? $item->dotXuat->dot->PK_MaDot : $item->hoiDong->dot->PK_MaDot,
+                        'hinhThuc' => $item->danhHieu->hinhThuc->sTenHinhThuc,
+                        'capDanhHieu' => $item->danhHieu->capDanhHieu->sTenCap,
+                        'soLuongDat' => 1,
+                    ];
+                });
+
+            // $group = [];
+            // foreach ($data as $item) {
+            //     if (!isset($group[$item['tenDonVi']])) {
+            //         $group[$item['tenDonVi']] = 0;
+            //     }
+            //     $group[$item['tenDonVi']]++;
+            // }
+
+            // $data = $data->transform(function ($item) use ($group) {
+            //     $item['soLuongDat'] = $group[$item['tenDonVi']];
+            //     return $item;
+            // });
+
+
+            return response()->json([
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi lấy dữ liệu thống kê danh hiệu: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Có lỗi xảy ra khi lấy dữ liệu thống kê danh hiệu'
+            ], 500);
+        }
+    }
+
+    public function danhSachDonVi()
+    {
+        try {
+            $donVi = DonViModel::select('PK_MaDonVi as maDonVi', 'sTenDonVi as tenDonVi')
+                ->select('PK_MaDonVi as maDonVi', 'sTenDonVi as tenDonVi')
+                ->orderBy('sTenDonVi', 'asc')
+                ->get();
+            return response()->json([
+                'data' => $donVi
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi lấy danh sách đơn vị: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Có lỗi xảy ra khi lấy danh sách đơn vị'
             ], 500);
         }
     }

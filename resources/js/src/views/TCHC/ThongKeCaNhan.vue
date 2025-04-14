@@ -16,35 +16,37 @@
                     <!-- Bộ lọc năm học (đợt) -->
                     <div class="col-md-6 col-lg-3">
                         <label class="form-label">Năm học (Đợt)</label>
-                        <Dropdown v-model="filters.namHoc" :options="namHocOptions" optionLabel="name" optionValue="code" 
+                        <MultiSelect v-model="filters.namHoc" :options="namHocOptions" optionLabel="name"
                             placeholder="Chọn năm học" class="w-100" />
                     </div>
 
                     <!-- Bộ lọc đơn vị -->
                     <div class="col-md-6 col-lg-3">
                         <label class="form-label">Đơn vị</label>
-                        <Dropdown v-model="filters.donVi" :options="donViOptions" optionLabel="name" optionValue="code" 
+                        <MultiSelect v-model="filters.donVi" :options="donViOptions" optionLabel="name"
                             placeholder="Chọn đơn vị" class="w-100" />
                     </div>
 
                     <!-- Bộ lọc danh hiệu -->
                     <div class="col-md-6 col-lg-3">
                         <label class="form-label">Danh hiệu</label>
-                        <MultiSelect v-model="filters.danhHieu" :options="danhHieuOptions" optionLabel="name" 
+                        <MultiSelect v-model="filters.danhHieu" :options="danhHieuOptions" optionLabel="name"
                             placeholder="Chọn danh hiệu" class="w-100" />
                     </div>
 
                     <!-- Bộ lọc cấp danh hiệu -->
                     <div class="col-md-6 col-lg-3">
                         <label class="form-label">Cấp danh hiệu</label>
-                        <MultiSelect v-model="filters.capDanhHieu" :options="capDanhHieuOptions" optionLabel="name" 
+                        <MultiSelect v-model="filters.capDanhHieu" :options="capDanhHieuOptions" optionLabel="name"
                             placeholder="Chọn cấp danh hiệu" class="w-100" />
                     </div>
 
                     <!-- Nút tìm kiếm -->
                     <div class="col-12 text-end">
-                        <Button label="Áp dụng bộ lọc" icon="bi bi-search" class="p-button-primary" @click="applyFilters" />
-                        <Button label="Xóa bộ lọc" icon="bi bi-x-circle" class="p-button-secondary ms-2" @click="resetFilters" />
+                        <Button label="Áp dụng bộ lọc" icon="bi bi-search" class="p-button-primary"
+                            @click="applyFilters" />
+                        <Button label="Xóa bộ lọc" icon="bi bi-x-circle" class="p-button-secondary ms-2"
+                            @click="resetFilters" />
                     </div>
                 </div>
             </div>
@@ -107,17 +109,18 @@
             <!-- Bảng chi tiết -->
             <div class="table-section">
                 <h5 class="mb-3"><i class="bi bi-table me-2"></i>Dữ liệu chi tiết theo cá nhân</h5>
-                <DataTable :value="filteredData" v-model:filters="tableFilters" :paginator="true" 
-                    :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]"
-                    :globalFilterFields="['hoTen', 'donVi', 'danhHieu', 'namHoc', 'capDanhHieu']"
-                    stripedRows rowHover class="p-datatable-sm" responsiveLayout="scroll">
+                <DataTable :value="filteredData" v-model:filters="tableFilters" :paginator="true" :rows="10"
+                    :rowsPerPageOptions="[5, 10, 20, 50]"
+                    :globalFilterFields="['hoTen', 'donVi', 'danhHieu', 'namHoc', 'capDanhHieu']" stripedRows rowHover
+                    class="p-datatable-sm" responsiveLayout="scroll">
                     <template #header>
                         <div class="d-flex justify-content-between align-items-center flex-wrap">
                             <IconField class="w-100 md:w-25">
                                 <InputIcon>
                                     <i class="bi bi-search" />
                                 </InputIcon>
-                                <InputText v-model="tableFilters['global'].value" placeholder="Tìm kiếm" class="w-100" />
+                                <InputText v-model="tableFilters['global'].value" placeholder="Tìm kiếm"
+                                    class="w-100" />
                             </IconField>
                             <div class="text-muted">
                                 <strong>Tổng số:</strong> {{ filteredData.length }} bản ghi
@@ -164,12 +167,6 @@
                             </span>
                         </template>
                     </Column>
-                    <Column field="ngayTrao" header="Ngày trao" style="width: 120px">
-                        <template #body="slotProps">
-                            {{ formatDate(slotProps.data.ngayTrao) }}
-                        </template>
-                    </Column>
-
                     <template #empty>
                         <div class="text-center p-4">
                             <i class="bi bi-search fs-3 text-muted"></i>
@@ -208,41 +205,20 @@ let unitChart = null;
 
 // Dữ liệu bộ lọc
 const filters = ref({
-    namHoc: null,
-    donVi: null,
+    namHoc: [],
+    donVi: [],
     danhHieu: [],
     capDanhHieu: []
 });
 
 // Danh sách tùy chọn cho bộ lọc
-const namHocOptions = ref([
-    { name: '2022-2023', code: '2022-2023' },
-    { name: '2023-2024', code: '2023-2024' },
-    { name: '2024-2025', code: '2024-2025' }
-]);
+const namHocOptions = ref([]);
 
-const donViOptions = ref([
-    { name: 'Khoa Công nghệ thông tin', code: 'cntt' },
-    { name: 'Khoa Điện - Điện tử', code: 'ddt' },
-    { name: 'Khoa Cơ khí', code: 'ck' },
-    { name: 'Phòng Đào tạo', code: 'dt' },
-    { name: 'Phòng Tổ chức hành chính', code: 'tchc' },
-    { name: 'Phòng Kế hoạch tài chính', code: 'khtc' }
-]);
+const donViOptions = ref([]);
 
-const danhHieuOptions = ref([
-    { name: 'Chiến sĩ thi đua cơ sở', code: 'cstd_cs' },
-    { name: 'Lao động tiên tiến', code: 'ldtt' },
-    { name: 'Giáo viên dạy giỏi', code: 'gvdg' },
-    { name: 'Chiến sĩ thi đua cấp tỉnh', code: 'cstd_tinh' }
-]);
+const danhHieuOptions = ref([]);
 
-const capDanhHieuOptions = ref([
-    { name: 'Cấp trường', code: 'cap_truong' },
-    { name: 'Cấp tỉnh', code: 'cap_tinh' },
-    { name: 'Cấp bộ', code: 'cap_bo' },
-    { name: 'Cấp nhà nước', code: 'cap_nha_nuoc' }
-]);
+const capDanhHieuOptions = ref([]);
 
 // Dữ liệu bảng và bộ lọc
 const allData = ref([]);
@@ -253,154 +229,154 @@ const tableFilters = ref({
 
 // Dữ liệu mẫu cho testing
 const sampleData = [
-    { 
-        id: 1, 
-        hoTen: 'Nguyễn Văn An', 
+    {
+        id: 1,
+        hoTen: 'Nguyễn Văn An',
         donVi: 'Khoa Công nghệ thông tin',
-        danhHieu: 'Chiến sĩ thi đua cơ sở', 
-        namHoc: '2022-2023', 
-        hinhThuc: 'Theo đợt', 
-        capDanhHieu: 'Cấp trường', 
+        danhHieu: 'Chiến sĩ thi đua cơ sở',
+        namHoc: '2022-2023',
+        hinhThuc: 'Theo đợt',
+        capDanhHieu: 'Cấp trường',
         ngayTrao: '2023-05-19'
     },
-    { 
-        id: 2, 
-        hoTen: 'Trần Thị Bình', 
+    {
+        id: 2,
+        hoTen: 'Trần Thị Bình',
         donVi: 'Khoa Điện - Điện tử',
-        danhHieu: 'Giáo viên dạy giỏi', 
-        namHoc: '2022-2023', 
-        hinhThuc: 'Theo đợt', 
-        capDanhHieu: 'Cấp tỉnh', 
+        danhHieu: 'Giáo viên dạy giỏi',
+        namHoc: '2022-2023',
+        hinhThuc: 'Theo đợt',
+        capDanhHieu: 'Cấp tỉnh',
         ngayTrao: '2023-06-05'
     },
-    { 
-        id: 3, 
-        hoTen: 'Lê Văn Cường', 
+    {
+        id: 3,
+        hoTen: 'Lê Văn Cường',
         donVi: 'Phòng Đào tạo',
-        danhHieu: 'Chiến sĩ thi đua cấp tỉnh', 
-        namHoc: '2022-2023', 
-        hinhThuc: 'Đột xuất', 
-        capDanhHieu: 'Cấp tỉnh', 
+        danhHieu: 'Chiến sĩ thi đua cấp tỉnh',
+        namHoc: '2022-2023',
+        hinhThuc: 'Đột xuất',
+        capDanhHieu: 'Cấp tỉnh',
         ngayTrao: '2023-04-30'
     },
-    { 
-        id: 4, 
-        hoTen: 'Phạm Thị Dung', 
+    {
+        id: 4,
+        hoTen: 'Phạm Thị Dung',
         donVi: 'Phòng Tổ chức hành chính',
-        danhHieu: 'Lao động tiên tiến', 
-        namHoc: '2023-2024', 
-        hinhThuc: 'Theo đợt', 
-        capDanhHieu: 'Cấp trường', 
+        danhHieu: 'Lao động tiên tiến',
+        namHoc: '2023-2024',
+        hinhThuc: 'Theo đợt',
+        capDanhHieu: 'Cấp trường',
         ngayTrao: '2024-05-20'
     },
-    { 
-        id: 5, 
-        hoTen: 'Nguyễn Văn An', 
+    {
+        id: 5,
+        hoTen: 'Nguyễn Văn An',
         donVi: 'Khoa Công nghệ thông tin',
-        danhHieu: 'Chiến sĩ thi đua cơ sở', 
-        namHoc: '2023-2024', 
-        hinhThuc: 'Theo đợt', 
-        capDanhHieu: 'Cấp trường', 
+        danhHieu: 'Chiến sĩ thi đua cơ sở',
+        namHoc: '2023-2024',
+        hinhThuc: 'Theo đợt',
+        capDanhHieu: 'Cấp trường',
         ngayTrao: '2024-05-19'
     },
-    { 
-        id: 6, 
-        hoTen: 'Hoàng Thị Hương', 
+    {
+        id: 6,
+        hoTen: 'Hoàng Thị Hương',
         donVi: 'Khoa Cơ khí',
-        danhHieu: 'Giáo viên dạy giỏi', 
-        namHoc: '2023-2024', 
-        hinhThuc: 'Theo đợt', 
-        capDanhHieu: 'Cấp bộ', 
+        danhHieu: 'Giáo viên dạy giỏi',
+        namHoc: '2023-2024',
+        hinhThuc: 'Theo đợt',
+        capDanhHieu: 'Cấp bộ',
         ngayTrao: '2024-06-10'
     },
-    { 
-        id: 7, 
-        hoTen: 'Vũ Đức Long', 
+    {
+        id: 7,
+        hoTen: 'Vũ Đức Long',
         donVi: 'Phòng Kế hoạch tài chính',
-        danhHieu: 'Chiến sĩ thi đua cấp tỉnh', 
-        namHoc: '2022-2023', 
-        hinhThuc: 'Đột xuất', 
-        capDanhHieu: 'Cấp tỉnh', 
+        danhHieu: 'Chiến sĩ thi đua cấp tỉnh',
+        namHoc: '2022-2023',
+        hinhThuc: 'Đột xuất',
+        capDanhHieu: 'Cấp tỉnh',
         ngayTrao: '2023-11-15'
     },
-    { 
-        id: 8, 
-        hoTen: 'Nguyễn Thị Mai', 
+    {
+        id: 8,
+        hoTen: 'Nguyễn Thị Mai',
         donVi: 'Khoa Điện - Điện tử',
-        danhHieu: 'Lao động tiên tiến', 
-        namHoc: '2023-2024', 
-        hinhThuc: 'Theo đợt', 
-        capDanhHieu: 'Cấp trường', 
+        danhHieu: 'Lao động tiên tiến',
+        namHoc: '2023-2024',
+        hinhThuc: 'Theo đợt',
+        capDanhHieu: 'Cấp trường',
         ngayTrao: '2024-05-30'
     },
-    { 
-        id: 9, 
-        hoTen: 'Lê Văn Nam', 
+    {
+        id: 9,
+        hoTen: 'Lê Văn Nam',
         donVi: 'Khoa Cơ khí',
-        danhHieu: 'Chiến sĩ thi đua cơ sở', 
-        namHoc: '2022-2023', 
-        hinhThuc: 'Theo đợt', 
-        capDanhHieu: 'Cấp trường', 
+        danhHieu: 'Chiến sĩ thi đua cơ sở',
+        namHoc: '2022-2023',
+        hinhThuc: 'Theo đợt',
+        capDanhHieu: 'Cấp trường',
         ngayTrao: '2023-05-19'
     },
-    { 
-        id: 10, 
-        hoTen: 'Trần Văn Phúc', 
+    {
+        id: 10,
+        hoTen: 'Trần Văn Phúc',
         donVi: 'Phòng Đào tạo',
-        danhHieu: 'Giáo viên dạy giỏi', 
-        namHoc: '2024-2025', 
-        hinhThuc: 'Theo đợt', 
-        capDanhHieu: 'Cấp tỉnh', 
+        danhHieu: 'Giáo viên dạy giỏi',
+        namHoc: '2024-2025',
+        hinhThuc: 'Theo đợt',
+        capDanhHieu: 'Cấp tỉnh',
         ngayTrao: '2025-06-05'
     },
-    { 
-        id: 11, 
-        hoTen: 'Phạm Thị Quỳnh', 
+    {
+        id: 11,
+        hoTen: 'Phạm Thị Quỳnh',
         donVi: 'Khoa Công nghệ thông tin',
-        danhHieu: 'Lao động tiên tiến', 
-        namHoc: '2024-2025', 
-        hinhThuc: 'Theo đợt', 
-        capDanhHieu: 'Cấp trường', 
+        danhHieu: 'Lao động tiên tiến',
+        namHoc: '2024-2025',
+        hinhThuc: 'Theo đợt',
+        capDanhHieu: 'Cấp trường',
         ngayTrao: '2025-05-20'
     },
-    { 
-        id: 12, 
-        hoTen: 'Trần Thị Bình', 
+    {
+        id: 12,
+        hoTen: 'Trần Thị Bình',
         donVi: 'Khoa Điện - Điện tử',
-        danhHieu: 'Chiến sĩ thi đua cơ sở', 
-        namHoc: '2023-2024', 
-        hinhThuc: 'Theo đợt', 
-        capDanhHieu: 'Cấp trường', 
+        danhHieu: 'Chiến sĩ thi đua cơ sở',
+        namHoc: '2023-2024',
+        hinhThuc: 'Theo đợt',
+        capDanhHieu: 'Cấp trường',
         ngayTrao: '2024-05-25'
     },
-    { 
-        id: 13, 
-        hoTen: 'Hoàng Thị Hương', 
+    {
+        id: 13,
+        hoTen: 'Hoàng Thị Hương',
         donVi: 'Khoa Cơ khí',
-        danhHieu: 'Chiến sĩ thi đua cấp tỉnh', 
-        namHoc: '2024-2025', 
-        hinhThuc: 'Đột xuất', 
-        capDanhHieu: 'Cấp tỉnh', 
+        danhHieu: 'Chiến sĩ thi đua cấp tỉnh',
+        namHoc: '2024-2025',
+        hinhThuc: 'Đột xuất',
+        capDanhHieu: 'Cấp tỉnh',
         ngayTrao: '2025-03-15'
     },
-    { 
-        id: 14, 
-        hoTen: 'Nguyễn Văn An', 
+    {
+        id: 14,
+        hoTen: 'Nguyễn Văn An',
         donVi: 'Khoa Công nghệ thông tin',
-        danhHieu: 'Chiến sĩ thi đua cấp bộ', 
-        namHoc: '2024-2025', 
-        hinhThuc: 'Theo đợt', 
-        capDanhHieu: 'Cấp bộ', 
+        danhHieu: 'Chiến sĩ thi đua cấp bộ',
+        namHoc: '2024-2025',
+        hinhThuc: 'Theo đợt',
+        capDanhHieu: 'Cấp bộ',
         ngayTrao: '2025-07-10'
     },
-    { 
-        id: 15, 
-        hoTen: 'Lê Văn Cường', 
+    {
+        id: 15,
+        hoTen: 'Lê Văn Cường',
         donVi: 'Phòng Đào tạo',
-        danhHieu: 'Lao động tiên tiến', 
-        namHoc: '2024-2025', 
-        hinhThuc: 'Theo đợt', 
-        capDanhHieu: 'Cấp trường', 
+        danhHieu: 'Lao động tiên tiến',
+        namHoc: '2024-2025',
+        hinhThuc: 'Theo đợt',
+        capDanhHieu: 'Cấp trường',
         ngayTrao: '2025-05-18'
     }
 ];
@@ -408,12 +384,67 @@ const sampleData = [
 // Hàm gọi API lấy dữ liệu (tạm thời sử dụng dữ liệu mẫu)
 const fetchData = async () => {
     try {
-        // Mô phỏng việc gọi API bằng cách delay 500ms để tạo cảm giác thực tế
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Sử dụng dữ liệu mẫu thay vì gọi API
-        allData.value = sampleData;
-        filteredData.value = [...sampleData];
+        const [namHoc, danhHieu, capDanhHieu, donVi, dataThongKe] = await Promise.all([
+            axios.get('/api/baocaothongke/danhsachnamhoc', {
+                headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` }
+            }),
+            axios.get('/api/baocaothongke/danhsachdanhhieu', {
+                headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` }
+            }),
+            axios.get('/api/baocaothongke/danhsachcapdanhhieu', {
+                headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` }
+            }),
+            axios.get('/api/baocaothongke/danhsachdonvi', {
+                headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` }
+            }),
+            axios.get('/api/baocaothongke/datathongkecanhan', {
+                headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` }
+            })
+        ]);
+
+
+        if (namHoc.status === 200) {
+            namHocOptions.value = namHoc.data.data.map(item => ({
+                name: item.namHoc,
+                code: item.namHoc
+            }));
+        }
+
+        if (danhHieu.status === 200) {
+            danhHieuOptions.value = danhHieu.data.data.map(item => ({
+                name: item.tenDanhHieu,
+                code: item.maDanhHieu
+            }));
+        }
+
+        if (capDanhHieu.status === 200) {
+            capDanhHieuOptions.value = capDanhHieu.data.data.map(item => ({
+                name: item.tenCap,
+                code: item.maCap
+            }));
+        }
+
+        if (donVi.status === 200) {
+            donViOptions.value = donVi.data.data.map(item => ({
+                name: item.tenDonVi,
+                code: item.maDonVi
+            }));
+        }
+
+        if (dataThongKe.status === 200) {
+            allData.value = dataThongKe.data.data.map(item => ({
+                id: 15,
+                hoTen: item.hoTen,
+                donVi: item.donVi,
+                danhHieu: item.danhHieu,
+                namHoc: item.namHoc,
+                hinhThuc: item.hinhThuc,
+                capDanhHieu: item.capDanhHieu,
+            }));
+            filteredData.value = [...allData.value];
+        }
+        // allData.value = sampleData;
+        // filteredData.value = [...sampleData];
         initCharts();
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -424,35 +455,36 @@ const fetchData = async () => {
 const applyFilters = () => {
     filteredData.value = allData.value.filter(item => {
         // Lọc theo năm học
-        if (filters.value.namHoc && item.namHoc !== filters.value.namHoc) {
-            return false;
-        }
-        
-        // Lọc theo đơn vị
-        if (filters.value.donVi) {
-            const donViName = donViOptions.value.find(d => d.code === filters.value.donVi)?.name;
-            if (item.donVi !== donViName) {
+        if (filters.value.namHoc && filters.value.namHoc.length > 0) {
+            if (!filters.value.namHoc.some(n => n.name === item.namHoc)) {
                 return false;
             }
         }
-        
+
+        // Lọc theo đơn vị
+        if (filters.value.donVi && filters.value.donVi.length > 0) {
+            if (!filters.value.donVi.some(d => d.name === item.donVi)) {
+                return false;
+            }
+        }
+
         // Lọc theo danh hiệu
         if (filters.value.danhHieu && filters.value.danhHieu.length > 0) {
             if (!filters.value.danhHieu.some(d => d.name === item.danhHieu)) {
                 return false;
             }
         }
-        
+
         // Lọc theo cấp danh hiệu
         if (filters.value.capDanhHieu && filters.value.capDanhHieu.length > 0) {
             if (!filters.value.capDanhHieu.some(c => c.name === item.capDanhHieu)) {
                 return false;
             }
         }
-        
+
         return true;
     });
-    
+
     // Cập nhật biểu đồ
     updateCharts();
 };
@@ -460,8 +492,8 @@ const applyFilters = () => {
 // Hàm reset bộ lọc
 const resetFilters = () => {
     filters.value = {
-        namHoc: null,
-        donVi: null,
+        namHoc: [],
+        donVi: [],
         danhHieu: [],
         capDanhHieu: []
     };
@@ -474,10 +506,10 @@ const initCharts = () => {
     // Biểu đồ cột theo năm học
     if (yearlyChartRef.value) {
         const ctx = yearlyChartRef.value.getContext('2d');
-        
+
         // Tính toán dữ liệu cho biểu đồ
         const yearlyData = countByYear();
-        
+
         yearlyChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -504,14 +536,14 @@ const initCharts = () => {
             }
         });
     }
-    
+
     // Biểu đồ cột theo cá nhân (top 10)
     if (individualChartRef.value) {
         const ctx = individualChartRef.value.getContext('2d');
-        
+
         // Tính toán dữ liệu top 10 cá nhân
         const individualData = countByIndividual(10);
-        
+
         individualChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -539,14 +571,14 @@ const initCharts = () => {
             }
         });
     }
-    
+
     // Biểu đồ tròn theo loại danh hiệu
     if (awardChartRef.value) {
         const ctx = awardChartRef.value.getContext('2d');
-        
+
         // Tính toán dữ liệu cho biểu đồ
         const awardData = countByAward();
-        
+
         awardChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
@@ -581,14 +613,14 @@ const initCharts = () => {
             }
         });
     }
-    
+
     // Biểu đồ tròn theo đơn vị
     if (unitChartRef.value) {
         const ctx = unitChartRef.value.getContext('2d');
-        
+
         // Tính toán dữ liệu cho biểu đồ
         const unitData = countByUnit();
-        
+
         unitChart = new Chart(ctx, {
             type: 'pie',
             data: {
@@ -635,21 +667,21 @@ const updateCharts = () => {
         yearlyChart.data.datasets[0].data = Object.values(yearlyData);
         yearlyChart.update();
     }
-    
+
     if (individualChart) {
         const individualData = countByIndividual(10);
         individualChart.data.labels = Object.keys(individualData);
         individualChart.data.datasets[0].data = Object.values(individualData);
         individualChart.update();
     }
-    
+
     if (awardChart) {
         const awardData = countByAward();
         awardChart.data.labels = Object.keys(awardData);
         awardChart.data.datasets[0].data = Object.values(awardData);
         awardChart.update();
     }
-    
+
     if (unitChart) {
         const unitData = countByUnit();
         unitChart.data.labels = Object.keys(unitData);
@@ -673,7 +705,7 @@ const countByYear = () => {
 // Hàm đếm số lượng danh hiệu theo cá nhân (lấy top N)
 const countByIndividual = (topN = 10) => {
     const data = {};
-    
+
     // Đếm số lượng danh hiệu cho mỗi cá nhân
     filteredData.value.forEach(item => {
         if (!data[item.hoTen]) {
@@ -681,17 +713,17 @@ const countByIndividual = (topN = 10) => {
         }
         data[item.hoTen]++;
     });
-    
+
     // Sắp xếp và lấy top N
     const sortedEntries = Object.entries(data).sort((a, b) => b[1] - a[1]);
     const topEntries = sortedEntries.slice(0, topN);
-    
+
     // Chuyển đổi trở lại thành đối tượng
     const result = {};
     topEntries.forEach(entry => {
         result[entry[0]] = entry[1];
     });
-    
+
     return result;
 };
 
@@ -777,7 +809,7 @@ onMounted(() => {
     overflow: hidden;
 }
 
-.p-datatable .p-datatable-thead > tr > th {
+.p-datatable .p-datatable-thead>tr>th {
     background-color: #f8f9fa;
     font-weight: 600;
 }
@@ -794,7 +826,7 @@ onMounted(() => {
         flex-direction: column;
         align-items: start;
     }
-    
+
     .card-header div {
         margin-top: 1rem;
     }
