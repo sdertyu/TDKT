@@ -436,10 +436,12 @@ const fetchData = async () => {
                 id: 15,
                 hoTen: item.hoTen,
                 donVi: item.donVi,
+                maDanhHieu: item.maDanhHieu,
                 danhHieu: item.danhHieu,
                 namHoc: item.namHoc,
                 hinhThuc: item.hinhThuc,
                 capDanhHieu: item.capDanhHieu,
+                loai: item.loai,
             }));
             filteredData.value = [...allData.value];
         }
@@ -731,10 +733,17 @@ const countByIndividual = (topN = 10) => {
 const countByAward = () => {
     const data = {};
     filteredData.value.forEach(item => {
-        if (!data[item.danhHieu]) {
-            data[item.danhHieu] = 0;
+        let key = '';
+        if(item.danhHieu == "Giấy khen của hiệu trưởng") {
+            key = item.danhHieu + ' - ' + item.loai + ' - ' +item.hinhThuc;
         }
-        data[item.danhHieu]++;
+        else {
+            key = item.danhHieu;
+        }
+        if (!data[key]) {
+            data[key] = 0;
+        }
+        data[key]++;
     });
     return data;
 };
