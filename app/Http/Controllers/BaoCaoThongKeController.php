@@ -173,6 +173,7 @@ class BaoCaoThongKeController extends Controller
                     return [
                         'hoTen' => $item->taiKhoan->caNhan->sTenCaNhan,
                         'donVi' => $item->taiKhoan->caNhan->donVi->sTenDonVi,
+                        'maDanhHieu' => $item->danhHieu->PK_MaDanhHieu,
                         'danhHieu' => $item->danhHieu->sTenDanhHieu,
                         'namHoc' => $item->hoiDong == null ? $item->dotXuat->dot->PK_MaDot : $item->hoiDong->dot->PK_MaDot,
                         'hinhThuc' => $item->danhHieu->hinhThuc->sTenHinhThuc,
