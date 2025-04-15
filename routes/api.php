@@ -102,6 +102,8 @@ Route::middleware('auth.api')->group(function () {
     });
 
     Route::prefix('thongbao')->group(function () {
+        Route::post('/create', [ThongBaoController::class, 'taoThongBao']);
+        Route::post('/update/{id}', [ThongBaoController::class, 'suaThongBao']);
         Route::get('/getlisttheoquyen', [ThongBaoController::class, 'getListThongBaoTheoQuyen']);
         Route::post('/markread', [ThongBaoController::class, 'markRead']);
         Route::get('/getthongbao/{id}', [ThongBaoController::class, 'getThongBao']);

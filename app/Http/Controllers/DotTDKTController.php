@@ -61,41 +61,41 @@ class DotTDKTController extends Controller
             'dHanNopMinhChung' => $request->dHanNopMinhChung,
         ]);
 
-        $fields = [
-            'dHanBienBanDonVi' => [
-                'tieuDe' => 'Thông báo về thời hạn nộp biên bản đơn vị',
-                'noiDungLabel' => 'Yêu cầu các đơn vị nộp biên bản bình bầu thi đua khen thưởng của đơn vị mình lên hệ thống trước: ',
-                'quyen' => [4],
-            ],
-            'dHanBienBanHoiDong' => [
-                'tieuDe' => 'Thông báo về thời hạn nộp biên bản hội đồng',
-                'noiDungLabel' => 'Hội đồng thi đua cần hoàn thành biên bản họp xét thi đua và nộp lên hệ thống trước: ',
-                'quyen' => [3],
-            ],
-            'dHanNopMinhChung' => [
-                'tieuDe' => 'Thông báo về hạn nộp minh chứng',
-                'noiDungLabel' => 'Đề nghị các đơn vị cùng toàn bộ cá nhân trong trường tiến hành cung cấp minh chứng về các danh hiệu đã được đề xuất theo biên bản bình xét thi đua tại đơn vị trước: ',
-                'quyen' => [4, 5],
-            ],
-        ];
+        // $fields = [
+        //     'dHanBienBanDonVi' => [
+        //         'tieuDe' => 'Thông báo về thời hạn nộp biên bản đơn vị',
+        //         'noiDungLabel' => 'Yêu cầu các đơn vị nộp biên bản bình bầu thi đua khen thưởng của đơn vị mình lên hệ thống trước: ',
+        //         'quyen' => [4],
+        //     ],
+        //     'dHanBienBanHoiDong' => [
+        //         'tieuDe' => 'Thông báo về thời hạn nộp biên bản hội đồng',
+        //         'noiDungLabel' => 'Hội đồng thi đua cần hoàn thành biên bản họp xét thi đua và nộp lên hệ thống trước: ',
+        //         'quyen' => [3],
+        //     ],
+        //     'dHanNopMinhChung' => [
+        //         'tieuDe' => 'Thông báo về hạn nộp minh chứng',
+        //         'noiDungLabel' => 'Đề nghị các đơn vị cùng toàn bộ cá nhân trong trường tiến hành cung cấp minh chứng về các danh hiệu đã được đề xuất theo biên bản bình xét thi đua tại đơn vị trước: ',
+        //         'quyen' => [4, 5],
+        //     ],
+        // ];
 
-        foreach ($fields as $field => $data) {
-            if ($request->$field !== null) {
-                $thongBao = ThongBaoModel::create([
-                    'sTieuDe' => $data['tieuDe'],
-                    'sNoiDung' => $data['noiDungLabel'] . formatDate($request->$field),
-                    'dNgayTao' => $carbon->format('Y-m-d H:i:s'),
-                    'FK_NguoiTao' => auth()->user()->PK_MaTaiKhoan,
-                ]);
+        // foreach ($fields as $field => $data) {
+        //     if ($request->$field !== null) {
+        //         $thongBao = ThongBaoModel::create([
+        //             'sTieuDe' => $data['tieuDe'],
+        //             'sNoiDung' => $data['noiDungLabel'] . formatDate($request->$field),
+        //             'dNgayTao' => $carbon->format('Y-m-d H:i:s'),
+        //             'FK_NguoiTao' => auth()->user()->PK_MaTaiKhoan,
+        //         ]);
 
-                foreach ($data['quyen'] as $maQuyen) {
-                    ThongBaoQuyenModel::create([
-                        'FK_MaThongBao' => $thongBao->PK_MaThongBao,
-                        'FK_MaQuyen' => $maQuyen,
-                    ]);
-                }
-            }
-        }
+        //         foreach ($data['quyen'] as $maQuyen) {
+        //             ThongBaoQuyenModel::create([
+        //                 'FK_MaThongBao' => $thongBao->PK_MaThongBao,
+        //                 'FK_MaQuyen' => $maQuyen,
+        //             ]);
+        //         }
+        //     }
+        // }
 
         if ($dotTDKT) {
             return response()->json([
@@ -143,44 +143,44 @@ class DotTDKTController extends Controller
             }
 
             // Kiểm tra thay đổi & tạo thông báo
-            $fields = [
-                'dHanBienBanDonVi' => [
-                    'tieuDe' => 'Thông báo về thời hạn nộp biên bản đơn vị',
-                    'noiDungLabel' => 'Yêu cầu các đơn vị nộp biên bản bình bầu thi đua khen thưởng của đơn vị mình lên hệ thống trước: ',
-                    'quyen' => [4],
-                ],
-                'dHanBienBanHoiDong' => [
-                    'tieuDe' => 'Thông báo về thời hạn nộp biên bản hội đồng',
-                    'noiDungLabel' => 'Hội đồng thi đua cần hoàn thành biên bản họp xét thi đua và nộp lên hệ thống trước: ',
-                    'quyen' => [3],
-                ],
-                'dHanNopMinhChung' => [
-                    'tieuDe' => 'Thông báo về hạn nộp minh chứng',
-                    'noiDungLabel' => 'Đề nghị các đơn vị cùng toàn bộ cá nhân trong trường tiến hành cung cấp minh chứng về các danh hiệu đã được đề xuất theo biên bản bình xét thi đua tại đơn vị trước: ',
-                    'quyen' => [4, 5],
-                ],
-            ];
+            // $fields = [
+            //     'dHanBienBanDonVi' => [
+            //         'tieuDe' => 'Thông báo về thời hạn nộp biên bản đơn vị',
+            //         'noiDungLabel' => 'Yêu cầu các đơn vị nộp biên bản bình bầu thi đua khen thưởng của đơn vị mình lên hệ thống trước: ',
+            //         'quyen' => [4],
+            //     ],
+            //     'dHanBienBanHoiDong' => [
+            //         'tieuDe' => 'Thông báo về thời hạn nộp biên bản hội đồng',
+            //         'noiDungLabel' => 'Hội đồng thi đua cần hoàn thành biên bản họp xét thi đua và nộp lên hệ thống trước: ',
+            //         'quyen' => [3],
+            //     ],
+            //     'dHanNopMinhChung' => [
+            //         'tieuDe' => 'Thông báo về hạn nộp minh chứng',
+            //         'noiDungLabel' => 'Đề nghị các đơn vị cùng toàn bộ cá nhân trong trường tiến hành cung cấp minh chứng về các danh hiệu đã được đề xuất theo biên bản bình xét thi đua tại đơn vị trước: ',
+            //         'quyen' => [4, 5],
+            //     ],
+            // ];
 
-            $carbon = Carbon::now();  // Tạo đối tượng Carbon với thời gian hiện tại
-            $carbon->setTimezone('Asia/Ho_Chi_Minh');  // Đặt múi giờ là múi giờ Việt Nam
+            // $carbon = Carbon::now();  // Tạo đối tượng Carbon với thời gian hiện tại
+            // $carbon->setTimezone('Asia/Ho_Chi_Minh');  // Đặt múi giờ là múi giờ Việt Nam
 
-            foreach ($fields as $field => $data) {
-                if ($dotTDKT->$field !== $request->$field) {
-                    $thongBao = ThongBaoModel::create([
-                        'sTieuDe' => $data['tieuDe'],
-                        'sNoiDung' => $data['noiDungLabel'] . formatDate($request->$field),
-                        'dNgayTao' => $carbon->format('Y-m-d H:i:s'),
-                        'FK_NguoiTao' => auth()->user()->PK_MaTaiKhoan,
-                    ]);
+            // foreach ($fields as $field => $data) {
+            //     if ($dotTDKT->$field !== $request->$field) {
+            //         $thongBao = ThongBaoModel::create([
+            //             'sTieuDe' => $data['tieuDe'],
+            //             'sNoiDung' => $data['noiDungLabel'] . formatDate($request->$field),
+            //             'dNgayTao' => $carbon->format('Y-m-d H:i:s'),
+            //             'FK_NguoiTao' => auth()->user()->PK_MaTaiKhoan,
+            //         ]);
 
-                    foreach ($data['quyen'] as $maQuyen) {
-                        ThongBaoQuyenModel::create([
-                            'FK_MaThongBao' => $thongBao->PK_MaThongBao,
-                            'FK_MaQuyen' => $maQuyen,
-                        ]);
-                    }
-                }
-            }
+            //         foreach ($data['quyen'] as $maQuyen) {
+            //             ThongBaoQuyenModel::create([
+            //                 'FK_MaThongBao' => $thongBao->PK_MaThongBao,
+            //                 'FK_MaQuyen' => $maQuyen,
+            //             ]);
+            //         }
+            //     }
+            // }
 
 
             // Gán dữ liệu mới

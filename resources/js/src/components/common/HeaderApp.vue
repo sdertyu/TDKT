@@ -31,9 +31,9 @@
                         <li v-for="(item, index) in listThongBao" :key="index"
                             @click="goTo('/thongbao/' + item.PK_MaThongBao)">
                             <div class="dropdown-item notification-item"
-                                :style="item.daDoc === null ? 'background-color: #d7dadc;' : ''">
+                                :style="item.daDoc === 0 ? 'background-color: #d7dadc;' : ''">
                                 <div class="notification-title fw-bold mb-1">
-                                    <i :class="item.daDoc === null ? 'bi bi-mailbox2-flag' : 'bi bi-mailbox2'"></i>
+                                    <i :class="item.daDoc === 0 ? 'bi bi-mailbox2-flag' : 'bi bi-mailbox2'"></i>
                                     {{ item.sTieuDe }}
                                 </div>
                                 <div class="notification-text">
@@ -122,7 +122,7 @@ const getAllNotifications = () => {
         if (response.status === 200) {
             listThongBao.value = response.data.data;
             listThongBao.value.forEach(item => {
-                if (item.daDoc === null) {
+                if (item.daDoc === 0) {
                     soChuaDoc.value++;
                 }
             });
@@ -134,8 +134,8 @@ const getAllNotifications = () => {
     });
 }
 
-onMounted(() => {
-    getAllNotifications();
+onMounted( async () => {
+    await getAllNotifications();
 });
 
 </script>

@@ -30,7 +30,7 @@ class ThongBaoModel extends Model
         return $this->hasMany(ThongBaoQuyenModel::class, 'FK_MaThongBao', 'PK_MaThongBao');
     }
 
-    public function thongBaoDaDoc() {
-        return $this->hasMany(ThongBaoDaDocModel::class, 'FK_MaThongBao', 'PK_MaThongBao');
+    public function thongBaoTaiKhoan() {
+        return $this->hasMany(ThongBaoTaiKhoanModel::class, 'FK_MaThongBao', 'PK_MaThongBao');
     }
 }
