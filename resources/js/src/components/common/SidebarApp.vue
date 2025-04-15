@@ -91,7 +91,7 @@ switch (role.value) {
                 ]
             },
             {
-                title: 'thông tin minh chứng',
+                title: 'Minh chứng đề xuất',
                 icon: 'bi bi-bag-check-fill',
                 isActive: false,
                 isOpen: false,
@@ -109,6 +109,12 @@ switch (role.value) {
                         isActive: false
                     }
                 ]
+            },
+            {
+                link: '/quanlythongbao',
+                title: 'Quản lý thông báo',
+                icon: 'bi bi-bell',
+                isActive: false
             },
             // {
             //     title: 'Widgets',
@@ -167,7 +173,7 @@ switch (role.value) {
                 ]
             },
             {
-                title: 'thông tin minh chứng',
+                title: 'Minh chứng đề xuất',
                 icon: 'bi bi-bag-check-fill',
                 isActive: false,
                 isOpen: false,

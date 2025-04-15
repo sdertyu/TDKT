@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ThongBaoDaDocModel extends Model
+class ThongBaoTaiKhoanModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'tblthongbao_dadoc';
+    protected $table = 'tblthongbao_taikhoan';
 
     protected $primaryKey = null;
 
@@ -18,5 +18,10 @@ class ThongBaoDaDocModel extends Model
     protected $fillable = [
         'FK_MaThongBao',
         'FK_MaTaiKhoan',
+        'bTrangThai'
     ];
+
+    public function taiKhoan() {
+        return $this->belongsTo(AccountModel::class, 'FK_MaTaiKhoan', 'PK_MaTaiKhoan');
+    }
 }
