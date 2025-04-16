@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/login', [AccountController::class, 'index']);
-Route::middleware('auth.api')->group(function () {
+Route::middleware(['auth.api'])->group(function () {
     Route::post('/logout', [AccountController::class, 'logOut']);
     Route::get('/info', [AccountController::class, 'info']);
     Route::put('/doi-mat-khau', [AccountController::class, 'changePassword']);
@@ -67,7 +67,6 @@ Route::middleware('auth.api')->group(function () {
         Route::delete('/deletedotdotxuat/{id}', [DotTDKTController::class, 'xoaDotDotXuat']);
         Route::delete('/updatedotdotxuat/{id}', [DotTDKTController::class, 'xoaDotDotXuat']);
         Route::put('/updatetrangthaidotdotxuat/{id}', [DotTDKTController::class, 'capNhatTrangThaiDotDotXuat']);
-
     });
     Route::prefix('hoidong')->group(function () {
         Route::get('/list', [HoiDongController::class, 'index']);
@@ -84,11 +83,11 @@ Route::middleware('auth.api')->group(function () {
     Route::prefix('danhhieu')->group(function () {
         Route::get('/list', [DanhHieuController::class, 'index']);
         Route::get('/listdanhhieutheodot', [DanhHieuController::class, 'layDanhSachDanhHieuTheoDot']);
-        Route::post('/add',[DanhHieuController::class, 'themDanhHieu']);
-        Route::put('/update',[DanhHieuController::class, 'suaDanhHieu']);
-        Route::put('/updatestatus/{id}',[DanhHieuController::class, 'suaTrangThai']);
-        Route::delete('/delete/{id}',[DanhHieuController::class, 'xoaDanhHieu']);
-        Route::get('/listdanhhieudotxuat',[DanhHieuController::class, 'layDanhSachDanhHieuDotXuat']);
+        Route::post('/add', [DanhHieuController::class, 'themDanhHieu']);
+        Route::put('/update', [DanhHieuController::class, 'suaDanhHieu']);
+        Route::put('/updatestatus/{id}', [DanhHieuController::class, 'suaTrangThai']);
+        Route::delete('/delete/{id}', [DanhHieuController::class, 'xoaDanhHieu']);
+        Route::get('/listdanhhieudotxuat', [DanhHieuController::class, 'layDanhSachDanhHieuDotXuat']);
     });
 
     Route::prefix('loaidanhhieu')->group(function () {
@@ -116,10 +115,9 @@ Route::middleware('auth.api')->group(function () {
         Route::get('/getlistdexuatxetduyet', [DeXuatController::class, 'getListDeXuatXetDuyet']);
         Route::get('/getlistdexuatxetduyetdotxuat', [DeXuatController::class, 'getListDeXuatXetDuyetDotXuat']);
         Route::get('/getlisttheodotdotxuat', [DeXuatController::class, 'getListDeXuatTheoDotDotXuat']);
-        Route::post('/xetduyetdexuat',[DeXuatController::class, 'xetDuyetDeXuat']);
+        Route::post('/xetduyetdexuat', [DeXuatController::class, 'xetDuyetDeXuat']);
         Route::post('/themdexuatdotxuat', [DeXuatController::class, 'themDeXuatDotDotXuat']);
         Route::get('/thongtindexuatdotxuat', [DeXuatController::class, 'layThongTinDeXuatDotXuat']);
-
     });
 
     Route::prefix('minhchung')->group(function () {
