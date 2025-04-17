@@ -7,12 +7,78 @@ use App\Models\DotTDKTModel;
 use App\Models\DotXuatModel;
 use App\Models\HoiDongModel;
 use App\Models\KetQuaModel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class DeXuatController extends Controller
 {
+
+    public function themDeXuatTheoDot(Request $request)
+    {
+        try {
+            $dotActive = DotTDKTModel::where('bTrangThai', 1)->first();
+            $hanNopDeXuat = $dotActive->dHanBienBanDonVi;
+            $homNay = Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
+            if ($hanNopDeXuat < $homNay) {
+                return response()->json([
+                    'success' => false,
+                    'error' => ['Hết thời gian nộp biên bản']
+                ], 422);
+            }
+            $message = [
+                'dexuatcanhan.required' => 'Đề xuất cá nhân không được để trống',
+                'dexuatcanhan.json' => 'Đề xuất cá nhân phải là định dạng JSON',
+                'dexuatdonvi.required' => 'Đề xuất đơn vị không được để trống',
+                'dexuatdonvi.json' => 'Đề xuất đơn vị phải là định dạng JSON',
+                'mahoidong.required' => 'Mã hội đồng không được để trống',
+                'mahoidong.exists' => 'Không tìm thấy hội đồng',
+            ];
+            $validator = Validator::make($request->all(), [
+                'dexuatcanhan' => 'required|json',
+                'dexuatdonvi' => 'required|json',
+                'mahoidong' => 'required|exists:tblhoidong,PK_MaHoiDong',
+            ], $message);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => $validator->errors()
+                ], 422);
+            }
+            $deXuatHoiDong = DeXuatModel::where('FK_MaHoiDong', $request->mahoidong)->delete();
+            $currentUser = auth()->user();
+            $caNhan = json_decode($request->dexuatcanhan, true);
+            foreach ($caNhan as $key => $cn) {
+                foreach ($cn as $key2 => $value) {
+                    // Log::info($value);
+                    $dexuat = new DeXuatModel();
+                    $dexuat->FK_User = $value['taiKhoan'];
+                    $dexuat->FK_MaHoiDong = $request->mahoidong;
+                    $dexuat->iSoNguoiBau = $value['soPhieu'];
+                    $dexuat->dNgayTao = now();
+                    $dexuat->FK_MaDanhHieu = $key;
+                    $dexuat->save();
+                }
+            }
+
+            $donVi = json_decode($request->dexuatdonvi, true);
+            foreach ($donVi as $key => $dv) {
+                $dexuat = new DeXuatModel();
+                $dexuat->FK_User = $currentUser->PK_MaTaiKhoan;
+                $dexuat->FK_MaHoiDong = $request->mahoidong;
+                $dexuat->iSoNguoiBau = $dv['soPhieu'];
+                $dexuat->dNgayTao = now();
+                $dexuat->FK_MaDanhHieu = $dv['id'];
+                $dexuat->save();
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Lỗi khi thêm đề xuất: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function getListDeXuatTheoDot()
     {
         $user = auth()->user();
@@ -42,7 +108,7 @@ class DeXuatController extends Controller
 
         if ($hoiDong->isEmpty()) {
             return response()->json([
-                'message' => 'Không có đề xuất nào trong đợt thi đua khen thưởng này'
+                'message' => 'Không có danh sách đề xuất nào trong đợt thi đua khen thưởng này'
             ], 404);
         }
         return response()->json([
@@ -80,7 +146,7 @@ class DeXuatController extends Controller
 
         if ($hoiDong->isEmpty()) {
             return response()->json([
-                'message' => 'Không có đề xuất nào trong đợt thi đua khen thưởng này'
+                'message' => 'Không có đề xuất đột xuất nào được tìm thấy'
             ], 404);
         }
         return response()->json([
@@ -106,6 +172,7 @@ class DeXuatController extends Controller
                 'taiKhoan',
                 'taiKhoan.donVi',
                 'taiKhoan.caNhan',
+                'taiKhoan.caNhan.donVi',
                 'taiKhoan.donVi.caNhan'
             ])
             ->get();
@@ -133,7 +200,6 @@ class DeXuatController extends Controller
             // Nếu là tài khoản đơn vị
             if ($quyen == 4 && $tk->donVi) {
                 $donVi = $tk->donVi;
-                Log::info($donVi);
                 $maDonVi = $donVi->PK_MaDonVi;
 
                 if (!isset($grouped[$maDonVi])) {
@@ -143,10 +209,6 @@ class DeXuatController extends Controller
                         'de_xuat_don_vi' => [],
                         'ca_nhan' => []
                     ];
-                } else {
-                    if ($grouped[$maDonVi]['ten_don_vi'] === null) {
-                        $grouped[$maDonVi]['ten_don_vi'] = $donVi->sTenDonVi;
-                    }
                 }
 
 
@@ -162,7 +224,7 @@ class DeXuatController extends Controller
                 if (!isset($grouped[$maDonVi])) {
                     $grouped[$maDonVi] = [
                         'ma_don_vi' => $maDonVi,
-                        'ten_don_vi' => null,
+                        'ten_don_vi' => $caNhan->donVi->sTenDonVi,
                         'de_xuat_don_vi' => [],
                         'ca_nhan' => []
                     ];
@@ -621,7 +683,7 @@ class DeXuatController extends Controller
 
     public function themDeXuatDotDotXuat(Request $request)
     {
-        Log::info($request->all());
+        // Log::info($request->all());
         // $validator = Validator::make($request->all(), [
         //     'caNhan.*.danhHieu' => 'required',
         //     'caNhan.*.caNhan'   => 'required',
@@ -638,6 +700,21 @@ class DeXuatController extends Controller
         $donVi = $request->donVi;
         $user = auth()->user();
         $dotXuat = DotXuatModel::where('bTrangThai', 1)->first();
+
+        if (!$dotXuat) {
+            return response()->json([
+                'message' => 'Không có đợt đột xuất nào đang hoạt động'
+            ], 404);
+        }
+
+        $hanNop = $dotXuat->dHanNopDeXuat;
+        $homNay = Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
+        if ($hanNop < $homNay) {
+            return response()->json([
+                'success' => false,
+                'error' => ['Hết thời gian nộp đề xuất']
+            ], 422);
+        }
 
         DeXuatModel::where('FK_MaDotXuat', $dotXuat->PK_MaDotXuat)
             ->where('FK_NguoiTao', $user->PK_MaTaiKhoan)

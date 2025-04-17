@@ -7,6 +7,7 @@ use App\Models\DotTDKTModel;
 use App\Models\HinhThucModel;
 use App\Models\HoiDongModel;
 use App\Models\LoaiHDModel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
@@ -51,7 +52,15 @@ class HoiDongController extends Controller
     {
         $currentUser = auth()->user();
 
-        Log::info($request->all());
+        $dotActive = DotTDKTModel::where('bTrangThai', 1)->first();
+        $hanNopBienBan = $dotActive->dHanBienBanDonVi;
+        $homNay = Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
+        if ($hanNopBienBan < $homNay)  {
+            return response()->json([
+                'success' => false,
+                'error' => ['Hết thời gian nộp biên bản']
+            ], 422);
+        }
 
         if ($currentUser->FK_MaQuyen == 3) {
             $validator = Validator::make($request->all(), [
@@ -136,32 +145,6 @@ class HoiDongController extends Controller
             $hoiDong->sGhiChu = $request->ghichu;
             $hoiDong->save();
 
-            if ($hoiDong) {
-                $caNhan = json_decode($request->dexuatcanhan, true);
-                foreach ($caNhan as $key => $cn) {
-                    foreach ($cn as $key2 => $value) {
-                        // Log::info($value);
-                        $dexuat = new DeXuatModel();
-                        $dexuat->FK_User = $value['taiKhoan'];
-                        $dexuat->FK_MaHoiDong = $request->mahoidong;
-                        $dexuat->iSoNguoiBau = $value['soPhieu'];
-                        $dexuat->dNgayTao = now();
-                        $dexuat->FK_MaDanhHieu = $key;
-                        $dexuat->save();
-                    }
-                }
-
-                $donVi = json_decode($request->dexuatdonvi, true);
-                foreach ($donVi as $key => $dv) {
-                    $dexuat = new DeXuatModel();
-                    $dexuat->FK_User = $currentUser->PK_MaTaiKhoan;
-                    $dexuat->FK_MaHoiDong = $request->mahoidong;
-                    $dexuat->iSoNguoiBau = $dv['soPhieu'];
-                    $dexuat->dNgayTao = now();
-                    $dexuat->FK_MaDanhHieu = $dv['id'];
-                    $dexuat->save();
-                }
-            }
         } else {
             $existingHoiDong->update([
                 'FK_MaTaiKhoan' => $currentUser->PK_MaTaiKhoan,
@@ -176,31 +159,31 @@ class HoiDongController extends Controller
                 'sGhiChu' => $request->ghichu
             ]);
 
-            DeXuatModel::where('FK_MaHoiDong', $existingHoiDong->PK_MaHoiDong)->delete();
-            $caNhan = json_decode($request->dexuatcanhan, true);
-            foreach ($caNhan as $key => $cn) {
-                foreach ($cn as $key2 => $value) {
-                    // Log::info($value);
-                    $dexuat = new DeXuatModel();
-                    $dexuat->FK_User = $value['taiKhoan'];
-                    $dexuat->FK_MaHoiDong = $request->mahoidong;
-                    $dexuat->iSoNguoiBau = $value['soPhieu'];
-                    $dexuat->dNgayTao = now();
-                    $dexuat->FK_MaDanhHieu = $key;
-                    $dexuat->save();
-                }
-            }
+            // DeXuatModel::where('FK_MaHoiDong', $existingHoiDong->PK_MaHoiDong)->delete();
+            // $caNhan = json_decode($request->dexuatcanhan, true);
+            // foreach ($caNhan as $key => $cn) {
+            //     foreach ($cn as $key2 => $value) {
+            //         // Log::info($value);
+            //         $dexuat = new DeXuatModel();
+            //         $dexuat->FK_User = $value['taiKhoan'];
+            //         $dexuat->FK_MaHoiDong = $request->mahoidong;
+            //         $dexuat->iSoNguoiBau = $value['soPhieu'];
+            //         $dexuat->dNgayTao = now();
+            //         $dexuat->FK_MaDanhHieu = $key;
+            //         $dexuat->save();
+            //     }
+            // }
 
-            $donVi = json_decode($request->dexuatdonvi, true);
-            foreach ($donVi as $key => $dv) {
-                $dexuat = new DeXuatModel();
-                $dexuat->FK_User = $currentUser->PK_MaTaiKhoan;
-                $dexuat->FK_MaHoiDong = $request->mahoidong;
-                $dexuat->iSoNguoiBau = $dv['soPhieu'];
-                $dexuat->dNgayTao = now();
-                $dexuat->FK_MaDanhHieu = $dv['id'];
-                $dexuat->save();
-            }
+            // $donVi = json_decode($request->dexuatdonvi, true);
+            // foreach ($donVi as $key => $dv) {
+            //     $dexuat = new DeXuatModel();
+            //     $dexuat->FK_User = $currentUser->PK_MaTaiKhoan;
+            //     $dexuat->FK_MaHoiDong = $request->mahoidong;
+            //     $dexuat->iSoNguoiBau = $dv['soPhieu'];
+            //     $dexuat->dNgayTao = now();
+            //     $dexuat->FK_MaDanhHieu = $dv['id'];
+            //     $dexuat->save();
+            // }
 
 
             if ($request->hasFile('bienban')) {

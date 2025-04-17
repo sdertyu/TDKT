@@ -581,7 +581,7 @@ class DotTDKTController extends Controller
 
         $validator = Validator::make($request->all(), [
             'maDot' => 'required|exists:tbldotthiduakhenthuong,PK_MaDot',
-            'ngayBatDau' => 'required|date|after_or_equal:today',
+            'ngayBatDau' => 'required|date',
             'ngayKetThuc' => 'required|date|after_or_equal:ngayBatDau',
             'hanNopMinhChung' => 'required|date',
             'hanNopBienBan' => 'required|date',
@@ -626,7 +626,7 @@ class DotTDKTController extends Controller
             ], 404);
         }
         $validator = Validator::make($request->all(), [
-            'ngayBatDau' => 'required|date|after_or_equal:today',
+            'ngayBatDau' => 'required|date',
             'ngayKetThuc' => 'required|date|after_or_equal:ngayBatDau',
             'hanNopMinhChung' => 'required|date',
             'hanNopBienBan' => 'required|date',

@@ -457,8 +457,13 @@ const handleSubmitAll = async () => {
         toastSuccess('Đã gửi đề xuất khen thưởng thành công!');
 
     } catch (error) {
-        console.error(error);
-        toastError('Có lỗi xảy ra khi gửi đề xuất khen thưởng!');
+        if (error.response.status === 422) {
+            const errors = error.response.data.error;
+            let errorMessage = Object.values(errors).flat().join('<br>');
+            toastError(errorMessage);
+        } else {
+            toastError(error.response.data.message || 'Có lỗi xảy ra khi lưu đợt thi đua đột xuất');
+        }
     }
 };
 

@@ -81,8 +81,18 @@ const getDanhHieuDeXuat = async () => {
             toastError('Lỗi khi lấy danh sách danh hiệu đề xuất:', response.message);
         }
     } catch (error) {
-        console.error('Đã xảy ra lỗi:', error);
-        toastError('Không thể kết nối đến máy chủ');
+        if(error.response) {
+            if (error.response.status === 404) {
+                toastError(error.response.data.message);
+            } 
+            else {
+                toastError('Có lỗi xảy ra, vui lòng thử lại sau');
+            }
+        } else if (error.request) {
+            toastError('Không thể kết nối đến máy chủ');
+        } else {
+            toastError('Có lỗi xảy ra, vui lòng thử lại sau');
+        }
     } finally {
         loading.value = false;
     }

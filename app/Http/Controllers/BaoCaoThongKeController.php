@@ -56,6 +56,56 @@ class BaoCaoThongKeController extends Controller
         }
     }
 
+    public function thongKeThanhTichCuaCaNhanTrongDonVi()
+    {
+        try {
+            $user = auth()->user();
+            $id = $user->PK_MaTaiKhoan;
+            $donVi = DonViModel::where('FK_MaTaiKhoan', $id)->first();
+            if (!$donVi) {
+                return response()->json([
+                    'message' => 'Đơn vị không tồn tại'
+                ], 404);
+            }
+            $maDonVi = $donVi->PK_MaDonVi;
+            $thanhTich = DeXuatModel::whereHas('ketQua', function ($query) {
+                $query->where('bDuyet', 1);
+            })
+                ->whereHas('taiKhoan.caNhan', function ($query) use ($maDonVi) {
+                    $query->where('FK_MaDonVi', $maDonVi);
+                })
+                ->with([
+                    'danhHieu',
+                    'danhHieu.capDanhHieu',
+                    'danhHieu.loaiDanhHieu',
+                    'danhHieu.hinhThuc',
+                    'hoiDong.dot',
+                    'dotXuat.dot',
+                    'taiKhoan.caNhan',
+                ])
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'maCaNhan' => $item->taiKhoan->caNhan->PK_MaCaNhan ?? null,
+                        'tenCaNhan' => $item->taiKhoan->caNhan->sTenCaNhan ?? null,
+                        'tenDanhHieu' => $item->danhHieu->sTenDanhHieu,
+                        'dot' => $item->hoiDong == null ? $item->dotXuat->dot->PK_MaDot : $item->hoiDong->dot->PK_MaDot,
+                        'hinhThuc' => $item->danhHieu->hinhThuc->sTenHinhThuc,
+                        'capDanhHieu' => $item->danhHieu->capDanhHieu->sTenCap,
+                    ];
+                });
+
+            return response()->json([
+                'data' => $thanhTich
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi lấy danh sách thành tích của cá nhân trong đơn vị: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Có lỗi xảy ra khi lấy danh sách thành tích của cá nhân trong đơn vị'
+            ], 500);
+        }
+    }
+
     public function danhSachNamHoc()
     {
         try {

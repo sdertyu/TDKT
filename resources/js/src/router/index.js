@@ -20,6 +20,7 @@ import authMiddleware from "../middleware/auth";
 import DeXuatTheoDot from "../views/DonVi/DeXuatTheoDot.vue";
 import DeXuatDotXuat from "../views/DonVi/DeXuatDotXuat.vue";
 import VanBanDinhKem from "../views/DonVi/VanBan.vue";
+import ThanhTichCaNhan from "../views/DonVi/ThanhTichCaNhan.vue";
 
 //hội đồng
 import MinhChungTheoDot from "../views/HoiDong/MinhChungTheoDot.vue";
@@ -124,6 +125,11 @@ const router = createRouter({
                     path: "dexuatdotxuat",
                     component: DeXuatDotXuat,
                     meta: { roles: [4] , title: 'Đề xuất đột xuất'},
+                },
+                {
+                    path: "thanhtichcanhan",
+                    component: ThanhTichCaNhan,
+                    meta: { roles: [4] , title: 'Thành tích cá nhân trong đơn vị'},
                 },
 
 
