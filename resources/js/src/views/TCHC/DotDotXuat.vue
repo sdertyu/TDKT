@@ -262,15 +262,16 @@ const formatDateDisplay = (dateString) => {
     return date.toLocaleDateString('vi-VN'); // sẽ ra: 25/04/2025
 };
 
+
 const showEditModal = (data) => {
     isEditing.value = true;
     dotDotXuat.value = {
-        id: data.PK_MaDotXuat,
-        ngayBatDau: data.dNgayBatDau,
-        ngayKetThuc: (data.dNgayKetThuc),
-        hanNopDeXuat: (data.dHanNopDeXuat),
-        hanNopMinhChung: (data.dHanNopMinhChung),
-        hanNopBienBan: (data.dHanBienBanHoiDong)
+        id: data.id,
+        ngayBatDau: data.ngayBatDau,
+        ngayKetThuc: (data.ngayKetThuc),
+        hanNopDeXuat: (data.hanNopDeXuat),
+        hanNopMinhChung: (data.hanNopMinhChung),
+        hanNopBienBan: (data.hanNopBienBan)
     }
 };
 
@@ -290,6 +291,7 @@ const saveDotDotXuat = async () => {
 
         if (isEditing.value) {
             // Cập nhật đợt đột xuất
+            console.log(dotDotXuat.value.id);
             response = await axios.put(`/api/dotthiduakhenthuong/updatedotdotxuat/${dotDotXuat.value.id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('api_token')}`

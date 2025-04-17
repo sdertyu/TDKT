@@ -65,7 +65,6 @@ Route::middleware(['auth.api'])->group(function () {
         Route::post('/adddotdotxuat', [DotTDKTController::class, 'themDotDotXuat']);
         Route::put('/updatedotdotxuat/{id}', [DotTDKTController::class, 'suaDotDotXuat']);
         Route::delete('/deletedotdotxuat/{id}', [DotTDKTController::class, 'xoaDotDotXuat']);
-        Route::delete('/updatedotdotxuat/{id}', [DotTDKTController::class, 'xoaDotDotXuat']);
         Route::put('/updatetrangthaidotdotxuat/{id}', [DotTDKTController::class, 'capNhatTrangThaiDotDotXuat']);
     });
     Route::prefix('hoidong')->group(function () {
@@ -109,6 +108,7 @@ Route::middleware(['auth.api'])->group(function () {
     });
 
     Route::prefix('dexuat')->group(function () {
+        Route::post('/themdexuattheodot', [DeXuatController::class, 'themDeXuatTheoDot']);
         Route::get('/getlisttheodot', [DeXuatController::class, 'getListDeXuatTheoDot']);
         Route::get('/getalldexuattheodot', [DeXuatController::class, 'getAllDeXuatTheoDot']);
         Route::get('/getalldexuatdotxuat', [DeXuatController::class, 'getAllDeXuatTheoDotDotXuat']);
@@ -130,6 +130,7 @@ Route::middleware(['auth.api'])->group(function () {
 
     Route::prefix('baocaothongke')->group(function () {
         Route::get('thanhtichcuatoi', [BaoCaoThongKeController::class, 'thongKeThanhTichCuaToi']);
+        Route::get('thanhtichcanhantrongdonvi', [BaoCaoThongKeController::class, 'thongKeThanhTichCuaCaNhanTrongDonVi']);
         Route::get('danhsachnamhoc', [BaoCaoThongKeController::class, 'danhSachNamHoc']);
         Route::get('danhsachdanhhieu', [BaoCaoThongKeController::class, 'danhSachDanhHieu']);
         Route::get('danhsachcapdanhhieu', [BaoCaoThongKeController::class, 'danhSachCapDanhHieu']);

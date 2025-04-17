@@ -39,6 +39,7 @@
                                         <div class="invalid-feedback">{{ passwordError }}</div>
                                     </div>
                                 </div>
+                                <p class="mb-2">Mật khẩu test: Chithien123456@</p>
 
                                 <!-- Thông báo lỗi -->
                                 <div v-if="errorMessage" class="alert alert-danger alert-dismissible fade show"
@@ -99,10 +100,22 @@ const validateForm = () => {
     if (!password.value) {
         passwordError.value = 'Vui lòng nhập mật khẩu';
         isValid = false;
-    } else if (password.value.length < 6) {
-        passwordError.value = 'Mật khẩu phải có ít nhất 6 ký tự';
-        isValid = false;
     }
+    // if (password.value.length < 8) {
+    //     passwordError.value = 'Mật khẩu phải có ít nhất 8 ký tự';
+    //     isValid = false;
+    // } else {
+    //     // Check for uppercase, lowercase, number, and special character
+    //     const hasUpperCase = /[A-Z]/.test(password.value);
+    //     const hasLowerCase = /[a-z]/.test(password.value);
+    //     const hasNumbers = /\d/.test(password.value);
+    //     const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password.value);
+        
+    //     if (!hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChar) {
+    //         passwordError.value = 'Mật khẩu phải chứa chữ hoa, chữ thường, chữ số và ký tự đặc biệt';
+    //         isValid = false;
+    //     }
+    // }
 
     return isValid;
 };
@@ -147,8 +160,7 @@ const submitLogin = () => {
             }
         })
         .catch(error => {
-            console.error('Lỗi đăng nhập:', error);
-            errorMessage.value = 'Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại sau.';
+            errorMessage.value = error.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại sau.';
         })
         .finally(() => {
             isLoading.value = false;

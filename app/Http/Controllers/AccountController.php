@@ -43,7 +43,7 @@ class AccountController extends Controller
 
         if (!$user) {
             return response()->json([
-                'message' => 'Không tìm thấy tài khoản'
+                'message' => 'Tài khoản hoặc mật khẩu không chính xác'
             ], 404);
         }
         if ($user->bTrangThai == 0) {
@@ -53,7 +53,7 @@ class AccountController extends Controller
         }
         if (!Hash::check($request->password, $user->sPassword)) {
             return response()->json([
-                'message' => 'Mật khẩu không chính xác'
+                'message' => 'Tài khoản hoặc mật khẩu không chính xác'
             ], 401);
         }
         if ($user->FK_MaQuyen == 4) {

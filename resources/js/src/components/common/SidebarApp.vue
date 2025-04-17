@@ -243,10 +243,23 @@ switch (role.value) {
                 ]
             },
             {
-                title: 'Thành tích của tôi',
+                title: 'Thành tích',
                 icon: 'bi bi-award-fill',
                 isActive: false,
-                link: '/thanhtichcuatoi',
+                children: [
+                    {
+                        title: 'Của tôi',
+                        icon: 'bi bi-person-check-fill',
+                        link: '/thanhtichcuatoi',
+                        isActive: false
+                    },
+                    {
+                        title: 'Cá nhân trong ĐV',
+                        icon: 'bi bi-file-earmark-text',
+                        link: '/thanhtichcanhan',
+                        isActive: false
+                    }
+                ]
             }
         ];
         break;

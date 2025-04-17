@@ -7,7 +7,7 @@
                     <h4 class="mb-0">
                         <i class="bi bi-cloud-upload me-2"></i>Upload Minh Chứng
                     </h4>
-                    <button v-if="!role" class="btn btn-sm btn-light" @click="showUploadModal = true">
+                    <button v-if="!role" class="btn btn-sm btn-primary" @click="showUploadModal = true">
                         <i class="bi bi-plus-lg me-1"></i>Thêm mới
                     </button>
                 </div>
@@ -183,7 +183,6 @@ const pdfUrl = ref('')
 
 onMounted(() => {
     getListMinhChung()
-    console.log(role.value);
 })
 
 const getListMinhChung = () => {
@@ -240,7 +239,14 @@ const onFileChange = async (event) => {
             }, 1500)
         }
     } catch (error) {
-        toastError('Lưu minh chứng thất bại');
+        if (error.response.status === 422) {
+            const errors = error.response.data.error;
+            let errorMessage = Object.values(errors).flat().join('<br>');
+            toastError(errorMessage);
+        } else {
+            toastError('Lưu minh chứng thất bại');
+        }
+        uploadingFiles.value = [];
     }
 };
 
