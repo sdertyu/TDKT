@@ -24,8 +24,8 @@ class DeXuatModel extends Model
 
     protected $fillable = ['FK_User', 'FK_MaHoiDong', 'iSoNguoiBau', 'dNgayTao', 'FK_MaHoiDong', 'FK_MaDanhHieu', 'FK_MaDotXuat', 'FK_NguoiTao'];
 
-    public function hoiDong() {
-        return $this->belongsTo(HoiDongModel::class, 'FK_MaHoiDong', 'PK_MaHoiDong');
+    public function hoiDongDonVi() {
+        return $this->belongsTo(HoiDongDonViModel::class, 'FK_MaHoiDong', 'PK_MaHoiDong');
     }
 
     public function danhHieu() {

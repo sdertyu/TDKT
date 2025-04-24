@@ -8,6 +8,7 @@ use App\Http\Controllers\DonViController;
 use App\Http\Controllers\DotTDKTController;
 use App\Http\Controllers\HinhThucController;
 use App\Http\Controllers\HoiDongController;
+use App\Http\Controllers\KienToanController;
 use App\Http\Controllers\MinhChungController;
 use App\Http\Controllers\TaiKhoanController;
 use App\Http\Controllers\ThongBaoController;
@@ -139,4 +140,13 @@ Route::middleware(['auth.api'])->group(function () {
         Route::get('datathongkecanhan', [BaoCaoThongKeController::class, 'dataThongKeCaNhan']);
         Route::get('datathongkedonvi', [BaoCaoThongKeController::class, 'dataThongKeDonVi']);
     });
+
+    Route::prefix('kientoan')->group(function () {
+        Route::get('/getlist', [KienToanController::class, 'index']);
+        Route::put('/updatestatus/{id}', [KienToanController::class, 'capNhatTrangThai']);
+        Route::get('/getlistnhiemvu', [KienToanController::class, 'getListNhiemVu']);
+        Route::post('/create', [KienToanController::class, 'taoKienToan']);
+        Route::post('/update', [KienToanController::class, 'suaKienToan']);
+    });
+
 });
