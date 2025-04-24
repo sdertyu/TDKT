@@ -80,6 +80,7 @@ class HoiDongController extends Controller
                 // 'thuKyId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
                 'fileBienBan' => 'nullable|file',
                 'fileKiemPhieu' => 'nullable|file',
+                'maKienToan' => 'required|exists:tblkientoan,PK_MaKienToan',
                 // 'maDotXuat' => 'nullable|exists:tbldotxuat,PK_MaDotXuat',
             ], $this->messages);
 
@@ -224,7 +225,7 @@ class HoiDongController extends Controller
             $hoiDong->dThoiGianHop = $request->thoiGian;
             $hoiDong->sDiaChi = $request->diaChi;
             $hoiDong->iSoNguoiThamDu = $request->soNguoiCoMat;
-            $hoiDong->iSoThanhVien = $request->tongNguoiTrieuTap;
+            // $hoiDong->iSoThanhVien = $request->tongNguoiTrieuTap;
             // $hoiDong->FK_ChiTietHD = $chiTietHD->PK_MaChiTietHD;
             $hoiDong->sDuongDanBienBan = $filePathBienBan;
             $hoiDong->sTenBienBan = $fileBienBan->getClientOriginalName();
@@ -236,22 +237,23 @@ class HoiDongController extends Controller
             // $hoiDong->FK_PhoChuTichTT = $request->phoThuongTrucId;
             // $hoiDong->FK_MaLoaiHD = 2;
             $hoiDong->FK_MaHinhThuc = 1;
+            $hoiDong->FK_MaKienToan = $request->maKienToan;
             // $hoiDong->FK_MaDotXuat = $request->maDotXuat;
             $hoiDong->save();
         } else {
             $existingHoiDong->update([
                 'FK_MaTaiKhoan' => $currentUser->PK_MaTaiKhoan,
                 'dNgayTao' => getDateNow(),
-                'FK_ChuTri' => $request->chuTichId,
-                'FK_ThuKy' => $request->thuKyId,
+                // 'FK_ChuTri' => $request->chuTichId,
+                // 'FK_ThuKy' => $request->thuKyId,
                 'dThoiGianHop' => $request->thoiGian,
                 'sDiaChi' => $request->diaChi,
                 'iSoNguoiThamDu' => $request->soNguoiCoMat,
-                'iSoThanhVien' => $request->tongNguoiTrieuTap,
+                // 'iSoThanhVien' => $request->tongNguoiTrieuTap,
                 'sSoHD' => $request->huongDanSo,
                 'sGhiChu' => $request->ghiChu,
-                'FK_PhoChuTich' => $request->phoChuTichId,
-                'FK_PhoChuTichTT' => $request->phoThuongTrucId
+                // 'FK_PhoChuTich' => $request->phoChuTichId,
+                // 'FK_PhoChuTichTT' => $request->phoThuongTrucId
             ]);
             if ($request->hasFile('fileBienBan')) {
                 if ($existingHoiDong->sDuongDanBienBan != null) {

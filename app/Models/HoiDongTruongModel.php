@@ -33,4 +33,9 @@ class HoiDongTruongModel extends Model
     public function dotXuat() {
         return $this->belongsTo(DotTDKTModel::class, 'FK_MaDotXuat', 'PK_MaDotXuat');
     }
+
+    public function kienToan()
+    {
+        return $this->hasOne(KienToanModel::class, 'PK_MaKienToan', 'FK_MaKienToan');
+    }
 }

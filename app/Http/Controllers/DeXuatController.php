@@ -7,6 +7,7 @@ use App\Models\DotTDKTModel;
 use App\Models\DotXuatModel;
 use App\Models\HoiDongDonViModel;
 use App\Models\HoiDongModel;
+use App\Models\HoiDongTruongModel;
 use App\Models\KetQuaModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -476,7 +477,17 @@ class DeXuatController extends Controller
             });
         }
 
-        $hoiDong = HoiDongDonViModel::where('PK_MaHoiDong', $user->sUsername . '-' . $dotActive->PK_MaDot)->first();
+
+        $hoiDong = HoiDongTruongModel::where('PK_MaHoiDong', $user->sUsername . '-' . $dotActive->PK_MaDot)
+            ->whereHas('kienToan')          // thêm điều kiện khác nếu cần
+            ->with(['kienToan.thanhVienHoiDong'])  // load KienToan và các thành viên
+            ->first();
+
+        if($hoiDong) {
+            $hoiDong['soThanhVien'] = $hoiDong->kienToan->thanhVienHoiDong->count();
+        }
+
+
 
 
 
@@ -632,7 +643,7 @@ class DeXuatController extends Controller
             'deXuat' => 'required|array',
             'dexuat.*.ma_de_xuat' => 'required|exists:tbldexuat,PK_MaDeXuat',
             'dexuat.*.trang_thai' => 'required|in:0,1',
-            'maHoiDong' => 'required|exists:tblhoidong,PK_MaHoiDong',
+            'maHoiDong' => 'required|exists:tblhoidongtruong,PK_MaHoiDong',
             'dexuat.*.so_nguoi_bau' => 'required|integer',
         ]);
 

@@ -147,6 +147,8 @@ Route::middleware(['auth.api'])->group(function () {
         Route::get('/getlistnhiemvu', [KienToanController::class, 'getListNhiemVu']);
         Route::post('/create', [KienToanController::class, 'taoKienToan']);
         Route::post('/update', [KienToanController::class, 'suaKienToan']);
+        Route::delete('/delete/{id}', [KienToanController::class, 'xoaKienToan']);
+        Route::get('/kientoanactive', [KienToanController::class, 'layKienToanActive']);
     });
 
 });

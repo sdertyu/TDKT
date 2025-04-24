@@ -52,6 +52,22 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <div class="form-group">
+                                <label class="form-label">Số người vắng</label>
+                                <input type="text" class="form-control" readonly disabled v-model="hoiDong.soVang" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Mã quyết định kiện toàn</label>
+                                <input type="text" class="form-control" placeholder="Nhập mã quyết định kiện toàn"
+                                    v-model="hoiDong.maKienToan" readonly disabled />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
                                 <label class="form-label">Chủ tịch hội đồng</label>
                                 <select v-model="hoiDong.chuTichId" class="form-select">
                                     <option value="">-- Chọn chủ tịch hội đồng --</option>
@@ -101,7 +117,7 @@
                                 </select>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="row mb-3">
                         <div class="col-md-12">
@@ -109,7 +125,7 @@
                                 <label class="form-label">Tệp đính kèm biên bản họp</label>
                                 <input type="file" class="form-control" @change="e => handleFileUpload('bienBan', e)"
                                     accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
-                                <small class="text-muted">Hỗ trợ file: PDF, Word, Excel, hình ảnh (tối đa 10MB)</small>
+                                <small class="text-muted">Hỗ trợ file: PDF</small>
                                 <p v-if="hoiDong.tenBienBan" class="mt-2 fst-italic">
                                     <i class="fas fa-file-alt me-1"></i> File đã tải lên: <strong>{{
                                         hoiDong.tenBienBan }}</strong>
@@ -124,7 +140,7 @@
                                 <label class="form-label">Tệp đính kèm biên bản kiểm phiếu</label>
                                 <input type="file" class="form-control" @change="e => handleFileUpload('kiemPhieu', e)"
                                     accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
-                                <small class="text-muted">Hỗ trợ file: PDF, Word, Excel, hình ảnh (tối đa 10MB)</small>
+                                <small class="text-muted">Hỗ trợ file: PDF</small>
                                 <p v-if="hoiDong.tenKiemPhieu" class="mt-2 fst-italic">
                                     <i class="fas fa-file-alt me-1"></i> File đã tải lên: <strong>{{
                                         hoiDong.tenKiemPhieu }}</strong>
@@ -187,7 +203,8 @@
                                         class="form-control" :max="hoiDong.soNguoiCoMat" />
                                 </td>
                                 <td class="text-center fw-bold">
-                                    {{ hoiDong.soNguoiCoMat > 0 ? ((deXuat.so_nguoi_bau / hoiDong.soNguoiCoMat) * 100).toFixed(2) : 0 }}%
+                                    {{ hoiDong.soNguoiCoMat > 0 ? ((deXuat.so_nguoi_bau / hoiDong.soNguoiCoMat) *
+                                        100).toFixed(2) : 0 }}%
                                 </td>
                                 <td>
                                     <select v-model="deXuat.trang_thai" class="form-select">
@@ -240,7 +257,8 @@
                                         class="form-control" :max="hoiDong.soNguoiCoMat" />
                                 </td>
                                 <td class="text-center fw-bold">
-                                    {{ hoiDong.soNguoiCoMat > 0 ? ((deXuat.so_nguoi_bau / hoiDong.soNguoiCoMat) * 100).toFixed(2) : 0 }}%
+                                    {{ hoiDong.soNguoiCoMat > 0 ? ((deXuat.so_nguoi_bau / hoiDong.soNguoiCoMat) *
+                                        100).toFixed(2) : 0 }}%
                                 </td>
                                 <td>
                                     <select v-model="deXuat.trang_thai" class="form-select">
@@ -280,12 +298,18 @@ const hoiDong = ref({
     tongNguoiTrieuTap: 0,
     soNguoiCoMat: 0,
     ghiChu: '',
-    chuTichId: '',
-    phoThuongTrucId: '',
-    phoChuTichId: '',
-    thuKyId: '',
+    // chuTichId: '',
+    // phoThuongTrucId: '',
+    // phoChuTichId: '',
+    // thuKyId: '',
     fileBienBan: null,
     fileKiemPhieu: null,
+    soVang: 0,
+    maKienToan: null,
+});
+
+watch([() => hoiDong.value.tongNguoiTrieuTap, () => hoiDong.value.soNguoiCoMat], () => {
+    hoiDong.value.soVang = hoiDong.value.tongNguoiTrieuTap - hoiDong.value.soNguoiCoMat;
 });
 
 const danhSachCanhan = ref([]);
@@ -326,10 +350,10 @@ const saveHoiDong = async () => {
         }
 
         // Check if required fields are filled
-        if (!hoiDong.value.chuTichId || !hoiDong.value.thuKyId) {
-            alert('Vui lòng chọn Chủ tịch hội đồng và Thư ký!');
-            return;
-        }
+        // if (!hoiDong.value.chuTichId || !hoiDong.value.thuKyId) {
+        //     alert('Vui lòng chọn Chủ tịch hội đồng và Thư ký!');
+        //     return;
+        // }
 
         // Create FormData for file upload
         const formData = new FormData();
@@ -394,7 +418,7 @@ const saveDeXuat = async () => {
         });
 
         let maHD = localStorage.getItem('user_name') + '-' + madot.value
-   
+
         formData.append('maHoiDong', maHD); // Include maHoiDong if exists
         for (let [key, value] of formData.entries()) {
             console.log(`${key}:`, value);
@@ -471,15 +495,19 @@ const getListDeXuat = () => {
                     hoiDong.value.huongDanSo = hoiDongInfo.sSoHD;
                     hoiDong.value.thoiGian = hoiDongInfo.dThoiGianHop;
                     hoiDong.value.diaChi = hoiDongInfo.sDiaChi;
-                    hoiDong.value.tongNguoiTrieuTap = hoiDongInfo.iSoThanhVien;
+                    hoiDong.value.tongNguoiTrieuTap = hoiDongInfo.soThanhVien;
                     hoiDong.value.soNguoiCoMat = hoiDongInfo.iSoNguoiThamDu;
                     hoiDong.value.ghiChu = hoiDongInfo.sGhiChu;
-                    hoiDong.value.chuTichId = hoiDongInfo.FK_ChuTri;
-                    hoiDong.value.phoThuongTrucId = hoiDongInfo.FK_PhoChuTichTT;
-                    hoiDong.value.phoChuTichId = hoiDongInfo.FK_PhoChuTich;
-                    hoiDong.value.thuKyId = hoiDongInfo.FK_ThuKy;
+                    // hoiDong.value.chuTichId = hoiDongInfo.FK_ChuTri;
+                    // hoiDong.value.phoThuongTrucId = hoiDongInfo.FK_PhoChuTichTT;
+                    // hoiDong.value.phoChuTichId = hoiDongInfo.FK_PhoChuTich;
+                    // hoiDong.value.thuKyId = hoiDongInfo.FK_ThuKy;
                     hoiDong.value.tenBienBan = hoiDongInfo.sTenBienBan;
                     hoiDong.value.tenKiemPhieu = hoiDongInfo.sTenKiemPhieu;
+                    hoiDong.value.maKienToan = hoiDongInfo.FK_MaKienToan;
+                }
+                else {
+                    getKienToan();
                 }
 
             }
@@ -583,6 +611,23 @@ const setAllDonViStatus = (status) => {
         }
     });
 };
+
+const getKienToan = async () => {
+    const response = await axios.get('/api/kientoan/kientoanactive', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    });
+
+    if (response.status === 200) {
+        if (response.data.data) {
+            let data = response.data.data;
+            // console.log(data);
+            hoiDong.value.maKienToan = data.PK_MaKienToan
+            hoiDong.value.tongNguoiTrieuTap = data.soThanhVien
+        }
+    }
+}
 
 // Fetch data when component mounted
 onMounted(async () => {
