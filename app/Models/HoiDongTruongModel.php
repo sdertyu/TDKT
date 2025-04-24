@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class HoiDongModel extends Model
+class HoiDongTruongModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'tblhoidong';
+    protected $table = 'tblhoidongtruong';
 
     protected $primaryKey = 'PK_MaHoiDong';
 
@@ -18,7 +18,7 @@ class HoiDongModel extends Model
     public $incrementing = false;
 
     public $timestamps = false;
-    protected $fillable = ['FK_MaTaiKhoan', 'FK_MaDot', 'dNgayTao', 'FK_ChuTri', 'FK_ThuKy', 'dThoiGianHop', 'sDiaChi', 'iSoNguoiThamDu', 'iSoThanhVien', 'FK_ChiTietHD', 'sDuongDan', 'sTenFile', 'sSoHD', 'sGhiChu', 'FK_MaLoaiHD', 'FK_MaHinhThuc', 'FK_MaDotXuat'];
+    protected $fillable = ['FK_MaTaiKhoan', 'FK_MaDot', 'dNgayTao', 'dThoiGianHop', 'sDiaChi', 'iSoNguoiThamDu', 'iSoThanhVien', 'FK_ChiTietHD', 'sDuongDan', 'sTenFile', 'sSoHD', 'sGhiChu', 'FK_MaLoaiHD', 'FK_MaHinhThuc', 'FK_MaDotXuat'];
 
     public function deXuat()
     {

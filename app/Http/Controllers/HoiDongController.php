@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\DeXuatModel;
 use App\Models\DotTDKTModel;
 use App\Models\HinhThucModel;
+use App\Models\HoiDongDonViModel;
 use App\Models\HoiDongModel;
+use App\Models\HoiDongTruongModel;
 use App\Models\LoaiHDModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -72,13 +74,13 @@ class HoiDongController extends Controller
                 'tongNguoiTrieuTap' => 'required|integer',
                 'soNguoiCoMat' => 'required|integer',
                 'ghiChu' => 'nullable|string',
-                'chuTichId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
-                'phoThuongTrucId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
-                'phoChuTichId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
-                'thuKyId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
+                // 'chuTichId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
+                // 'phoThuongTrucId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
+                // 'phoChuTichId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
+                // 'thuKyId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
                 'fileBienBan' => 'nullable|file',
                 'fileKiemPhieu' => 'nullable|file',
-                'maDotXuat' => 'nullable|exists:tbldotxuat,PK_MaDotXuat',
+                // 'maDotXuat' => 'nullable|exists:tbldotxuat,PK_MaDotXuat',
             ], $this->messages);
 
             if ($validator->fails()) {
@@ -97,7 +99,7 @@ class HoiDongController extends Controller
                 'thoigian' => 'required|date',
                 'diadiem' => 'required',
                 'hinhthuchoidong' => 'required|exists:tblhinhthuc,PK_MaHinhThuc',
-                'maloaihoidong' => 'required|exists:tblloaihoidong,PK_MaLoaiHD',
+                // 'maloaihoidong' => 'required|exists:tblloaihoidong,PK_MaLoaiHD',
                 'songuoithamdu' => 'required|integer',
                 'sothanhvien' => 'required|integer',
                 'bienban' => 'nullable|file',
@@ -120,13 +122,13 @@ class HoiDongController extends Controller
 
     public function themHoiDongDV(Request $request, $currentUser)
     {
-        $existingHoiDong = HoiDongModel::where('PK_MaHoiDong', $request->mahoidong)->first();
+        $existingHoiDong = HoiDongDonViModel::where('PK_MaHoiDong', $request->mahoidong)->first();
         if (!$existingHoiDong) {
             $file = $request->file('bienban');
             $folderDot = $request->madot;
             $filePath = $file->store('vanBanHoiDong/' . $folderDot);
 
-            $hoiDong = new HoiDongModel();
+            $hoiDong = new HoiDongDonViModel();
             $hoiDong->PK_MaHoiDong = $request->mahoidong;
             $hoiDong->FK_MaDot = $request->madot;
             $hoiDong->FK_MaTaiKhoan = $currentUser->PK_MaTaiKhoan;
@@ -137,7 +139,7 @@ class HoiDongController extends Controller
             $hoiDong->sDiaChi = $request->diadiem;
             $hoiDong->iSoNguoiThamDu = $request->songuoithamdu;
             $hoiDong->iSoThanhVien = $request->sothanhvien;
-            $hoiDong->FK_MaLoaiHD = 1;
+            // $hoiDong->FK_MaLoaiHD = 1;
             $hoiDong->FK_MaHinhThuc = 1;
             $hoiDong->sDuongDanBienBan = $filePath;
             $hoiDong->sTenBienBan = $file->getClientOriginalName();
@@ -203,7 +205,7 @@ class HoiDongController extends Controller
     public function themHoiDongTruong(Request $request, $currentUser)
     {
 
-        $existingHoiDong = HoiDongModel::where('PK_MaHoiDong', $request->maHoiDong)->first();
+        $existingHoiDong = HoiDongTruongModel::where('PK_MaHoiDong', $request->maHoiDong)->first();
         if (!$existingHoiDong) {
             $fileBienBan = $request->file('fileBienBan');
             $folderDot = $request->madot;
@@ -212,14 +214,13 @@ class HoiDongController extends Controller
             $fileKiemPhieu = $request->file('fileKiemPhieu');
             $filePathKiemPhieu = $fileKiemPhieu->store('vanBanHoiDong/' . $folderDot);
 
-
-            $hoiDong = new HoiDongModel();
+            $hoiDong = new HoiDongTruongModel();
             $hoiDong->PK_MaHoiDong = $request->maHoiDong;
             $hoiDong->FK_MaDot = $request->maDot;
             $hoiDong->FK_MaTaiKhoan = $currentUser->PK_MaTaiKhoan;
             $hoiDong->dNgayTao = getDateNow();
-            $hoiDong->FK_ChuTri = $request->chuTichId;
-            $hoiDong->FK_ThuKy = $request->thuKyId;
+            // $hoiDong->FK_ChuTri = $request->chuTichId;
+            // $hoiDong->FK_ThuKy = $request->thuKyId;
             $hoiDong->dThoiGianHop = $request->thoiGian;
             $hoiDong->sDiaChi = $request->diaChi;
             $hoiDong->iSoNguoiThamDu = $request->soNguoiCoMat;
@@ -231,11 +232,11 @@ class HoiDongController extends Controller
             $hoiDong->sTenKiemPhieu = $fileKiemPhieu->getClientOriginalName();
             $hoiDong->sSoHD = $request->huongDanSo;
             $hoiDong->sGhiChu = $request->ghiChu;
-            $hoiDong->FK_PhoChuTich = $request->phoChuTichId;
-            $hoiDong->FK_PhoChuTichTT = $request->phoThuongTrucId;
-            $hoiDong->FK_MaLoaiHD = 2;
+            // $hoiDong->FK_PhoChuTich = $request->phoChuTichId;
+            // $hoiDong->FK_PhoChuTichTT = $request->phoThuongTrucId;
+            // $hoiDong->FK_MaLoaiHD = 2;
             $hoiDong->FK_MaHinhThuc = 1;
-            $hoiDong->FK_MaDotXuat = $request->maDotXuat;
+            // $hoiDong->FK_MaDotXuat = $request->maDotXuat;
             $hoiDong->save();
         } else {
             $existingHoiDong->update([
@@ -349,7 +350,7 @@ class HoiDongController extends Controller
                 'message' => 'Không tìm thấy đợt thi đua'
             ], 404);
         }
-        $hoidong = HoiDongModel::where('FK_MaTaiKhoan', $currentUser->PK_MaTaiKhoan)
+        $hoidong = HoiDongDonViModel::where('FK_MaTaiKhoan', $currentUser->PK_MaTaiKhoan)
             ->with(['dexuat' => function ($query) {
                 $query->with(['danhhieu']);
             }, 'dexuat.taiKhoan' => function ($query) {
@@ -362,7 +363,7 @@ class HoiDongController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Không tìm thấy hội đồng'
-            ], 404);
+            ], 200);
         }
 
         // Organize proposals into individual and organizational categories
