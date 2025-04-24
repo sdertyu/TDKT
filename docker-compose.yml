@@ -59,8 +59,8 @@ services:
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
-      PMA_USER: nick
-      PMA_PASSWORD: 123456
+      # PMA_USER: nick
+      # PMA_PASSWORD: 123456
     depends_on:
       - db
       
