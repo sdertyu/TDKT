@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DeXuatModel;
 use App\Models\DotTDKTModel;
 use App\Models\DotXuatModel;
+use App\Models\HoiDongDonViModel;
 use App\Models\HoiDongModel;
 use App\Models\KetQuaModel;
 use Carbon\Carbon;
@@ -38,7 +39,7 @@ class DeXuatController extends Controller
             $validator = Validator::make($request->all(), [
                 'dexuatcanhan' => 'required|json',
                 'dexuatdonvi' => 'required|json',
-                'mahoidong' => 'required|exists:tblhoidong,PK_MaHoiDong',
+                'mahoidong' => 'required|exists:tblhoidongdonvi,PK_MaHoiDong',
             ], $message);
 
             if ($validator->fails()) {
@@ -379,7 +380,7 @@ class DeXuatController extends Controller
             ], 404);
         }
 
-        $deXuat = DeXuatModel::whereHas('hoiDong', function ($query) use ($dotActive) {
+        $deXuat = DeXuatModel::whereHas('hoiDongDonVi', function ($query) use ($dotActive) {
             $query->where('FK_MaDot', $dotActive->PK_MaDot); // HoiDong có FK_MaDot
         })
             ->with([
@@ -475,7 +476,7 @@ class DeXuatController extends Controller
             });
         }
 
-        $hoiDong = HoiDongModel::where('PK_MaHoiDong', $user->sUsername . '-' . $dotActive->PK_MaDot)->first();
+        $hoiDong = HoiDongDonViModel::where('PK_MaHoiDong', $user->sUsername . '-' . $dotActive->PK_MaDot)->first();
 
 
 

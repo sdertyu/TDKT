@@ -116,6 +116,12 @@ switch (role.value) {
                 icon: 'bi bi-bell',
                 isActive: false
             },
+            {
+                link: '/quanlykientoan',
+                title: 'Quản lý kiện toàn',
+                icon: 'bi bi-person-lines-fill',
+                isActive: false
+            }
             // {
             //     title: 'Widgets',
             //     icon: 'bi bi-box-seam-fill',
