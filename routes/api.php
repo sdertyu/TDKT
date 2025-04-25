@@ -75,6 +75,7 @@ Route::middleware(['auth.api'])->group(function () {
         Route::get('/list-loai-hoi-dong', [HoiDongController::class, 'layDanhSachLoaiHD']);
         Route::post('/cap-nhat-hoi-dong', [HoiDongController::class, 'capNhatHoiDong']);
         Route::get('/thongtinhoidong', [HoiDongController::class, 'layThongTinHoiDong']);
+        Route::get('getlisthoidongdotxuat', [HoiDongController::class, 'layDanhSachHoiDongTheoDotXuat']);
     });
 
     Route::prefix('donvi')->group(function () {
@@ -115,10 +116,14 @@ Route::middleware(['auth.api'])->group(function () {
         Route::get('/getalldexuatdotxuat', [DeXuatController::class, 'getAllDeXuatTheoDotDotXuat']);
         Route::get('/getlistdexuatxetduyet', [DeXuatController::class, 'getListDeXuatXetDuyet']);
         Route::get('/getlistdexuatxetduyetdotxuat', [DeXuatController::class, 'getListDeXuatXetDuyetDotXuat']);
+        Route::get('/getlistdexuatxetduyetdotxuat/{id}', [DeXuatController::class, 'getListDeXuatXetDuyetDotXuatTheoMa']);
+
         Route::get('/getlisttheodotdotxuat', [DeXuatController::class, 'getListDeXuatTheoDotDotXuat']);
         Route::post('/xetduyetdexuat', [DeXuatController::class, 'xetDuyetDeXuat']);
         Route::post('/themdexuatdotxuat', [DeXuatController::class, 'themDeXuatDotDotXuat']);
         Route::get('/thongtindexuatdotxuat', [DeXuatController::class, 'layThongTinDeXuatDotXuat']);
+        Route::put('/capnhatdexuatdotxuat', [DeXuatController::class, 'capNhatDeXuatDotXuat']);
+        Route::delete('/xoadexuatdotxuat/{id}', [DeXuatController::class, 'xoaDeXuatDotXuat']);
     });
 
     Route::prefix('minhchung')->group(function () {

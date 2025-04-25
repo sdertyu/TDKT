@@ -31,15 +31,13 @@ class BaoCaoThongKeController extends Controller
                     'danhHieu.capDanhHieu',
                     'danhHieu.loaiDanhHieu',
                     'danhHieu.hinhThuc',
-                    'hoiDong.dot',
-                    'dotXuat.dot'
                 ])
                 ->where('FK_User', $id)
                 ->get()
                 ->map(function ($item) {
                     return [
                         'tenDanhHieu' => $item->danhHieu->sTenDanhHieu,
-                        'dot' => $item->hoiDong == null ? $item->dotXuat->dot->PK_MaDot : $item->hoiDong->dot->PK_MaDot,
+                        'dot' => $item->FK_MaDot,
                         'hinhThuc' => $item->danhHieu->hinhThuc->sTenHinhThuc,
                         'capDanhHieu' => $item->danhHieu->capDanhHieu->sTenCap,
                     ];
@@ -79,8 +77,6 @@ class BaoCaoThongKeController extends Controller
                     'danhHieu.capDanhHieu',
                     'danhHieu.loaiDanhHieu',
                     'danhHieu.hinhThuc',
-                    'hoiDong.dot',
-                    'dotXuat.dot',
                     'taiKhoan.caNhan',
                 ])
                 ->get()
@@ -89,7 +85,7 @@ class BaoCaoThongKeController extends Controller
                         'maCaNhan' => $item->taiKhoan->caNhan->PK_MaCaNhan ?? null,
                         'tenCaNhan' => $item->taiKhoan->caNhan->sTenCaNhan ?? null,
                         'tenDanhHieu' => $item->danhHieu->sTenDanhHieu,
-                        'dot' => $item->hoiDong == null ? $item->dotXuat->dot->PK_MaDot : $item->hoiDong->dot->PK_MaDot,
+                        'dot' => $item->FK_MaDot,
                         'hinhThuc' => $item->danhHieu->hinhThuc->sTenHinhThuc,
                         'capDanhHieu' => $item->danhHieu->capDanhHieu->sTenCap,
                     ];

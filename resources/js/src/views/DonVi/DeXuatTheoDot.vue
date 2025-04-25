@@ -58,7 +58,6 @@
 import { ref, onMounted } from 'vue';
 import { useGlobalStore } from '@/stores/global';
 import router from '../../router';
-import axios from 'axios';
 
 // Danh sách danh hiệu đề xuất
 const danhHieuDeXuats = ref([]);
@@ -76,13 +75,15 @@ const getDanhHieuDeXuat = async () => {
         });
 
         if (response.status === 200) {
-            danhHieuDeXuats.value = response.data.data;
+            console.log(response.data.data);
+            console.log(response.data.data.length);
+            danhHieuDeXuats.value = [...response.data.data];
         }
     } catch (error) {
-        if(error.response) {
+        if (error.response) {
             if (error.response.status === 404) {
                 toastError(error.response.data.message);
-            } 
+            }
             else {
                 toastError('Có lỗi xảy ra, vui lòng thử lại sau');
             }
