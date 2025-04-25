@@ -34,7 +34,8 @@
                                             <small>{{ formatDate(deXuat.dNgayTao) }}</small>
                                         </div>
                                         <div class="d-flex justify-content-end mt-2">
-                                            <button class="btn btn-primary btn-sm" @click="xemMinhChung(deXuat.PK_MaDeXuat)">
+                                            <button class="btn btn-primary btn-sm"
+                                                @click="xemMinhChung(deXuat.PK_MaDeXuat)">
                                                 <i class="fas fa-file-alt me-1"></i> Xem minh chứng
                                             </button>
                                         </div>
@@ -63,12 +64,14 @@
                                             <div v-if="caNhan.de_xuat && caNhan.de_xuat.length > 0" class="list-group">
                                                 <div v-for="deXuat in caNhan.de_xuat" :key="deXuat.PK_MaDeXuat"
                                                     class="list-group-item list-group-item-action d-flex flex-column">
-                                                    <div class="d-flex w-100 justify-content-between align-items-center">
+                                                    <div
+                                                        class="d-flex w-100 justify-content-between align-items-center">
                                                         <h6 class="mb-1">{{ deXuat.danh_hieu.sTenDanhHieu }}</h6>
                                                         <small>{{ formatDate(deXuat.dNgayTao) }}</small>
                                                     </div>
                                                     <div class="d-flex justify-content-end mt-2">
-                                                        <button class="btn btn-primary btn-sm" @click="xemMinhChung(deXuat.PK_MaDeXuat)">
+                                                        <button class="btn btn-primary btn-sm"
+                                                            @click="xemMinhChung(deXuat.PK_MaDeXuat)">
                                                             <i class="fas fa-file-alt me-1"></i> Xem minh chứng
                                                         </button>
                                                     </div>
@@ -118,18 +121,13 @@ const xemMinhChung = (id) => {
 
 // Format date function
 const formatDate = (dateString) => {
-    if (!dateString) return "";
-
-    // Parse date string format "15:54:48 06/04/25"
-    const parts = dateString.split(" ");
-    const datePart = parts[1].split("/");
-    const timePart = parts[0].split(":");
-
-    const day = datePart[0];
-    const month = datePart[1];
-    const year = "20" + datePart[2]; // Thêm "20" vào năm "25" để thành "2025"
-
-    return `${day}/${month}/${year}`;
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    }).format(date);
 };
 
 // Hàm thông báo lỗi (được giả định là tồn tại từ trước)

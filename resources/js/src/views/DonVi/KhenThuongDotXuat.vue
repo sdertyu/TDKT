@@ -5,7 +5,6 @@
         <div class="card-header">
             <h1 class="card-title">Khen thưởng đột xuất</h1>
         </div>
-
         <!-- Main content -->
         <section class="content mt-3">
             <div class="container-fluid">
@@ -135,13 +134,143 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Danh sách đề xuất đã tạo -->
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    Danh sách đề xuất đột xuất đã tạo
+                                </h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" @click="refreshProposals">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div v-if="isLoading" class="text-center">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                                <div v-else-if="proposals.length === 0" class="text-center">
+                                    <p class="text-muted">Chưa có đề xuất nào được tạo</p>
+                                </div>
+                                <div v-else class="table-responsive">
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 10px">STT</th>
+                                                <th>Loại đề xuất</th>
+                                                <th>Danh hiệu</th>
+                                                <th>Đối tượng</th>
+                                                <th>Ngày tạo</th>
+                                                <th style="width: 120px">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(proposal, index) in proposals" :key="proposal.id">
+                                                <td class="text-center">{{ index + 1 }}</td>
+                                                <td>{{ proposal.tai_khoan.ca_nhan !== null ? 'Cá nhân' : 'Đơn vị' }}
+                                                </td>
+                                                <td>{{ proposal.danh_hieu.sTenDanhHieu }}</td>
+                                                <td>{{ proposal.tai_khoan.ca_nhan !== null ?
+                                                    proposal.tai_khoan.ca_nhan.sTenCaNhan :
+                                                    proposal.tai_khoan.don_vi.sTenDonVi }}</td>
+                                                <td>{{ formatDate(proposal.dNgayTao) }}</td>
+                                                <td>
+                                                    <div class="text-center">
+                                                        <button @click="editProposal(proposal)"
+                                                            class="btn btn-sm btn-warning me-2" data-bs-toggle="modal"
+                                                            data-bs-target="#editProposalModal">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button @click="deleteProposal(proposal)"
+                                                            class="btn btn-sm btn-danger">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
+
+        <!-- Edit Proposal Modal -->
+        <div class="modal fade" id="editProposalModal" tabindex="-1" aria-labelledby="editProposalModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProposalModalLabel">Chỉnh sửa đề xuất</h5>
+                        <button type="button" class="btn-close" @click="handleClose" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div v-if="editingProposal">
+                            <div class="mb-3">
+                                <label class="form-label">Loại đề xuất:</label>
+                                <div>{{ editingProposal.tai_khoan?.ca_nhan !== null ? 'Cá nhân' : 'Đơn vị' }}</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Danh hiệu:</label>
+                                <div>{{ editingProposal.danh_hieu?.sTenDanhHieu }}</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Đối tượng:</label>
+                                <div>{{ editingProposal.tai_khoan?.ca_nhan !== null ?
+                                    editingProposal.tai_khoan?.ca_nhan.sTenCaNhan :
+                                    editingProposal.tai_khoan?.don_vi.sTenDonVi }}</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Ngày tạo:</label>
+                                <div>{{ formatDate(editingProposal.dNgayTao) }}</div>
+                            </div>
+
+                            <!-- Nếu là đề xuất cho cá nhân -->
+                            <div v-if="editingProposal.tai_khoan?.ca_nhan !== null">
+                                <div class="mb-3">
+                                    <label class="form-label">Chọn cá nhân mới:</label>
+                                    <multiselect v-model="editingProposalNewIndividual" :options="individuals"
+                                        track-by="id" label="displayName" placeholder="Chọn cá nhân thay thế"
+                                        :custom-label="customLabel" :searchable="true" :internal-search="false"
+                                        @search-change="searchIndividuals">
+                                    </multiselect>
+                                </div>
+                            </div>
+
+                            <!-- Nếu là đề xuất cho đơn vị, có thể thêm các trường cần thiết ở đây -->
+                            <div v-else>
+                                <div class="mb-3">
+                                    <label class="form-label">Chọn danh hiệu mới:</label>
+                                    <multiselect v-model="editingProposalNewUnitAward" :options="unitAwards"
+                                        track-by="id" label="name" placeholder="Chọn danh hiệu thay thế">
+                                    </multiselect>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="handleClose">Đóng</button>
+                        <button type="button" class="btn btn-primary" @click="saveEditedProposal">Lưu thay đổi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 
 <script setup>
 import { get } from 'jquery';
+import Swal from 'sweetalert2';
 import { ref, reactive, onMounted, computed } from 'vue';
 import Multiselect from 'vue-multiselect';
 
@@ -228,55 +357,6 @@ const removeAward = (awardId) => {
     delete awardReasons[awardId];
 };
 
-// Xử lý gửi form cá nhân
-const handleSubmitIndividual = async () => {
-    if (selectedAwardsObjects.value.length === 0) {
-        alert('Vui lòng chọn ít nhất một danh hiệu');
-        return;
-    }
-
-    // Kiểm tra xem mỗi danh hiệu đã chọn có cá nhân và lý do chưa
-    let isValid = true;
-    const nominations = [];
-
-    selectedAwardsObjects.value.forEach(award => {
-        if (!awardIndividuals[award.id] || awardIndividuals[award.id].length === 0) {
-            alert(`Vui lòng chọn ít nhất một cá nhân cho danh hiệu "${award.name}"`);
-            isValid = false;
-            return;
-        }
-
-        nominations.push({
-            award: award,
-            individuals: awardIndividuals[award.id],
-            reason: awardReasons[award.id]
-        });
-    });
-
-    if (!isValid) return;
-
-    try {
-        const response = await axios.post('/api/dexuat/themdexuatdotxuat', {
-            deXuat: nominations.map(nomination => ({
-                danhHieu: nomination.award.id,
-                caNhan: nomination.individuals.map(individual => individual.id),
-            }))
-        }, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
-            }
-        });
-
-        if (response.status === 200) {
-            toastSuccess('Đã gửi đề xuất khen thưởng cá nhân thành công!');
-        }
-    } catch (error) {
-        toastError('Có lỗi xảy ra khi gửi đề xuất khen thưởng cá nhân!');
-    }
-
-    // handleResetIndividual();
-};
-
 // Xử lý gửi form đơn vị
 const handleSubmitUnit = () => {
     // Kiểm tra dữ liệu
@@ -305,48 +385,6 @@ const handleResetUnit = () => {
     selectedUnitAwards.value = [];
     unitReason.value = '';
 };
-
-const getThongTinDeXuatDotXuat = async () => {
-    const response = await axios.get('/api/dexuat/thongtindexuatdotxuat', {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
-        }
-    });
-
-    if (response.status === 200) {
-        if (response.data.data) {
-            let caNhan = response.data.data.caNhan;
-            let donVi = response.data.data.donVi;
-            caNhan.forEach(item => {
-                if (!selectedAwardsObjects.value.some(award => award.id === item.danhHieu.maDanhHieu)) {
-                    selectedAwardsObjects.value.push({
-                        id: item.danhHieu.maDanhHieu,
-                        name: item.danhHieu.tenDanhHieu
-                    });
-                }
-                if (!awardIndividuals[item.danhHieu.maDanhHieu]) {
-                    awardIndividuals[item.danhHieu.maDanhHieu] = []; // Khởi tạo mảng nếu chưa tồn tại
-                }
-                awardIndividuals[item.danhHieu.maDanhHieu].push({
-                    id: item.caNhan.taiKhoan,
-                    code: item.caNhan.maCaNhan,
-                    name: item.caNhan.tenCaNhan
-                });
-            });
-            donVi.forEach(item => {
-                if (!selectedUnitAwards.value.some(award => award.id === item.danhHieu.maDanhHieu)) {
-                    selectedUnitAwards.value.push({
-                        id: item.danhHieu.maDanhHieu,
-                        name: item.danhHieu.tenDanhHieu
-                    });
-                }
-            });
-        }
-    } else {
-        console.error('Lỗi khi lấy thông tin đề xuất đột xuất:', response.statusText);
-    }
-
-}
 
 const getListDanhHieuDotXuat = async () => {
     const list = await axios.get('/api/danhhieu/listdanhhieudotxuat', {
@@ -418,7 +456,7 @@ const handleSubmitAll = async () => {
             individualNominations.push({
                 award: award,
                 individuals: awardIndividuals[award.id],
-                reason: awardReasons[award.id]
+                // reason: awardReasons[award.id]
             });
         });
     }
@@ -435,7 +473,7 @@ const handleSubmitAll = async () => {
 
     try {
         // Gửi đề xuất khen thưởng cá nhân nếu có
-        if (hasIndividualAwards) {
+        if (hasIndividualAwards || hasUnitAwards) {
             const individualResponse = await axios.post('/api/dexuat/themdexuatdotxuat', {
                 caNhan: individualNominations.map(nomination => ({
                     danhHieu: nomination.award.id,
@@ -457,6 +495,7 @@ const handleSubmitAll = async () => {
         toastSuccess('Đã gửi đề xuất khen thưởng thành công!');
 
     } catch (error) {
+        // console.log(error);
         if (error.response.status === 422) {
             const errors = error.response.data.error;
             let errorMessage = Object.values(errors).flat().join('<br>');
@@ -467,12 +506,174 @@ const handleSubmitAll = async () => {
     }
 };
 
+// Thông tin về đề xuất đã tạo
+const proposals = ref([]);
+const isLoading = ref(false);
+
+// Format date function
+const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    }).format(date);
+};
+
+// Get tooltip text for multiple individuals
+const getTooltipNames = (individuals) => {
+    if (!individuals || individuals.length === 0) return '';
+    return individuals.map(ind => ind.tenDoiTuong).join(', ');
+};
+
+// Fetch all proposals
+const fetchProposals = async () => {
+    isLoading.value = true;
+    try {
+        const response = await axios.get('/api/dexuat/thongtindexuatdotxuat', {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            }
+        });
+
+        if (response.status === 200) {
+            proposals.value = response.data.data.dotXuat || [];
+        }
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách đề xuất:', error);
+        // toastError('Không thể lấy danh sách đề xuất');
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+// Refresh proposals list
+const refreshProposals = () => {
+    fetchProposals();
+};
+
+// For editing proposals in modal
+const editingProposal = ref(null);
+const editingProposalNewIndividual = ref(null);
+const editingProposalNewUnitAward = ref(null);
+
+// Edit proposal
+const editProposal = (proposal) => {
+    // Store the current proposal for editing
+    editingProposal.value = JSON.parse(JSON.stringify(proposal));
+    editingProposalNewIndividual.value = null;
+    editingProposalNewUnitAward.value = null;
+
+    // Use Bootstrap's modal method to show the modal
+    // If you're using Bootstrap 5 with vanilla JS
+    const modalEl = document.getElementById('editProposalModal');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+};
+
+// Save edited proposal
+const saveEditedProposal = async () => {
+    try {
+        if (!editingProposal.value) return;
+
+        let payload = {
+            maDeXuat: editingProposal.value.PK_MaDeXuat
+        };
+
+        // Kiểm tra loại đề xuất và dữ liệu tương ứng
+        if (editingProposal.value.tai_khoan?.ca_nhan !== null) {
+            // Đề xuất cho cá nhân
+            if (!editingProposalNewIndividual.value) {
+                toastError('Vui lòng chọn cá nhân thay thế');
+                return;
+            }
+            payload.maTaiKhoanMoi = editingProposalNewIndividual.value?.id;
+        } else {
+            // Đề xuất cho đơn vị
+            if (!editingProposalNewUnitAward.value) {
+                toastError('Vui lòng chọn danh hiệu thay thế');
+                return;
+            }
+            payload.maDanhHieuMoi = editingProposalNewUnitAward.value?.id;
+        }
+
+        const response = await axios.put('/api/dexuat/capnhatdexuatdotxuat', payload, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            }
+        });
+
+        if (response.status === 200) {
+            toastSuccess('Cập nhật đề xuất thành công');
+
+            // Close modal - Using Bootstrap 5 method
+            handleClose();
+
+            // Refresh the proposals list
+            fetchProposals();
+        }
+    } catch (error) {
+        console.error('Lỗi khi cập nhật đề xuất:', error);
+        toastError(error.response?.data?.message || 'Không thể cập nhật đề xuất');
+    }
+};
+
+// Delete proposal
+const deleteProposal = async (proposal) => {
+    Swal.fire({
+        title: 'Bạn có chắc chắn muốn xóa đề xuất này?',
+        text: "Bạn sẽ không thể khôi phục lại đề xuất này!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Xóa'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const response = await axios.delete(`/api/dexuat/xoadexuatdotxuat/${proposal.PK_MaDeXuat}`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    }
+                });
+
+                if (response.status === 200) {
+                    toastSuccess('Đã xóa đề xuất thành công');
+                    fetchProposals(); // Refresh the list
+                }
+            } catch (error) {
+                console.error('Lỗi khi xóa đề xuất:', error);
+                toastError(error.response?.data?.message || 'Không thể xóa đề xuất');
+            }
+        }
+    });
+
+
+};
+
 // Khởi tạo sau khi component được mount
 onMounted(() => {
-    getThongTinDeXuatDotXuat();
+    // getThongTinDeXuatDotXuat();
     getListDanhHieuDotXuat();
     getCaNhanTrongDonVi();
+    fetchProposals(); // Fetch existing proposals
 });
+
+const handleClose = () => {
+    // Đầu tiên ẩn modal bằng Bootstrap API
+    const modalEl = document.getElementById('editProposalModal');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    modal.hide();
+
+    // Sau đó, chờ một chút và dọn dẹp backdrop
+    setTimeout(() => {
+        document.querySelector('.modal-backdrop').remove();
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('padding-right');
+    }, 150);
+}
 </script>
 
 <style scoped>
@@ -482,6 +683,17 @@ onMounted(() => {
 
 .table-responsive {
     overflow-x: auto;
+}
+
+/* Add any modal specific styles here */
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
 }
 </style>
 

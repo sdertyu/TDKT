@@ -11,7 +11,7 @@ class DeXuatModel extends Model
 
     protected $table = 'tbldexuat';
 
-    protected $primaryKey = 'PK_DeXuat';
+    protected $primaryKey = 'PK_MaDeXuat';
     public $incrementing = true;
     protected $keyType = 'int';
 
@@ -19,10 +19,10 @@ class DeXuatModel extends Model
 
     public $timestamps = false;
     protected $casts = [
-        'dNgayTao' => 'datetime:H:i:s d/m/y',
+        // 'dNgayTao' => 'datetime:H:i:s d/m/y',
     ];
 
-    protected $fillable = ['FK_User', 'FK_MaHoiDong', 'iSoNguoiBau', 'dNgayTao', 'FK_MaHoiDong', 'FK_MaDanhHieu', 'FK_MaDotXuat', 'FK_NguoiTao'];
+    protected $fillable = ['FK_User', 'FK_MaHoiDong', 'iSoNguoiBau', 'dNgayTao', 'FK_MaHoiDong', 'FK_MaDanhHieu', 'FK_MaDotXuat', 'FK_NguoiTao', 'FK_MaDot'];
 
     public function hoiDongDonVi() {
         return $this->belongsTo(HoiDongDonViModel::class, 'FK_MaHoiDong', 'PK_MaHoiDong');
