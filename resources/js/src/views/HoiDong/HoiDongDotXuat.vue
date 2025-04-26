@@ -46,11 +46,11 @@
                                     ({{ calculateAttendanceRate(item.iSoNguoiThamDu, item.iSoThanhVien) }}%)
                                 </td> -->
                                 <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-info mr-1" @click="viewHoiDong(item)">
+                                    <div class="text-center">
+                                        <button class="btn btn-sm btn-info me-1" @click="viewHoiDong(item)">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-warning mr-1" @click="editHoiDong(item)">
+                                        <button class="btn btn-sm btn-warning me-1" @click="editHoiDong(item)">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="btn btn-sm btn-danger" @click="deleteHoiDong(item)">
@@ -408,12 +408,8 @@
                                     <p><strong>Địa chỉ:</strong> {{ selectedHoiDong.sDiaChi }}</p>
                                 </div>
                                 <div class="col-md-6">
-                                    <p><strong>Chủ tịch:</strong> {{ getChuTriName(selectedHoiDong.FK_ChuTri) }}</p>
-                                    <p><strong>Thư ký:</strong> {{ getChuTriName(selectedHoiDong.FK_ThuKy) }}</p>
-                                    <p><strong>Tỷ lệ tham dự:</strong> {{ selectedHoiDong.iSoNguoiThamDu }}/{{
-                                        selectedHoiDong.iSoThanhVien }}
-                                        ({{ calculateAttendanceRate(selectedHoiDong.iSoNguoiThamDu,
-                                        selectedHoiDong.iSoThanhVien) }}%)</p>
+                                    <p><strong>Số người triệu tập: </strong> {{ selectedHoiDong.kien_toan.thanh_vien_hoi_dong_count }}</p>
+                                    <p><strong>Mã kiện toàn: </strong> {{ selectedHoiDong.FK_MaKienToan }}</p>
                                 </div>
                             </div>
 
@@ -527,8 +523,6 @@ const formatDateTime = (dateString) => {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
     }).format(date);
 };
 
@@ -552,7 +546,7 @@ const openAddModal = () => {
     getDeXuatForHoiDong(null)
 
     // Initialize new ID
-    hoiDong.value.maHoiDong = localStorage.getItem('user_name') + '-' + maDotDotXuat.value;
+    // hoiDong.value.maHoiDong = localStorage.getItem('user_name') + '-' + maDotDotXuat.value;
 
     // Open modal
     const modal = new bootstrap.Modal(document.getElementById('hoiDongModal'));
@@ -749,7 +743,7 @@ const saveHoiDong = async () => {
                 : 'Tạo hội đồng mới thành công!');
 
             // Close modal
-            bootstrap.Modal.getInstance(document.getElementById('hoiDongModal')).hide();
+            // bootstrap.Modal.getInstance(document.getElementById('hoiDongModal')).hide();
 
             // Refresh list
             fetchDanhSachHoiDong();
@@ -843,12 +837,7 @@ const saveDeXuat = async () => {
 
         if (response.status === 200) {
             toastSuccess('Lưu danh sách đề xuất thành công!');
-
-            // Update the proposals status in the current view
-            getDeXuatForHoiDong(null);
-
-            // Close modal if needed
-            // bootstrap.Modal.getInstance(document.getElementById('hoiDongModal')).hide();
+        
         } else {
             toastError('Có lỗi xảy ra khi lưu đề xuất');
         }
