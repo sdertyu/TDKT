@@ -1,0 +1,28 @@
+name: Deploy to server
+
+on:
+  push:
+    branches:
+      - main  # Chạy khi push lên nhánh main
+ 
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Upload files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          local-dir: ./  
+          server-dir: /tdkt.kesug.com/htdocs/tdkt/ 
+          exclude: |
+            **/.git*
+            **/.github*
+            **/node_modules/*
+            **/.vscode*

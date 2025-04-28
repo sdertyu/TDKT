@@ -17,6 +17,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-.github
+# .github
 # app/Dockerfile
 # docker-compose.yml
