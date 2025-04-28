@@ -124,6 +124,7 @@ Route::middleware(['auth.api'])->group(function () {
         Route::get('/thongtindexuatdotxuat', [DeXuatController::class, 'layThongTinDeXuatDotXuat']);
         Route::put('/capnhatdexuatdotxuat', [DeXuatController::class, 'capNhatDeXuatDotXuat']);
         Route::delete('/xoadexuatdotxuat/{id}', [DeXuatController::class, 'xoaDeXuatDotXuat']);
+        Route::get('/checkchinhchu/{id}', [DeXuatController::class, 'checkChinhChu']);
     });
 
     Route::prefix('minhchung')->group(function () {

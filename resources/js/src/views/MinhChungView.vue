@@ -93,8 +93,8 @@
                                     <i class="bi bi-cloud-arrow-up text-primary" style="font-size: 4rem;"></i>
                                 </div>
                                 <h5 class="mb-3">Kéo và thả file vào đây</h5>
-                                <p class="text-muted mb-4">Hoặc nhấp vào nút bên dưới để chọn file từ máy tính của bạn
-                                </p>
+                                <p class="text-muted">Hoặc nhấp vào nút bên dưới để chọn file từ máy tính của bạn</p>
+                                <p><small class="text-muted">Hỗ trợ file: PDF</small></p>
                                 <label for="file-upload" class="btn btn-primary btn-lg">
                                     <i class="bi bi-folder-plus me-2"></i>Chọn file
                                 </label>
@@ -166,12 +166,10 @@
 <script setup>
 import Swal from 'sweetalert2';
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-
-
-
+import { useRoute, useRouter } from 'vue-router';
 
 // State variables
+const router = useRouter();
 const files = ref([]);
 const uploadingFiles = ref([]);
 const isDragging = ref(false);
@@ -181,9 +179,29 @@ const maDeXuat = useRoute().params.id;
 const role = ref([2, 3].includes(Number(localStorage.getItem('role'))));
 const pdfUrl = ref('')
 
-onMounted(() => {
+onMounted(async () => {
+    await checkDeXuatTaiKhoan();
     getListMinhChung()
 })
+
+const checkDeXuatTaiKhoan = async () => {
+    try {
+        const response = await axios.get(`/api/dexuat/checkchinhchu/${maDeXuat}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            }
+        });
+        if (response.status === 200) {
+            console.log(response.data.data);
+        }
+    } catch (error) {
+        if (error.response) {
+            router.push('/403');
+        } else {
+            toastError('Lỗi khi kiểm tra đề xuất');
+        }
+    }
+};
 
 const getListMinhChung = () => {
     axios.get(`/api/minhchung/getlist/${maDeXuat}`, {

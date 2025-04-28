@@ -1052,4 +1052,48 @@ class DeXuatController extends Controller
             ], 500);
         }
     }
+
+    public function checkChinhChu($id)
+    {
+        $validator = Validator::make(['id' => $id], [
+            'id' => 'required|exists:tbldexuat,PK_MaDeXuat',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()
+            ], 422);
+        }
+
+        $deXuat = DeXuatModel::where('PK_MaDeXuat', $id)->with('ketQua')->first();
+        if (!$deXuat) {
+            return response()->json([
+                'message' => 'Không tìm thấy đề xuất'
+            ], 404);
+        }
+
+        // if ($deXuat->ketQua) {
+        //     return response()->json([
+        //         'message' => 'Đề xuất đã được duyệt',
+        //     ], 403);
+        // }
+
+        $dotActive = DotTDKTModel::where('bTrangThai', 1)->first();
+
+        if ($deXuat->FK_MaDot !== $dotActive->PK_MaDot) {
+            return response()->json([
+                'message' => 'Đề xuất không thuộc đợt hiện tại'
+            ], 403);
+        }
+
+        $user = auth()->user();
+        if ($deXuat->FK_User !== $user->PK_MaTaiKhoan) {
+            return response()->json([
+                'message' => 'Bạn không có quyền kiểm tra đề xuất này'
+            ], 403);
+        }
+        return response()->json([
+            'message' => 'Đề xuất hợp lệ',
+        ], 200);
+    }
 }
