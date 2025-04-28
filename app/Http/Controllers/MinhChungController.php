@@ -62,30 +62,30 @@ class MinhChungController extends Controller
         }
 
         try {
-            $deXuat = DeXuatModel::where('PK_MaDeXuat', $request->madexuat)->with(['hoiDong'])->first();
-            if (!$deXuat) {
-                return response()->json([
-                    'error' => 'Không tìm thấy đề xuất'
-                ], 404);
-            } else {
-                if ($deXuat->FK_MaDotXuat) {
-                    $hanNop = DotXuatModel::where('PK_MaDotXuat', $deXuat->FK_MaDotXuat)->first()?->dHanNopMinhChung;
-                    $homNay = Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
-                    if ($hanNop < $homNay) {
-                        return response()->json([
-                            'error' => ['Đã quá hạn nộp minh chứng']
-                        ], 422);
-                    }
-                } else if ($deXuat->hoiDong->FK_MaDot) {
-                    $hanNop = DotTDKTModel::where('PK_MaDot', $deXuat->FK_MaDot)->first()?->dHanNopMinhChung;
-                    $homNay = Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
-                    if ($hanNop < $homNay) {
-                        return response()->json([
-                            'error' => ['Đã quá hạn nộp minh chứng']
-                        ], 422);
-                    }
-                }
-            }
+            // $deXuat = DeXuatModel::where('PK_MaDeXuat', $request->madexuat)->with(['hoiDong'])->first();
+            // if (!$deXuat) {
+            //     return response()->json([
+            //         'error' => 'Không tìm thấy đề xuất'
+            //     ], 404);
+            // } else {
+            //     if ($deXuat->FK_MaDotXuat) {
+            //         $hanNop = DotXuatModel::where('PK_MaDotXuat', $deXuat->FK_MaDotXuat)->first()?->dHanNopMinhChung;
+            //         $homNay = Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
+            //         if ($hanNop < $homNay) {
+            //             return response()->json([
+            //                 'error' => ['Đã quá hạn nộp minh chứng']
+            //             ], 422);
+            //         }
+            //     } else if ($deXuat->hoiDong->FK_MaDot) {
+            //         $hanNop = DotTDKTModel::where('PK_MaDot', $deXuat->FK_MaDot)->first()?->dHanNopMinhChung;
+            //         $homNay = Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
+            //         if ($hanNop < $homNay) {
+            //             return response()->json([
+            //                 'error' => ['Đã quá hạn nộp minh chứng']
+            //             ], 422);
+            //         }
+            //     }
+            // }
 
 
             $validator = Validator::make($request->all(), $rules);

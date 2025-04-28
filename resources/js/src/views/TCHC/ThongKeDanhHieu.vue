@@ -170,7 +170,6 @@ import InputIcon from 'primevue/inputicon';
 import Button from 'primevue/button';
 import RadioButton from 'primevue/radiobutton';
 import { FilterMatchMode } from '@primevue/core/api';
-import axios from 'axios';
 import Chart from 'chart.js/auto';
 
 // Biến tham chiếu đến các canvas cho biểu đồ
