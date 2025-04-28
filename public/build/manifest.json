@@ -1,0 +1,50 @@
+{
+  "_adminlte.min-DyUboR-Y.js": {
+    "file": "assets/adminlte.min-DyUboR-Y.js",
+    "name": "adminlte.min",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff": {
+    "file": "assets/bootstrap-icons-BOrJxbIo.woff",
+    "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff"
+  },
+  "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2": {
+    "file": "assets/bootstrap-icons-BtvjY1KL.woff2",
+    "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-wiQDgypR.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-Di_8SLBu.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/src/layouts/LayoutView.vue"
+    ],
+    "css": [
+      "assets/app-CA6j_j8V.css"
+    ]
+  },
+  "resources/js/src/layouts/LayoutView.vue": {
+    "file": "assets/LayoutView-Js24N8SQ.js",
+    "name": "LayoutView",
+    "src": "resources/js/src/layouts/LayoutView.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "dynamicImports": [
+      "_adminlte.min-DyUboR-Y.js"
+    ],
+    "css": [
+      "assets/LayoutView-BgXUcK0V.css"
+    ]
+  }
+}
