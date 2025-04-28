@@ -57,7 +57,7 @@ class HoiDongController extends Controller
         $dotActive = DotTDKTModel::where('bTrangThai', 1)->first();
         $hanNopBienBan = $dotActive->dHanBienBanDonVi;
         $homNay = Carbon::now('Asia/Ho_Chi_Minh')->toDateString();
-        if ($hanNopBienBan < $homNay)  {
+        if ($hanNopBienBan < $homNay) {
             return response()->json([
                 'success' => false,
                 'error' => ['Hết thời gian nộp biên bản']
@@ -80,6 +80,7 @@ class HoiDongController extends Controller
                 // 'thuKyId' => 'required|exists:tbltaikhoan,PK_MaTaiKhoan',
                 'fileBienBan' => 'nullable|file',
                 'fileKiemPhieu' => 'nullable|file',
+                'maKienToan' => 'required|exists:tblkientoan,PK_MaKienToan',
                 // 'maDotXuat' => 'nullable|exists:tbldotxuat,PK_MaDotXuat',
             ], $this->messages);
 
@@ -146,7 +147,6 @@ class HoiDongController extends Controller
             $hoiDong->sSoHD = $request->sohd;
             $hoiDong->sGhiChu = $request->ghichu;
             $hoiDong->save();
-
         } else {
             $existingHoiDong->update([
                 'FK_MaTaiKhoan' => $currentUser->PK_MaTaiKhoan,
@@ -189,7 +189,7 @@ class HoiDongController extends Controller
 
 
             if ($request->hasFile('bienban')) {
-                if($existingHoiDong->sDuongDan != null) {
+                if ($existingHoiDong->sDuongDan != null) {
                     if (Storage::exists($existingHoiDong->sDuongDan)) {
                         Storage::delete($existingHoiDong->sDuongDan);
                     }
@@ -224,7 +224,7 @@ class HoiDongController extends Controller
             $hoiDong->dThoiGianHop = $request->thoiGian;
             $hoiDong->sDiaChi = $request->diaChi;
             $hoiDong->iSoNguoiThamDu = $request->soNguoiCoMat;
-            $hoiDong->iSoThanhVien = $request->tongNguoiTrieuTap;
+            // $hoiDong->iSoThanhVien = $request->tongNguoiTrieuTap;
             // $hoiDong->FK_ChiTietHD = $chiTietHD->PK_MaChiTietHD;
             $hoiDong->sDuongDanBienBan = $filePathBienBan;
             $hoiDong->sTenBienBan = $fileBienBan->getClientOriginalName();
@@ -235,23 +235,28 @@ class HoiDongController extends Controller
             // $hoiDong->FK_PhoChuTich = $request->phoChuTichId;
             // $hoiDong->FK_PhoChuTichTT = $request->phoThuongTrucId;
             // $hoiDong->FK_MaLoaiHD = 2;
-            $hoiDong->FK_MaHinhThuc = 1;
+            if ($request->dotXuat) {
+                $hoiDong->FK_MaHinhThuc = 2;
+            } else {
+                $hoiDong->FK_MaHinhThuc = 1;
+            }
+            $hoiDong->FK_MaKienToan = $request->maKienToan;
             // $hoiDong->FK_MaDotXuat = $request->maDotXuat;
             $hoiDong->save();
         } else {
             $existingHoiDong->update([
                 'FK_MaTaiKhoan' => $currentUser->PK_MaTaiKhoan,
                 'dNgayTao' => getDateNow(),
-                'FK_ChuTri' => $request->chuTichId,
-                'FK_ThuKy' => $request->thuKyId,
+                // 'FK_ChuTri' => $request->chuTichId,
+                // 'FK_ThuKy' => $request->thuKyId,
                 'dThoiGianHop' => $request->thoiGian,
                 'sDiaChi' => $request->diaChi,
                 'iSoNguoiThamDu' => $request->soNguoiCoMat,
-                'iSoThanhVien' => $request->tongNguoiTrieuTap,
+                // 'iSoThanhVien' => $request->tongNguoiTrieuTap,
                 'sSoHD' => $request->huongDanSo,
                 'sGhiChu' => $request->ghiChu,
-                'FK_PhoChuTich' => $request->phoChuTichId,
-                'FK_PhoChuTichTT' => $request->phoThuongTrucId
+                // 'FK_PhoChuTich' => $request->phoChuTichId,
+                // 'FK_PhoChuTichTT' => $request->phoThuongTrucId
             ]);
             if ($request->hasFile('fileBienBan')) {
                 if ($existingHoiDong->sDuongDanBienBan != null) {
@@ -291,7 +296,7 @@ class HoiDongController extends Controller
             'sohd' => 'required'
         ]);
 
-        $hoiDong = HoiDongModel::where('PK_MaHoiDong', '=', $request->mahoidong)->first();
+        $hoiDong = HoiDongDonViModel::where('PK_MaHoiDong', '=', $request->mahoidong)->first();
 
         if (!$hoiDong) {
             return response()->json([
@@ -391,5 +396,45 @@ class HoiDongController extends Controller
             'success' => true,
             'data' => $hoidong
         ], 200);
+    }
+
+    public function layDanhSachHoiDongTheoDotXuat()
+    {
+        try {
+            $dotActive = DotTDKTModel::where('bTrangThai', 1)->first();
+            if (!$dotActive) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không tìm thấy đợt thi đua'
+                ], 404);
+            }
+            $hoidong = HoiDongTruongModel::where('FK_MaDot', $dotActive->PK_MaDot)
+                ->where('FK_MaHinhThuc', 2)
+                ->with([
+                    'kienToan' => function ($query) {
+                        $query->withCount('thanhVienHoiDong');
+                    }
+                ])
+                ->get();
+
+
+            if ($hoidong->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không tìm thấy hội đồng'
+                ], 200);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $hoidong
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error fetching committee list: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi khi lấy danh sách hội đồng'
+            ], 500);
+        }
     }
 }

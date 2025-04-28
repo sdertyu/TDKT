@@ -201,6 +201,54 @@ class KienToanController extends Controller
         }
     }
 
+    public function xoaKienToan($id) {
+        try {
+            $kienToan = KienToanModel::find($id);
+            if (!$kienToan) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Kiện toàn không tồn tại'
+                ], 404);
+            }
+
+            $existingHoiDongTruong = KienToanModel::where('PK_MaKienToan', $id)
+                ->whereHas('hoiDongTruong', function () {})
+                ->first();
+
+            Log::info($existingHoiDongTruong);
+            if($existingHoiDongTruong) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Không thể xóa kiện toàn này vì đã được sử dụng'
+                ], 400);
+            }
+
+            // Xóa file nếu có
+            if (Storage::exists($kienToan->sDuongDan)) {
+                Storage::delete($kienToan->sDuongDan);
+            }
+
+            $kienToan->thanhVienHoiDong()->delete();
+
+            $kienToan->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Xóa kiến toán thành công'
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error deleting KienToan: ' . $e->getMessage(), [
+                'id' => $id,
+                'exception' => $e,
+            ]);
+            return response()->json([
+                'status' => false,
+                'message' => 'Lỗi khi xóa kiến toán: ' . $e->getMessage()
+            ], 500);
+        }
+
+    }
+
     public function capNhatTrangThai($id)
     {
         try {
@@ -230,6 +278,32 @@ class KienToanController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Lỗi khi cập nhật trạng thái: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function layKienToanActive() {
+        try {
+            $kienToanActive = KienToanModel::where('bTrangThai', 1)
+            ->with('thanhVienHoiDong')
+            ->first();
+            if (!$kienToanActive) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Không tìm thấy kiện toàn đang hoạt động'
+                ], 404);
+            }
+
+            $kienToanActive['soThanhVien'] = $kienToanActive->thanhVienHoiDong->count();
+
+            return response()->json([
+                'status' => true,
+                'data' => $kienToanActive
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Lỗi khi lấy kiện toàn đang hoạt động: ' . $e->getMessage()
             ], 500);
         }
     }

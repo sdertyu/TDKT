@@ -2,7 +2,7 @@
     <div class="container-fluid mt-4">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Thông tin Hội đồng Thi đua Khen thưởng năm học {{ madot }}</h4>
+                <h4 class="card-title">Thông tin Hội đồng Thi đua Khen thưởng</h4>
             </div>
             <div class="card-body">
                 <form @submit.prevent="saveHoiDong">
@@ -52,15 +52,53 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="form-label">Số người vắng</label>
-                                <input type="text" class="form-control" readonly disabled v-model="hoiDong.soVang" />
+                                <label class="form-label">Chủ tịch hội đồng</label>
+                                <select v-model="hoiDong.chuTichId" class="form-select">
+                                    <option value="">-- Chọn chủ tịch hội đồng --</option>
+                                    <option v-for="canhan in danhSachCanhan" :key="canhan.taikhoan.PK_MaTaiKhoan"
+                                        :value="canhan.taikhoan.PK_MaTaiKhoan">
+                                        {{ canhan.sTenCaNhan }}
+                                    </option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="form-label">Mã quyết định kiện toàn</label>
-                                <input type="text" class="form-control" placeholder="Nhập mã quyết định kiện toàn"
-                                    v-model="hoiDong.maKienToan" readonly disabled />
+                                <label class="form-label">Phó chủ tịch thường trực hội đồng</label>
+                                <select v-model="hoiDong.phoThuongTrucId" class="form-select">
+                                    <option value="">-- Chọn phó chủ tịch thường trực --</option>
+                                    <option v-for="canhan in danhSachCanhan" :key="canhan.taikhoan.PK_MaTaiKhoan"
+                                        :value="canhan.taikhoan.PK_MaTaiKhoan">
+                                        {{ canhan.sTenCaNhan }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Phó chủ tịch hội đồng</label>
+                                <select v-model="hoiDong.phoChuTichId" class="form-select">
+                                    <option value="">-- Chọn phó chủ tịch hội đồng --</option>
+                                    <option v-for="canhan in danhSachCanhan" :key="canhan.taikhoan.PK_MaTaiKhoan"
+                                        :value="canhan.taikhoan.PK_MaTaiKhoan">
+                                        {{ canhan.sTenCaNhan }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Thư ký</label>
+                                <select v-model="hoiDong.thuKyId" class="form-select">
+                                    <option value="">-- Chọn thư ký --</option>
+                                    <option v-for="canhan in danhSachCanhan" :key="canhan.taikhoan.PK_MaTaiKhoan"
+                                        :value="canhan.taikhoan.PK_MaTaiKhoan">
+                                        {{ canhan.sTenCaNhan }}
+                                    </option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -71,7 +109,7 @@
                                 <label class="form-label">Tệp đính kèm biên bản họp</label>
                                 <input type="file" class="form-control" @change="e => handleFileUpload('bienBan', e)"
                                     accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
-                                <small class="text-muted">Hỗ trợ file: PDF</small>
+                                <small class="text-muted">Hỗ trợ file: PDF, Word, Excel, hình ảnh (tối đa 10MB)</small>
                                 <p v-if="hoiDong.tenBienBan" class="mt-2 fst-italic">
                                     <i class="fas fa-file-alt me-1"></i> File đã tải lên: <strong>{{
                                         hoiDong.tenBienBan }}</strong>
@@ -86,7 +124,7 @@
                                 <label class="form-label">Tệp đính kèm biên bản kiểm phiếu</label>
                                 <input type="file" class="form-control" @change="e => handleFileUpload('kiemPhieu', e)"
                                     accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
-                                <small class="text-muted">Hỗ trợ file: PDF</small>
+                                <small class="text-muted">Hỗ trợ file: PDF, Word, Excel, hình ảnh (tối đa 10MB)</small>
                                 <p v-if="hoiDong.tenKiemPhieu" class="mt-2 fst-italic">
                                     <i class="fas fa-file-alt me-1"></i> File đã tải lên: <strong>{{
                                         hoiDong.tenKiemPhieu }}</strong>
@@ -125,66 +163,46 @@
                         <i class="fas fa-times me-1"></i> Không đạt
                     </button>
                 </div>
-                
-                <DataTable :value="danhSachDeXuatCaNhan" :paginator="true" :rows="10" 
-                     responsiveLayout="scroll"
-                     v-model:filters="filtersCaNhan" filterDisplay="menu" :loading="loadingCaNhan"
-                     :globalFilterFields="['danh_hieu', 'ca_nhan.ten_ca_nhan', 'ca_nhan.don_vi']"
-                     emptyMessage="Không có đề xuất cá nhân nào trong đợt này" stripedRows>
-                    <template #header>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="position-relative">
-                                <i class="pi pi-search position-absolute" style="left: 10px; top: 10px;"></i>
-                                <InputText v-model="filtersCaNhan['global'].value" placeholder="Tìm kiếm..." 
-                                    class="p-inputtext-sm ps-4" />
-                            </div>
-                            <div>
-                                <span v-if="filtersCaNhan['global'].value" class="badge bg-info me-2">
-                                    Đang tìm: {{ filtersCaNhan['global'].value }}
-                                </span>
-                            </div>
-                        </div>
-                    </template>
-                    
-                    <Column field="index" header="STT" :sortable="true" style="width: 70px" bodyClass="text-center">
-                        <template #body="slotProps">
-                            {{ danhSachDeXuatCaNhan.indexOf(slotProps.data) + 1 }}
-                        </template>
-                    </Column>
-                    <Column field="danh_hieu" header="Tên danh hiệu" :sortable="true"></Column>
-                    <Column field="ca_nhan.ten_ca_nhan" header="Người đề xuất" :sortable="true">
-                        <template #body="slotProps">
-                            {{ slotProps.data.ca_nhan.ten_ca_nhan }}
-                        </template>
-                    </Column>
-                    <Column field="ca_nhan.don_vi" header="Đơn vị" :sortable="true">
-                        <template #body="slotProps">
-                            {{ slotProps.data.ca_nhan.don_vi }}
-                        </template>
-                    </Column>
-                    <Column header="Tổng số người bầu" style="width: 200px">
-                        <template #body="slotProps">
-                            <input v-model.number="slotProps.data.so_nguoi_bau" type="number" min="0"
-                                class="form-control" :max="hoiDong.soNguoiCoMat" />
-                        </template>
-                    </Column>
-                    <Column header="Tỷ lệ %" style="width: 120px">
-                        <template #body="slotProps">
-                            <span class="fw-bold">
-                                {{ hoiDong.soNguoiCoMat > 0 ? ((slotProps.data.so_nguoi_bau / hoiDong.soNguoiCoMat) *
-                                    100).toFixed(2) : 0 }}%
-                            </span>
-                        </template>
-                    </Column>
-                    <Column header="Trạng thái" style="width: 150px">
-                        <template #body="slotProps">
-                            <select v-model="slotProps.data.trang_thai" class="form-select">
-                                <option value="1">Đạt</option>
-                                <option value="0">Không đạt</option>
-                            </select>
-                        </template>
-                    </Column>
-                </DataTable>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px">STT</th>
+                                <th>Tên danh hiệu</th>
+                                <th>Người đề xuất</th>
+                                <th>Đơn vị</th>
+                                <th style="width: 200px">Tổng số người bầu</th>
+                                <th style="width: 120px">Tỷ lệ %</th>
+                                <th style="width: 150px">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(deXuat, index) in danhSachDeXuatCaNhan" :key="deXuat.PK_MaDeXuat">
+                                <td class="text-center">{{ index + 1 }}</td>
+                                <td>{{ deXuat.danh_hieu }}</td>
+                                <td>{{ deXuat.ca_nhan.ten_ca_nhan }}</td>
+                                <td>{{ deXuat.ca_nhan.don_vi }}</td>
+                                <td>
+                                    <input v-model.number="deXuat.so_nguoi_bau" type="number" min="0"
+                                        class="form-control" :max="hoiDong.soNguoiCoMat" />
+                                </td>
+                                <td class="text-center fw-bold">
+                                    {{ hoiDong.soNguoiCoMat > 0 ? ((deXuat.so_nguoi_bau / hoiDong.soNguoiCoMat) *
+                                        100).toFixed(2) : 0 }}%
+                                </td>
+                                <td>
+                                    <select v-model="deXuat.trang_thai" class="form-select">
+                                        <option value="1">Đạt</option>
+                                        <option value="0">Không đạt</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr v-if="danhSachDeXuatCaNhan.length === 0">
+                                <td colspan="7" class="text-center">Không có đề xuất cá nhân nào trong đợt này</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -201,61 +219,44 @@
                         <i class="fas fa-times me-1"></i> Không đạt
                     </button>
                 </div>
-
-                <DataTable :value="danhSachDeXuatDonVi" :paginator="true" :rows="10" 
-                     responsiveLayout="scroll"
-                     v-model:filters="filtersDonVi" filterDisplay="menu" :loading="loadingDonVi"
-                     :globalFilterFields="['danh_hieu', 'don_vi.ten_don_vi']"
-                     emptyMessage="Không có đề xuất đơn vị nào trong đợt này">
-                    <template #header>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="position-relative">
-                                <i class="pi pi-search position-absolute" style="left: 10px; top: 10px;"></i>
-                                <InputText v-model="filtersDonVi['global'].value" placeholder="Tìm kiếm..." 
-                                    class="p-inputtext-sm ps-4" />
-                            </div>
-                            <div>
-                                <span v-if="filtersDonVi['global'].value" class="badge bg-info me-2">
-                                    Đang tìm: {{ filtersDonVi['global'].value }}
-                                </span>
-                            </div>
-                        </div>
-                    </template>
-                    
-                    <Column field="index" header="STT" :sortable="true" style="width: 70px;" bodyClass="text-center">
-                        <template #body="slotProps">
-                            {{ danhSachDeXuatDonVi.indexOf(slotProps.data) + 1 }}
-                        </template>
-                    </Column>
-                    <Column field="danh_hieu" header="Tên danh hiệu" :sortable="true"></Column>
-                    <Column field="don_vi.ten_don_vi" header="Đơn vị" :sortable="true">
-                        <template #body="slotProps">
-                            {{ slotProps.data.don_vi.ten_don_vi }}
-                        </template>
-                    </Column>
-                    <Column header="Tổng số người bầu" style="width: 200px">
-                        <template #body="slotProps">
-                            <input v-model.number="slotProps.data.so_nguoi_bau" type="number" min="0"
-                                class="form-control" :max="hoiDong.soNguoiCoMat" />
-                        </template>
-                    </Column>
-                    <Column header="Tỷ lệ %" style="width: 120px">
-                        <template #body="slotProps">
-                            <span class="fw-bold">
-                                {{ hoiDong.soNguoiCoMat > 0 ? ((slotProps.data.so_nguoi_bau / hoiDong.soNguoiCoMat) *
-                                    100).toFixed(2) : 0 }}%
-                            </span>
-                        </template>
-                    </Column>
-                    <Column header="Trạng thái" style="width: 150px">
-                        <template #body="slotProps">
-                            <select v-model="slotProps.data.trang_thai" class="form-select">
-                                <option value="1">Đạt</option>
-                                <option value="0">Không đạt</option>
-                            </select>
-                        </template>
-                    </Column>
-                </DataTable>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px">STT</th>
+                                <th>Tên danh hiệu</th>
+                                <th>Đơn vị</th>
+                                <th style="width: 200px">Tổng số người bầu</th>
+                                <th style="width: 120px">Tỷ lệ %</th>
+                                <th style="width: 150px">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(deXuat, index) in danhSachDeXuatDonVi" :key="deXuat.PK_MaDeXuat">
+                                <td class="text-center">{{ index + 1 }}</td>
+                                <td>{{ deXuat.danh_hieu }}</td>
+                                <td>{{ deXuat.don_vi.ten_don_vi }}</td>
+                                <td>
+                                    <input v-model.number="deXuat.so_nguoi_bau" type="number" min="0"
+                                        class="form-control" :max="hoiDong.soNguoiCoMat" />
+                                </td>
+                                <td class="text-center fw-bold">
+                                    {{ hoiDong.soNguoiCoMat > 0 ? ((deXuat.so_nguoi_bau / hoiDong.soNguoiCoMat) *
+                                        100).toFixed(2) : 0 }}%
+                                </td>
+                                <td>
+                                    <select v-model="deXuat.trang_thai" class="form-select">
+                                        <option value="1">Đạt</option>
+                                        <option value="0">Không đạt</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr v-if="danhSachDeXuatDonVi.length === 0">
+                                <td colspan="6" class="text-center">Không có đề xuất đơn vị nào trong đợt này</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
                     <button type="button" class="btn btn-success" @click="saveDeXuat">Lưu danh sách</button>
@@ -267,11 +268,10 @@
 
 <script setup>
 import { get } from 'jquery';
-import { ref, onMounted, watch, reactive } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
+// Import axios if needed for API communication
+// import axios from 'axios';
 
 // Hội đồng data structure
 const hoiDong = ref({
@@ -282,18 +282,12 @@ const hoiDong = ref({
     tongNguoiTrieuTap: 0,
     soNguoiCoMat: 0,
     ghiChu: '',
-    // chuTichId: '',
-    // phoThuongTrucId: '',
-    // phoChuTichId: '',
-    // thuKyId: '',
+    chuTichId: '',
+    phoThuongTrucId: '',
+    phoChuTichId: '',
+    thuKyId: '',
     fileBienBan: null,
     fileKiemPhieu: null,
-    soVang: 0,
-    maKienToan: null,
-});
-
-watch([() => hoiDong.value.tongNguoiTrieuTap, () => hoiDong.value.soNguoiCoMat], () => {
-    hoiDong.value.soVang = hoiDong.value.tongNguoiTrieuTap - hoiDong.value.soNguoiCoMat;
 });
 
 const danhSachCanhan = ref([]);
@@ -302,20 +296,8 @@ const danhSachCanhan = ref([]);
 const danhSachDeXuatCaNhan = ref([]);
 const danhSachDeXuatDonVi = ref([]);
 
-const madot = ref(useGlobalStore().dotActive);
-
-// Loading states for tables
-const loadingCaNhan = ref(false);
-const loadingDonVi = ref(false);
-
-// Filters for DataTables
-const filtersCaNhan = ref({
-    global: { value: null, matchMode: 'contains' }
-});
-
-const filtersDonVi = ref({
-    global: { value: null, matchMode: 'contains' }
-});
+const madot = ref('');
+const maDotDotXuat = ref('');
 
 // Handle file upload
 const handleFileUpload = (type, event) => {
@@ -347,10 +329,10 @@ const saveHoiDong = async () => {
         }
 
         // Check if required fields are filled
-        // if (!hoiDong.value.chuTichId || !hoiDong.value.thuKyId) {
-        //     alert('Vui lòng chọn Chủ tịch hội đồng và Thư ký!');
-        //     return;
-        // }
+        if (!hoiDong.value.chuTichId || !hoiDong.value.thuKyId) {
+            alert('Vui lòng chọn Chủ tịch hội đồng và Thư ký!');
+            return;
+        }
 
         // Create FormData for file upload
         const formData = new FormData();
@@ -364,10 +346,14 @@ const saveHoiDong = async () => {
             }
         }
 
-        let maHD = localStorage.getItem('user_name') + '-' + madot.value
+
+        let maHD = localStorage.getItem('user_name') + '-' + maDotDotXuat.value
+        console.log(maHD);
         let maDot = madot.value
+        let maDotXuat = maDotDotXuat.value
         formData.append('maHoiDong', maHD); // Include maHoiDong if exists
         formData.append('maDot', maDot); // Include madot if exists
+        formData.append('maDotXuat', maDotXuat); // Include madot if exists
 
         // API call to save Hội đồng information
         const add = await axios.post('/api/hoidong/add', formData, {
@@ -414,8 +400,7 @@ const saveDeXuat = async () => {
             formData.append('deXuat[]', JSON.stringify(item));
         });
 
-        let maHD = localStorage.getItem('user_name') + '-' + madot.value
-
+        let maHD = localStorage.getItem('user_name') + '-' + maDotDotXuat.value
         formData.append('maHoiDong', maHD); // Include maHoiDong if exists
         for (let [key, value] of formData.entries()) {
             console.log(`${key}:`, value);
@@ -478,10 +463,7 @@ const getListCaNhan = () => {
 }
 
 const getListDeXuat = () => {
-    loadingCaNhan.value = true;
-    loadingDonVi.value = true;
-    
-    axios.get('/api/dexuat/getlistdexuatxetduyet', {
+    axios.get('/api/dexuat/getlistdexuatxetduyetdotxuat', {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('api_token')}`
         }
@@ -495,29 +477,20 @@ const getListDeXuat = () => {
                     hoiDong.value.huongDanSo = hoiDongInfo.sSoHD;
                     hoiDong.value.thoiGian = hoiDongInfo.dThoiGianHop;
                     hoiDong.value.diaChi = hoiDongInfo.sDiaChi;
-                    hoiDong.value.tongNguoiTrieuTap = hoiDongInfo.soThanhVien;
+                    hoiDong.value.tongNguoiTrieuTap = hoiDongInfo.iSoThanhVien;
                     hoiDong.value.soNguoiCoMat = hoiDongInfo.iSoNguoiThamDu;
                     hoiDong.value.ghiChu = hoiDongInfo.sGhiChu;
-                    // hoiDong.value.chuTichId = hoiDongInfo.FK_ChuTri;
-                    // hoiDong.value.phoThuongTrucId = hoiDongInfo.FK_PhoChuTichTT;
-                    // hoiDong.value.phoChuTichId = hoiDongInfo.FK_PhoChuTich;
-                    // hoiDong.value.thuKyId = hoiDongInfo.FK_ThuKy;
+                    hoiDong.value.chuTichId = hoiDongInfo.FK_ChuTri;
+                    hoiDong.value.phoThuongTrucId = hoiDongInfo.FK_PhoChuTichTT;
+                    hoiDong.value.phoChuTichId = hoiDongInfo.FK_PhoChuTich;
+                    hoiDong.value.thuKyId = hoiDongInfo.FK_ThuKy;
                     hoiDong.value.tenBienBan = hoiDongInfo.sTenBienBan;
                     hoiDong.value.tenKiemPhieu = hoiDongInfo.sTenKiemPhieu;
-                    hoiDong.value.maKienToan = hoiDongInfo.FK_MaKienToan;
                 }
-                else {
-                    getKienToan();
-                }
+
             }
-            
-            loadingCaNhan.value = false;
-            loadingDonVi.value = false;
         })
         .catch(error => {
-            loadingCaNhan.value = false;
-            loadingDonVi.value = false;
-            
             if (error.response) {
                 if (error.response.status === 422) {
                     const errors = error.response.data.errors;
@@ -537,35 +510,14 @@ const getListDeXuat = () => {
 // Functions to set status for all entries at once
 const setAllCaNhanStatus = (status) => {
     if (!danhSachDeXuatCaNhan.value.length) return;
-    
-    // If we have a filter active, only apply to the visible rows
-    let targetDeXuats = danhSachDeXuatCaNhan.value;
-    const isFiltered = filtersCaNhan.value.global.value;
-    let messageText = 'Bạn có chắc chắn muốn ' + 
-        (status === '1' ? 'duyệt' : 'từ chối') + 
-        ' tất cả đề xuất cá nhân';
-    
-    if (isFiltered) {
-        targetDeXuats = danhSachDeXuatCaNhan.value.filter(item => {
-            const searchTerm = filtersCaNhan.value.global.value.toLowerCase();
-            return (
-                item.danh_hieu.toLowerCase().includes(searchTerm) ||
-                item.ca_nhan.ten_ca_nhan.toLowerCase().includes(searchTerm) ||
-                item.ca_nhan.don_vi.toLowerCase().includes(searchTerm)
-            );
-        });
-        messageText += ` phù hợp với tìm kiếm "${filtersCaNhan.value.global.value}"`;
-    } else {
-        messageText += '';
-    }
-    
-    messageText += '?';
 
     Swal.fire({
         title: status === '1'
-            ? 'Duyệt đề xuất cá nhân?'
-            : 'Từ chối đề xuất cá nhân?',
-        text: messageText,
+            ? 'Duyệt tất cả đề xuất cá nhân?'
+            : 'Từ chối tất cả đề xuất cá nhân?',
+        text: status === '1'
+            ? 'Bạn có chắc chắn muốn duyệt tất cả đề xuất cá nhân?'
+            : 'Bạn có chắc chắn muốn từ chối tất cả đề xuất cá nhân?',
         icon: status === '1' ? 'question' : 'warning',
         showCancelButton: true,
         confirmButtonColor: status === '1' ? '#28a745' : '#dc3545',
@@ -574,7 +526,7 @@ const setAllCaNhanStatus = (status) => {
         cancelButtonText: 'Hủy'
     }).then((result) => {
         if (result.isConfirmed) {
-            targetDeXuats.forEach(item => {
+            danhSachDeXuatCaNhan.value.forEach(item => {
                 item.trang_thai = status;
             });
 
@@ -584,8 +536,8 @@ const setAllCaNhanStatus = (status) => {
             Swal.fire({
                 title: 'Thành công!',
                 text: status === '1'
-                    ? 'Đề xuất đã được duyệt.'
-                    : 'Đề xuất đã bị từ chối.',
+                    ? 'Tất cả đề xuất cá nhân đã được duyệt.'
+                    : 'Tất cả đề xuất cá nhân đã bị từ chối.',
                 icon: 'success',
                 timer: 1500,
                 toast: true,
@@ -599,32 +551,14 @@ const setAllCaNhanStatus = (status) => {
 
 const setAllDonViStatus = (status) => {
     if (!danhSachDeXuatDonVi.value.length) return;
-    
-    // If we have a filter active, only apply to the visible rows
-    let targetDeXuats = danhSachDeXuatDonVi.value;
-    const isFiltered = filtersDonVi.value.global.value;
-    let messageText = 'Bạn có chắc chắn muốn ' + 
-        (status === '1' ? 'duyệt' : 'từ chối') + 
-        ' tất cả đề xuất đơn vị';
-    
-    if (isFiltered) {
-        targetDeXuats = danhSachDeXuatDonVi.value.filter(item => {
-            const searchTerm = filtersDonVi.value.global.value.toLowerCase();
-            return (
-                item.danh_hieu.toLowerCase().includes(searchTerm) ||
-                item.don_vi.ten_don_vi.toLowerCase().includes(searchTerm)
-            );
-        });
-        messageText += ` phù hợp với tìm kiếm "${filtersDonVi.value.global.value}"`;
-    }
-    
-    messageText += '?';
 
     Swal.fire({
         title: status === '1'
-            ? 'Duyệt đề xuất đơn vị?'
-            : 'Từ chối đề xuất đơn vị?',
-        text: messageText,
+            ? 'Duyệt tất cả đề xuất đơn vị?'
+            : 'Từ chối tất cả đề xuất đơn vị?',
+        text: status === '1'
+            ? 'Bạn có chắc chắn muốn duyệt tất cả đề xuất đơn vị?'
+            : 'Bạn có chắc chắn muốn từ chối tất cả đề xuất đơn vị?',
         icon: status === '1' ? 'question' : 'warning',
         showCancelButton: true,
         confirmButtonColor: status === '1' ? '#28a745' : '#dc3545',
@@ -633,7 +567,7 @@ const setAllDonViStatus = (status) => {
         cancelButtonText: 'Hủy'
     }).then((result) => {
         if (result.isConfirmed) {
-            targetDeXuats.forEach(item => {
+            danhSachDeXuatDonVi.value.forEach(item => {
                 item.trang_thai = status;
             });
 
@@ -643,8 +577,8 @@ const setAllDonViStatus = (status) => {
             Swal.fire({
                 title: 'Thành công!',
                 text: status === '1'
-                    ? 'Đề xuất đã được duyệt.'
-                    : 'Đề xuất đã bị từ chối.',
+                    ? 'Tất cả đề xuất đơn vị đã được duyệt.'
+                    : 'Tất cả đề xuất đơn vị đã bị từ chối.',
                 icon: 'success',
                 timer: 1500,
                 toast: true,
@@ -656,28 +590,28 @@ const setAllDonViStatus = (status) => {
     });
 };
 
-const getKienToan = async () => {
-    const response = await axios.get('/api/kientoan/kientoanactive', {
+const getDotDotXuat = () => {
+    axios.get('/api/dotthiduakhenthuong/getdotdotxuatactive', {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('api_token')}`
         }
-    });
-
-    if (response.status === 200) {
-        if (response.data.data) {
-            let data = response.data.data;
-            // console.log(data);
-            hoiDong.value.maKienToan = data.PK_MaKienToan
-            hoiDong.value.tongNguoiTrieuTap = data.soThanhVien
-        }
-    }
+    })
+        .then(response => {
+            if (response.status === 200) {
+                // madot.value = response.data.data.data;
+                maDotDotXuat.value = response.data.data.PK_MaDotXuat;
+            }
+        })
+        .catch(error => {
+            toastError('Có lỗi xảy ra');
+        });
 }
 
 // Fetch data when component mounted
 onMounted(async () => {
     try {
-        // madot.value = useGlobalStore().dotActive;
-        // Fetch hội đồng data if exists
+        madot.value = useGlobalStore().dotActive;
+        getDotDotXuat();
         // const response = await axios.get('/api/hoi-dong');
         // hoiDong.value = response.data;
 
@@ -741,6 +675,11 @@ onMounted(() => {
     border-bottom: 1px solid #e9ecef;
 }
 
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
 /* Custom styling for status selects */
 .form-select {
     padding: 0.375rem 2.25rem 0.375rem 0.75rem;
@@ -776,34 +715,5 @@ onMounted(() => {
     border-color: #dc3545 !important;
     color: #dc3545;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23dc3545' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
-}
-
-/* PrimeVue DataTable styling customizations */
-:deep(.p-datatable .p-datatable-header) {
-    background: transparent;
-    border: none;
-    padding: 0.5rem 0;
-}
-
-:deep(.p-datatable .p-datatable-thead > tr > th) {
-    font-weight: 600;
-    background-color: #f8f9fa;
-}
-
-:deep(.p-inputtext) {
-    padding: 0.5rem;
-}
-
-:deep(.p-datatable .p-datatable-tbody > tr > td) {
-    padding: 0.5rem 0.75rem;
-}
-
-:deep(.p-paginator) {
-    padding: 0.5rem;
-    font-size: 0.875rem;
-}
-
-.badge {
-    font-weight: normal;
 }
 </style>

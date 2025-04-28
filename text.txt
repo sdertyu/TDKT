@@ -1,0 +1,120 @@
+DANH SÁCH CHỨC NĂNG TRONG CÁC CONTROLLER THỰC TẾ TRONG DỰ ÁN
+
+1. AccountController
+   - index(): Đăng nhập hệ thống
+   - info(): Lấy thông tin tài khoản đang đăng nhập
+   - changePassword(): Thay đổi mật khẩu
+   - logOut(): Đăng xuất khỏi hệ thống
+
+2. TaiKhoanController
+   - index(): Lấy danh sách tài khoản
+   - themTaiKhoan(): Thêm tài khoản mới
+   - layThongTinTaiKhoan(): Lấy thông tin chi tiết của một tài khoản
+   - capNhatTaiKhoan(): Cập nhật thông tin tài khoản
+   - khoaTaiKhoan(): Khóa hoặc mở khóa tài khoản
+   - xoaTaiKhoan(): Xóa tài khoản
+   - layDanhSachDonVi(): Lấy danh sách đơn vị
+   - layDanhSachCaNhanTrongDonVi(): Lấy danh sách cá nhân theo đơn vị
+   - layDanhSachToanBoCaNhan(): Lấy danh sách tất cả cá nhân
+
+3. ThongBaoController
+   - taoThongBao(): Tạo thông báo mới
+   - suaThongBao(): Sửa thông báo
+   - getListThongBaoTheoQuyen(): Lấy danh sách thông báo theo quyền
+   - markRead(): Đánh dấu đã đọc thông báo
+   - getThongBao(): Lấy chi tiết một thông báo
+
+4. MinhChungController
+   - getListMinhChung(): Lấy danh sách minh chứng
+   - upLoadMinhChung(): Tải lên minh chứng
+   - downloadMinhChung(): Tải về minh chứng
+   - deleteMinhChung(): Xóa minh chứng
+   - viewMinhChung(): Xem minh chứng
+
+5. KienToanController
+   - index(): Lấy danh sách kiện toàn
+   - getListNhiemVu(): Lấy danh sách nhiệm vụ
+   - taoKienToan(): Tạo kiện toàn mới
+   - suaKienToan(): Sửa thông tin kiện toàn
+   - xoaKienToan(): Xóa kiện toàn
+   - capNhatTrangThai(): Cập nhật trạng thái kiện toàn
+   - layKienToanActive(): Lấy thông tin kiện toàn đang hoạt động
+
+6. HinhThucController
+   - getListHinhThuc(): Lấy danh sách hình thức khen thưởng
+
+7. HoiDongController
+   - index(): Lấy thông tin hội đồng
+   - themHoiDong(): Thêm hội đồng mới
+   - themHoiDongDV(): Thêm hội đồng đơn vị
+   - themHoiDongTruong(): Thêm hội đồng trường
+   - capNhatHoiDong(): Cập nhật thông tin hội đồng
+   - layDanhSachHinhThucHD(): Lấy danh sách hình thức hội đồng
+   - layDanhSachLoaiHD(): Lấy danh sách loại hội đồng
+   - layThongTinHoiDong(): Lấy thông tin chi tiết hội đồng
+   - layDanhSachHoiDongTheoDotXuat(): Lấy danh sách hội đồng theo đợt đột xuất
+
+8. DotTDKTController
+   - index(): Lấy danh sách đợt thi đua khen thưởng
+   - themDotTDKT(): Tạo đợt thi đua khen thưởng mới
+   - SuaDotTDKT(): Sửa thông tin đợt thi đua khen thưởng
+   - XoaDotTDKT(): Xóa đợt thi đua khen thưởng
+   - suaTrangThaiDot(): Cập nhật trạng thái đợt
+   - layThongTinDot(): Lấy thông tin chi tiết đợt
+   - layDotActive(): Lấy thông tin đợt đang hoạt động
+   - themVanBanDinhKem(): Thêm văn bản đính kèm
+   - suaVanBanDinhKem(): Sửa văn bản đính kèm
+   - xoaVanBanDinhKem(): Xóa văn bản đính kèm
+   - layDanhSachVanBanDinhKem(): Lấy danh sách văn bản đính kèm
+   - layDanhSachVanBanDinhKemActive(): Lấy danh sách văn bản đính kèm của đợt đang hoạt động
+   - viewVbdk(): Xem văn bản đính kèm
+   - downloadVbdk(): Tải về văn bản đính kèm
+   - downloadZipVanBan(): Tải về tất cả văn bản dạng ZIP
+   - layDanhSachDotDotXuat(): Lấy danh sách đợt đột xuất
+   - themDotDotXuat(): Tạo đợt đột xuất mới
+   - suaDotDotXuat(): Sửa thông tin đợt đột xuất
+   - xoaDotDotXuat(): Xóa đợt đột xuất
+   - capNhatTrangThaiDotDotXuat(): Cập nhật trạng thái đợt đột xuất
+   - layThongTinDotDotXuatActive(): Lấy thông tin đợt đột xuất đang hoạt động
+
+9. DonViController
+   - index(): Chức năng cơ bản
+   - layDanhSachCaNhan(): Lấy danh sách cá nhân trong đơn vị
+
+10. DeXuatController
+    - themDeXuatTheoDot(): Tạo đề xuất theo đợt
+    - getListDeXuatTheoDot(): Lấy danh sách đề xuất theo đợt
+    - getListDeXuatTheoDotDotXuat(): Lấy danh sách đề xuất theo đợt đột xuất
+    - getAllDeXuatTheoDot(): Lấy tất cả đề xuất theo đợt
+    - getAllDeXuatTheoDotDotXuat(): Lấy tất cả đề xuất theo đợt đột xuất
+    - getListDeXuatXetDuyet(): Lấy danh sách đề xuất cần xét duyệt
+    - getListDeXuatXetDuyetDotXuat(): Lấy danh sách đề xuất đột xuất cần xét duyệt
+    - getListDeXuatXetDuyetDotXuatTheoMa(): Lấy danh sách đề xuất đột xuất theo mã
+    - xetDuyetDeXuat(): Xét duyệt đề xuất
+    - themDeXuatDotDotXuat(): Tạo đề xuất cho đợt đột xuất
+    - layThongTinDeXuatDotXuat(): Lấy thông tin đề xuất đột xuất
+    - capNhatDeXuatDotXuat(): Cập nhật đề xuất đột xuất
+    - xoaDeXuatDotXuat(): Xóa đề xuất đột xuất
+    - checkChinhChu(): Kiểm tra đề xuất có thuộc tài khoản đang đăng nhập hay không
+
+11. DanhHieuController
+    - index(): Lấy danh sách danh hiệu
+    - layDanhSachDanhHieuTheoDot(): Lấy danh sách danh hiệu theo đợt
+    - themDanhHieu(): Thêm danh hiệu mới
+    - suaDanhHieu(): Cập nhật thông tin danh hiệu
+    - suaTrangThai(): Cập nhật trạng thái danh hiệu
+    - xoaDanhHieu(): Xóa danh hiệu
+    - getListLoaiDanhHieu(): Lấy danh sách loại danh hiệu
+    - getListCapDanhHieu(): Lấy danh sách cấp danh hiệu
+    - layDanhSachDanhHieuDotXuat(): Lấy danh sách danh hiệu đột xuất
+
+12. BaoCaoThongKeController
+    - thongKeThanhTichCuaToi(): Báo cáo thành tích cá nhân
+    - thongKeThanhTichCuaCaNhanTrongDonVi(): Báo cáo thành tích các cá nhân trong đơn vị
+    - danhSachNamHoc(): Lấy danh sách các năm học
+    - danhSachDanhHieu(): Lấy danh sách các danh hiệu
+    - danhSachCapDanhHieu(): Lấy danh sách cấp danh hiệu
+    - dataThongKeDanhHieu(): Lấy dữ liệu thống kê theo danh hiệu
+    - dataThongKeCaNhan(): Lấy dữ liệu thống kê theo cá nhân
+    - dataThongKeDonVi(): Lấy dữ liệu thống kê theo đơn vị
+    - danhSachDonVi(): Lấy danh sách đơn vị

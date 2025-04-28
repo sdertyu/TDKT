@@ -30,4 +30,8 @@ class KienToanModel extends Model
     {
         return $this->hasMany(ThanhVienHoiDongModel::class, 'FK_MaKienToan', 'PK_MaKienToan');
     }
+
+    public function hoiDongTruong() {
+        return $this->hasMany(HoiDongTruongModel::class, 'FK_MaKienToan', 'PK_MaKienToan');
+    }
 }

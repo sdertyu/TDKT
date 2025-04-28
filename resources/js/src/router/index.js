@@ -28,6 +28,7 @@ import MinhChungTheoDot from "../views/HoiDong/MinhChungTheoDot.vue";
 import MinhChungDotXuat from "../views/HoiDong/MinhChungDotXuat.vue";
 import HoiDongTheoDot from "../views/HoiDong/HoiDongTheoDot.vue";
 import HoiDongDotXuat from "../views/HoiDong/HoiDongDotXuat.vue";
+import ChiTietHoiDong from "../views/HoiDong/ChiTietHoiDong.vue";
 
 
 //all
@@ -180,6 +181,11 @@ const router = createRouter({
                     path: "thanhtichcuatoi",
                     component: ThanhTichCuaToi,
                     meta: { roles: [4, 5] , title: 'Thành tích của tôi'},
+                },
+                {
+                    path: 'chitiethoidong/:id',
+                    component: ChiTietHoiDong,
+                    meta: { roles: [3] , title: 'Chi tiết hội đồng'},
                 }
             ],
         },

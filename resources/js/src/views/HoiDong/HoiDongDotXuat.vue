@@ -1,204 +1,63 @@
 <template>
     <div class="container-fluid mt-4">
+
+        <!-- Danh sách cuộc họp đột xuất -->
         <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Thông tin Hội đồng Thi đua Khen thưởng</h4>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Danh sách cuộc họp hội đồng đột xuất</h4>
+                <button class="btn btn-primary" @click="openAddModal">
+                    <i class="fas fa-plus mr-1"></i> Thêm cuộc họp
+                </button>
             </div>
             <div class="card-body">
-                <form @submit.prevent="saveHoiDong">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Theo hướng dẫn số</label>
-                                <input v-model="hoiDong.huongDanSo" type="text" class="form-control"
-                                    placeholder="Nhập số hướng dẫn" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Thời gian</label>
-                                <input v-model="hoiDong.thoiGian" type="datetime-local" class="form-control" />
-                            </div>
-                        </div>
+                <div v-if="isLoading" class="text-center my-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Đang tải...</span>
                     </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="form-label">Địa chỉ</label>
-                                <input v-model="hoiDong.diaChi" type="text" class="form-control"
-                                    placeholder="Nhập địa chỉ" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Tổng số người triệu tập</label>
-                                <input v-model.number="hoiDong.tongNguoiTrieuTap" type="number" min="0"
-                                    class="form-control" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Số người có mặt</label>
-                                <input v-model.number="hoiDong.soNguoiCoMat" type="number" min="0"
-                                    class="form-control" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Chủ tịch hội đồng</label>
-                                <select v-model="hoiDong.chuTichId" class="form-select">
-                                    <option value="">-- Chọn chủ tịch hội đồng --</option>
-                                    <option v-for="canhan in danhSachCanhan" :key="canhan.taikhoan.PK_MaTaiKhoan"
-                                        :value="canhan.taikhoan.PK_MaTaiKhoan">
-                                        {{ canhan.sTenCaNhan }}
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Phó chủ tịch thường trực hội đồng</label>
-                                <select v-model="hoiDong.phoThuongTrucId" class="form-select">
-                                    <option value="">-- Chọn phó chủ tịch thường trực --</option>
-                                    <option v-for="canhan in danhSachCanhan" :key="canhan.taikhoan.PK_MaTaiKhoan"
-                                        :value="canhan.taikhoan.PK_MaTaiKhoan">
-                                        {{ canhan.sTenCaNhan }}
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Phó chủ tịch hội đồng</label>
-                                <select v-model="hoiDong.phoChuTichId" class="form-select">
-                                    <option value="">-- Chọn phó chủ tịch hội đồng --</option>
-                                    <option v-for="canhan in danhSachCanhan" :key="canhan.taikhoan.PK_MaTaiKhoan"
-                                        :value="canhan.taikhoan.PK_MaTaiKhoan">
-                                        {{ canhan.sTenCaNhan }}
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Thư ký</label>
-                                <select v-model="hoiDong.thuKyId" class="form-select">
-                                    <option value="">-- Chọn thư ký --</option>
-                                    <option v-for="canhan in danhSachCanhan" :key="canhan.taikhoan.PK_MaTaiKhoan"
-                                        :value="canhan.taikhoan.PK_MaTaiKhoan">
-                                        {{ canhan.sTenCaNhan }}
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="form-label">Tệp đính kèm biên bản họp</label>
-                                <input type="file" class="form-control" @change="e => handleFileUpload('bienBan', e)"
-                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
-                                <small class="text-muted">Hỗ trợ file: PDF, Word, Excel, hình ảnh (tối đa 10MB)</small>
-                                <p v-if="hoiDong.tenBienBan" class="mt-2 fst-italic">
-                                    <i class="fas fa-file-alt me-1"></i> File đã tải lên: <strong>{{
-                                        hoiDong.tenBienBan }}</strong>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="form-label">Tệp đính kèm biên bản kiểm phiếu</label>
-                                <input type="file" class="form-control" @change="e => handleFileUpload('kiemPhieu', e)"
-                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
-                                <small class="text-muted">Hỗ trợ file: PDF, Word, Excel, hình ảnh (tối đa 10MB)</small>
-                                <p v-if="hoiDong.tenKiemPhieu" class="mt-2 fst-italic">
-                                    <i class="fas fa-file-alt me-1"></i> File đã tải lên: <strong>{{
-                                        hoiDong.tenKiemPhieu }}</strong>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="form-label">Ghi chú</label>
-                                <textarea v-model="hoiDong.ghiChu" class="form-control" rows="3"
-                                    placeholder="Nhập ghi chú"></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
-                        <button type="submit" class="btn btn-primary">Lưu thông tin</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="card mt-4">
-            <div class="card-header">
-                <h4 class="card-title">Danh sách đề xuất cá nhân</h4>
-            </div>
-            <div class="card-body">
-                <div class="d-flex justify-content-end mb-3">
-                    <button type="button" class="btn btn-outline-success me-2" @click="setAllCaNhanStatus('1')">
-                        <i class="fas fa-check me-1"></i> Đạt
-                    </button>
-                    <button type="button" class="btn btn-outline-danger" @click="setAllCaNhanStatus('0')">
-                        <i class="fas fa-times me-1"></i> Không đạt
+                </div>
+                <div v-else-if="danhSachHoiDong.length === 0" class="text-center my-4">
+                    <p class="text-muted">Chưa có cuộc họp nào được tạo</p>
+                    <button class="btn btn-outline-primary" @click="openAddModal">
+                        <i class="fas fa-plus mr-1"></i> Thêm cuộc họp đầu tiên
                     </button>
                 </div>
-                <div class="table-responsive">
+                <div v-else class="table-responsive">
                     <table class="table table-bordered table-hover">
                         <thead class="table-light">
                             <tr>
                                 <th style="width: 50px">STT</th>
-                                <th>Tên danh hiệu</th>
-                                <th>Người đề xuất</th>
-                                <th>Đơn vị</th>
-                                <th style="width: 200px">Tổng số người bầu</th>
-                                <th style="width: 120px">Tỷ lệ %</th>
-                                <th style="width: 150px">Trạng thái</th>
+                                <th>Hướng dẫn số</th>
+                                <th>Thời gian</th>
+                                <th>Địa điểm</th>
+                                <th>Mã kiện toàn</th>
+                                <!-- <th>Tỷ lệ tham dự</th> -->
+                                <th style="width: 180px">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(deXuat, index) in danhSachDeXuatCaNhan" :key="deXuat.PK_MaDeXuat">
+                            <tr v-for="(item, index) in danhSachHoiDong" :key="item.PK_MaHoiDong">
                                 <td class="text-center">{{ index + 1 }}</td>
-                                <td>{{ deXuat.danh_hieu }}</td>
-                                <td>{{ deXuat.ca_nhan.ten_ca_nhan }}</td>
-                                <td>{{ deXuat.ca_nhan.don_vi }}</td>
+                                <td>{{ item.sSoHD }}</td>
+                                <td>{{ formatDateTime(item.dThoiGianHop) }}</td>
+                                <td>{{ item.sDiaChi }}</td>
+                                <td>{{ item.FK_MaKienToan }}</td>
+                                <!-- <td>
+                                    {{ item.iSoNguoiThamDu }}/{{ item.iSoThanhVien }}
+                                    ({{ calculateAttendanceRate(item.iSoNguoiThamDu, item.iSoThanhVien) }}%)
+                                </td> -->
                                 <td>
-                                    <input v-model.number="deXuat.so_nguoi_bau" type="number" min="0"
-                                        class="form-control" :max="hoiDong.soNguoiCoMat" />
+                                    <div class="text-center">
+                                        <button class="btn btn-sm btn-info me-1" @click="viewHoiDong(item)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning me-1" @click="editHoiDong(item)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" @click="deleteHoiDong(item)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </td>
-                                <td class="text-center fw-bold">
-                                    {{ hoiDong.soNguoiCoMat > 0 ? ((deXuat.so_nguoi_bau / hoiDong.soNguoiCoMat) *
-                                        100).toFixed(2) : 0 }}%
-                                </td>
-                                <td>
-                                    <select v-model="deXuat.trang_thai" class="form-select">
-                                        <option value="1">Đạt</option>
-                                        <option value="0">Không đạt</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr v-if="danhSachDeXuatCaNhan.length === 0">
-                                <td colspan="7" class="text-center">Không có đề xuất cá nhân nào trong đợt này</td>
                             </tr>
                         </tbody>
                     </table>
@@ -206,60 +65,403 @@
             </div>
         </div>
 
-        <div class="card mt-4">
-            <div class="card-header">
-                <h4 class="card-title">Danh sách đề xuất đơn vị</h4>
-            </div>
-            <div class="card-body">
-                <div class="d-flex justify-content-end mb-3">
-                    <button type="button" class="btn btn-outline-success me-2" @click="setAllDonViStatus('1')">
-                        <i class="fas fa-check me-1"></i> Đạt
-                    </button>
-                    <button type="button" class="btn btn-outline-danger" @click="setAllDonViStatus('0')">
-                        <i class="fas fa-times me-1"></i> Không đạt
-                    </button>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th style="width: 50px">STT</th>
-                                <th>Tên danh hiệu</th>
-                                <th>Đơn vị</th>
-                                <th style="width: 200px">Tổng số người bầu</th>
-                                <th style="width: 120px">Tỷ lệ %</th>
-                                <th style="width: 150px">Trạng thái</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(deXuat, index) in danhSachDeXuatDonVi" :key="deXuat.PK_MaDeXuat">
-                                <td class="text-center">{{ index + 1 }}</td>
-                                <td>{{ deXuat.danh_hieu }}</td>
-                                <td>{{ deXuat.don_vi.ten_don_vi }}</td>
-                                <td>
-                                    <input v-model.number="deXuat.so_nguoi_bau" type="number" min="0"
-                                        class="form-control" :max="hoiDong.soNguoiCoMat" />
-                                </td>
-                                <td class="text-center fw-bold">
-                                    {{ hoiDong.soNguoiCoMat > 0 ? ((deXuat.so_nguoi_bau / hoiDong.soNguoiCoMat) *
-                                        100).toFixed(2) : 0 }}%
-                                </td>
-                                <td>
-                                    <select v-model="deXuat.trang_thai" class="form-select">
-                                        <option value="1">Đạt</option>
-                                        <option value="0">Không đạt</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr v-if="danhSachDeXuatDonVi.length === 0">
-                                <td colspan="6" class="text-center">Không có đề xuất đơn vị nào trong đợt này</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+        <!-- Modal Thêm/Sửa Hội đồng -->
+        <div class="modal fade" id="hoiDongModal" tabindex="-1" role="dialog" aria-labelledby="hoiDongModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="hoiDongModalLabel">
+                            {{ isEditing ? 'Cập nhật thông tin cuộc họp' : 'Thêm mới cuộc họp' }}
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="saveHoiDong">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Thông tin cuộc họp</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Theo hướng dẫn số</label>
+                                                <input v-model="hoiDong.huongDanSo" type="text" class="form-control"
+                                                    placeholder="Nhập số hướng dẫn" required />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Thời gian</label>
+                                                <input v-model="hoiDong.thoiGian" type="datetime-local"
+                                                    class="form-control" required />
+                                            </div>
+                                        </div>
+                                    </div>
 
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-                    <button type="button" class="btn btn-success" @click="saveDeXuat">Lưu danh sách</button>
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="form-label">Địa chỉ</label>
+                                                <input v-model="hoiDong.diaChi" type="text" class="form-control"
+                                                    placeholder="Nhập địa chỉ" required />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Tổng số người triệu tập</label>
+                                                <input v-model.number="hoiDong.tongNguoiTrieuTap" type="number" min="1"
+                                                    class="form-control" required />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Số người có mặt</label>
+                                                <input v-model.number="hoiDong.soNguoiCoMat" type="number" min="1"
+                                                    class="form-control" required />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Số người vắng</label>
+                                                <input type="text" class="form-control" readonly disabled
+                                                    v-model="hoiDong.soVang" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Mã quyết định kiện toàn</label>
+                                                <input type="text" class="form-control"
+                                                    placeholder="Mã quyết định kiện toàn" v-model="hoiDong.maKienToan"
+                                                    readonly disabled />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Chủ tịch hội đồng</label>
+                                                <select v-model="hoiDong.chuTichId" class="form-select" required>
+                                                    <option value="">-- Chọn chủ tịch hội đồng --</option>
+                                                    <option v-for="canhan in danhSachCanhan" :key="canhan.taikhoan.PK_MaTaiKhoan"
+                                                        :value="canhan.taikhoan.PK_MaTaiKhoan">
+                                                        {{ canhan.sTenCaNhan }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Phó chủ tịch thường trực hội đồng</label>
+                                                <select v-model="hoiDong.phoThuongTrucId" class="form-select">
+                                                    <option value="">-- Chọn phó chủ tịch thường trực --</option>
+                                                    <option v-for="canhan in danhSachCanhan" :key="canhan.taikhoan.PK_MaTaiKhoan"
+                                                        :value="canhan.taikhoan.PK_MaTaiKhoan">
+                                                        {{ canhan.sTenCaNhan }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Phó chủ tịch hội đồng</label>
+                                                <select v-model="hoiDong.phoChuTichId" class="form-select">
+                                                    <option value="">-- Chọn phó chủ tịch hội đồng --</option>
+                                                    <option v-for="canhan in danhSachCanhan" :key="canhan.taikhoan.PK_MaTaiKhoan"
+                                                        :value="canhan.taikhoan.PK_MaTaiKhoan">
+                                                        {{ canhan.sTenCaNhan }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Thư ký</label>
+                                                <select v-model="hoiDong.thuKyId" class="form-select" required>
+                                                    <option value="">-- Chọn thư ký --</option>
+                                                    <option v-for="canhan in danhSachCanhan" :key="canhan.taikhoan.PK_MaTaiKhoan"
+                                                        :value="canhan.taikhoan.PK_MaTaiKhoan">
+                                                        {{ canhan.sTenCaNhan }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div> -->
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="form-label">Tệp đính kèm biên bản họp</label>
+                                                <input type="file" class="form-control"
+                                                    @change="e => handleFileUpload('bienBan', e)"
+                                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
+                                                <small class="text-muted">Hỗ trợ file: PDF, Word, Excel, hình ảnh (tối
+                                                    đa 10MB)</small>
+                                                <p v-if="hoiDong.tenBienBan" class="mt-2 fst-italic">
+                                                    <i class="fas fa-file-alt me-1"></i> File đã tải lên: <strong>{{
+                                                        hoiDong.tenBienBan }}</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="form-label">Tệp đính kèm biên bản kiểm phiếu</label>
+                                                <input type="file" class="form-control"
+                                                    @change="e => handleFileUpload('kiemPhieu', e)"
+                                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" />
+                                                <small class="text-muted">Hỗ trợ file: PDF, Word, Excel, hình ảnh (tối
+                                                    đa 10MB)</small>
+                                                <p v-if="hoiDong.tenKiemPhieu" class="mt-2 fst-italic">
+                                                    <i class="fas fa-file-alt me-1"></i> File đã tải lên: <strong>{{
+                                                        hoiDong.tenKiemPhieu }}</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="form-label">Ghi chú</label>
+                                                <textarea v-model="hoiDong.ghiChu" class="form-control" rows="3"
+                                                    placeholder="Nhập ghi chú"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <button type="button" class="btn btn-primary" @click="saveHoiDong">
+                                            {{ isEditing ? 'Cập nhật' : 'Lưu' }} thông tin hội đồng
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Danh sách đề xuất section (Only shown when editing) -->
+                        <div>
+                            <!-- Đề xuất cá nhân -->
+                            <div class="card mt-4">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">Danh sách đề xuất cá nhân</h5>
+                                    <div>
+                                        <button type="button" class="btn btn-sm btn-outline-success me-2"
+                                            @click="setAllCaNhanStatus('1')">
+                                            <i class="fas fa-check me-1"></i> Đạt
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                            @click="setAllCaNhanStatus('0')">
+                                            <i class="fas fa-times me-1"></i> Không đạt
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th style="width: 50px">STT</th>
+                                                    <th>Tên danh hiệu</th>
+                                                    <th>Người đề xuất</th>
+                                                    <th>Đơn vị</th>
+                                                    <th style="width: 150px">Tổng số người bầu</th>
+                                                    <th style="width: 100px">Tỷ lệ %</th>
+                                                    <th style="width: 150px">Trạng thái</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(deXuat, index) in danhSachDeXuatCaNhan"
+                                                    :key="deXuat.PK_MaDeXuat">
+                                                    <td class="text-center">{{ index + 1 }}</td>
+                                                    <td>{{ deXuat.danh_hieu }}</td>
+                                                    <td>{{ deXuat.ca_nhan.ten_ca_nhan }}</td>
+                                                    <td>{{ deXuat.ca_nhan.don_vi }}</td>
+                                                    <td>
+                                                        <input v-model.number="deXuat.so_nguoi_bau" type="number"
+                                                            min="0" class="form-control" :max="hoiDong.soNguoiCoMat" />
+                                                    </td>
+                                                    <td class="text-center fw-bold">
+                                                        {{ hoiDong.soNguoiCoMat > 0 ? ((deXuat.so_nguoi_bau /
+                                                            hoiDong.soNguoiCoMat) *
+                                                        100).toFixed(2) : 0 }}%
+                                                    </td>
+                                                    <td>
+                                                        <select v-model="deXuat.trang_thai" class="form-select">
+                                                            <option value="1">Đạt</option>
+                                                            <option value="0">Không đạt</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr v-if="danhSachDeXuatCaNhan.length === 0">
+                                                    <td colspan="7" class="text-center">Không có đề xuất cá nhân nào
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Đề xuất đơn vị -->
+                            <div class="card mt-3">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">Danh sách đề xuất đơn vị</h5>
+                                    <div>
+                                        <button type="button" class="btn btn-sm btn-outline-success me-2"
+                                            @click="setAllDonViStatus('1')">
+                                            <i class="fas fa-check me-1"></i> Đạt
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                            @click="setAllDonViStatus('0')">
+                                            <i class="fas fa-times me-1"></i> Không đạt
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th style="width: 50px">STT</th>
+                                                    <th>Tên danh hiệu</th>
+                                                    <th>Đơn vị</th>
+                                                    <th style="width: 150px">Tổng số người bầu</th>
+                                                    <th style="width: 100px">Tỷ lệ %</th>
+                                                    <th style="width: 150px">Trạng thái</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(deXuat, index) in danhSachDeXuatDonVi"
+                                                    :key="deXuat.PK_MaDeXuat">
+                                                    <td class="text-center">{{ index + 1 }}</td>
+                                                    <td>{{ deXuat.danh_hieu }}</td>
+                                                    <td>{{ deXuat.don_vi.ten_don_vi }}</td>
+                                                    <td>
+                                                        <input v-model.number="deXuat.so_nguoi_bau" type="number"
+                                                            min="0" class="form-control" :max="hoiDong.soNguoiCoMat" />
+                                                    </td>
+                                                    <td class="text-center fw-bold">
+                                                        {{ hoiDong.soNguoiCoMat > 0 ? ((deXuat.so_nguoi_bau /
+                                                            hoiDong.soNguoiCoMat) *
+                                                        100).toFixed(2) : 0 }}%
+                                                    </td>
+                                                    <td>
+                                                        <select v-model="deXuat.trang_thai" class="form-select">
+                                                            <option value="1">Đạt</option>
+                                                            <option value="0">Không đạt</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr v-if="danhSachDeXuatDonVi.length === 0">
+                                                    <td colspan="6" class="text-center">Không có đề xuất đơn vị nào</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                                        <button type="button" class="btn btn-success" @click="saveDeXuat">
+                                            Lưu danh sách đề xuất
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal xem chi tiết -->
+        <div class="modal fade" id="viewHoiDongModal" tabindex="-1" role="dialog"
+            aria-labelledby="viewHoiDongModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewHoiDongModalLabel">Chi tiết cuộc họp</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div v-if="selectedHoiDong">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <p><strong>Hướng dẫn số:</strong> {{ selectedHoiDong.sSoHD }}</p>
+                                    <p><strong>Thời gian:</strong> {{ formatDateTime(selectedHoiDong.dThoiGianHop) }}
+                                    </p>
+                                    <p><strong>Địa chỉ:</strong> {{ selectedHoiDong.sDiaChi }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Số người triệu tập: </strong> {{ selectedHoiDong.kien_toan.thanh_vien_hoi_dong_count }}</p>
+                                    <p><strong>Mã kiện toàn: </strong> {{ selectedHoiDong.FK_MaKienToan }}</p>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <p><strong>Ghi chú:</strong> {{ selectedHoiDong.sGhiChu || 'Không có' }}</p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header bg-light">
+                                            <h6 class="card-title mb-0">Biên bản họp</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <p v-if="selectedHoiDong.sTenBienBan">
+                                                <i class="fas fa-file-alt me-2"></i>
+                                                <a href="#" @click.prevent="downloadFile(selectedHoiDong.sTenBienBan)">
+                                                    {{ selectedHoiDong.sTenBienBan }}
+                                                </a>
+                                            </p>
+                                            <p v-else class="text-muted">Chưa có biên bản</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header bg-light">
+                                            <h6 class="card-title mb-0">Biên bản kiểm phiếu</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <p v-if="selectedHoiDong.sTenKiemPhieu">
+                                                <i class="fas fa-file-alt me-2"></i>
+                                                <a href="#"
+                                                    @click.prevent="downloadFile(selectedHoiDong.sTenKiemPhieu)">
+                                                    {{ selectedHoiDong.sTenKiemPhieu }}
+                                                </a>
+                                            </p>
+                                            <p v-else class="text-muted">Chưa có biên bản kiểm phiếu</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-info" @click="editSelectedHoiDong">
+                            <i class="fas fa-edit me-1"></i> Chỉnh sửa
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -270,8 +472,14 @@
 import { get } from 'jquery';
 import { ref, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2';
-// Import axios if needed for API communication
 // import axios from 'axios';
+
+// Danh sách hội đồng
+const danhSachHoiDong = ref([]);
+const isLoading = ref(true);
+const isEditing = ref(false);
+const selectedHoiDong = ref(null);
+const showDeXuatSection = ref(false);
 
 // Hội đồng data structure
 const hoiDong = ref({
@@ -281,6 +489,7 @@ const hoiDong = ref({
     diaChi: '',
     tongNguoiTrieuTap: 0,
     soNguoiCoMat: 0,
+    soVang: 0,
     ghiChu: '',
     chuTichId: '',
     phoThuongTrucId: '',
@@ -288,16 +497,124 @@ const hoiDong = ref({
     thuKyId: '',
     fileBienBan: null,
     fileKiemPhieu: null,
+    tenBienBan: '',
+    tenKiemPhieu: '',
+    maKienToan: null,
+});
+
+// Calculate số vắng when thành viên or người tham dự changes
+watch([() => hoiDong.value.tongNguoiTrieuTap, () => hoiDong.value.soNguoiCoMat], () => {
+    hoiDong.value.soVang = hoiDong.value.tongNguoiTrieuTap - hoiDong.value.soNguoiCoMat;
 });
 
 const danhSachCanhan = ref([]);
-
-// Sample data for đề xuất - Replace with actual API call
+// Danh sách đề xuất
 const danhSachDeXuatCaNhan = ref([]);
 const danhSachDeXuatDonVi = ref([]);
 
 const madot = ref('');
 const maDotDotXuat = ref('');
+
+// Format date function
+const formatDateTime = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    }).format(date);
+};
+
+const calculateAttendanceRate = (present, total) => {
+    if (!total || total === 0) return 0;
+    return ((present / total) * 100).toFixed(2);
+};
+
+// Get name from ID
+const getChuTriName = (id) => {
+    if (!id) return 'Chưa chọn';
+    const canhan = danhSachCanhan.value.find(item => item.taikhoan.PK_MaTaiKhoan === id);
+    return canhan ? canhan.sTenCaNhan : 'Không xác định';
+};
+
+// Open modal to add new
+const openAddModal = () => {
+    resetHoiDongForm();
+    isEditing.value = false;
+    showDeXuatSection.value = false;
+    getDeXuatForHoiDong(null)
+
+    // Initialize new ID
+    // hoiDong.value.maHoiDong = localStorage.getItem('user_name') + '-' + maDotDotXuat.value;
+
+    // Open modal
+    const modal = new bootstrap.Modal(document.getElementById('hoiDongModal'));
+    modal.show();
+};
+
+// Edit existing
+const editHoiDong = (item) => {
+    isEditing.value = true;
+    mapHoiDongToForm(item);
+    showDeXuatSection.value = true;
+
+    // Fetch đề xuất data if needed
+    getDeXuatForHoiDong(item.PK_MaHoiDong);
+
+    // Open modal
+    const modal = new bootstrap.Modal(document.getElementById('hoiDongModal'));
+    modal.show();
+};
+
+// View details
+const viewHoiDong = (item) => {
+    selectedHoiDong.value = item;
+
+    // Open view modal
+    const modal = new bootstrap.Modal(document.getElementById('viewHoiDongModal'));
+    modal.show();
+};
+
+// Edit from view modal
+const editSelectedHoiDong = () => {
+    // Close view modal
+    bootstrap.Modal.getInstance(document.getElementById('viewHoiDongModal')).hide();
+
+    // Open edit modal with selected data
+    editHoiDong(selectedHoiDong.value);
+};
+
+// Delete hội đồng
+const deleteHoiDong = (item) => {
+    Swal.fire({
+        title: 'Xác nhận xóa',
+        text: `Bạn có chắc chắn muốn xóa cuộc họp "${item.sSoHD}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Đồng ý xóa',
+        cancelButtonText: 'Hủy',
+        confirmButtonColor: '#dc3545'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const response = await axios.delete(`/api/hoidong/delete/${item.PK_MaHoiDong}`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    }
+                });
+
+                if (response.status === 200) {
+                    toastSuccess('Xóa cuộc họp thành công');
+                    fetchDanhSachHoiDong();
+                }
+            } catch (error) {
+                toastError('Có lỗi xảy ra khi xóa cuộc họp');
+                console.error('Lỗi xóa hội đồng:', error);
+            }
+        }
+    });
+};
 
 // Handle file upload
 const handleFileUpload = (type, event) => {
@@ -314,25 +631,81 @@ const handleFileUpload = (type, event) => {
     if (type === 'bienBan') {
         hoiDong.value.fileBienBan = file;
     } else if (type === 'kiemPhieu') {
-        console.log("object");
         hoiDong.value.fileKiemPhieu = file;
     }
 };
 
-// Functions
+// Download file
+const downloadFile = (fileName) => {
+    if (!fileName) return;
+
+    // Replace with actual download logic
+    window.open(`/api/hoidong/download?file=${fileName}`, '_blank');
+};
+
+// Reset form
+const resetHoiDongForm = () => {
+    hoiDong.value = {
+        maHoiDong: null,
+        huongDanSo: '',
+        thoiGian: '',
+        diaChi: '',
+        tongNguoiTrieuTap: hoiDong.value.tongNguoiTrieuTap,
+        soNguoiCoMat: 0,
+        soVang: 0,
+        ghiChu: '',
+        chuTichId: '',
+        phoThuongTrucId: '',
+        phoChuTichId: '',
+        thuKyId: '',
+        fileBienBan: null,
+        fileKiemPhieu: null,
+        tenBienBan: '',
+        tenKiemPhieu: '',
+        maKienToan: hoiDong.value.maKienToan,
+    };
+
+    danhSachDeXuatCaNhan.value = [];
+    danhSachDeXuatDonVi.value = [];
+};
+
+// Map API data to form
+const mapHoiDongToForm = (data) => {
+    hoiDong.value = {
+        maHoiDong: data.PK_MaHoiDong,
+        huongDanSo: data.sSoHD || '',
+        thoiGian: data.dThoiGianHop || '',
+        diaChi: data.sDiaChi || '',
+        tongNguoiTrieuTap: data.kien_toan.thanh_vien_hoi_dong_count || 0,
+        soNguoiCoMat: data.iSoNguoiThamDu || 0,
+        soVang: (data.iSoThanhVien || 0) - (data.iSoNguoiThamDu || 0),
+        ghiChu: data.sGhiChu || '',
+        chuTichId: data.FK_ChuTri || '',
+        phoThuongTrucId: data.FK_PhoChuTichTT || '',
+        phoChuTichId: data.FK_PhoChuTich || '',
+        thuKyId: data.FK_ThuKy || '',
+        tenBienBan: data.sTenBienBan || '',
+        tenKiemPhieu: data.sTenKiemPhieu || '',
+        maKienToan: data.FK_MaKienToan || null,
+        fileBienBan: null,
+        fileKiemPhieu: null
+    };
+};
+
+// Save or update hội đồng
 const saveHoiDong = async () => {
     try {
-        // Validate inputs if needed
+        // Validate inputs
         if (hoiDong.value.soNguoiCoMat > hoiDong.value.tongNguoiTrieuTap) {
-            alert('Số người có mặt không thể nhiều hơn tổng số người triệu tập!');
+            toastError('Số người có mặt không thể nhiều hơn tổng số người triệu tập!');
             return;
         }
 
-        // Check if required fields are filled
-        if (!hoiDong.value.chuTichId || !hoiDong.value.thuKyId) {
-            alert('Vui lòng chọn Chủ tịch hội đồng và Thư ký!');
-            return;
-        }
+        // Check required fields
+        // if (!hoiDong.value.chuTichId || !hoiDong.value.thuKyId) {
+        //     toastError('Vui lòng chọn Chủ tịch hội đồng và Thư ký!');
+        //     return;
+        // }
 
         // Create FormData for file upload
         const formData = new FormData();
@@ -346,166 +719,191 @@ const saveHoiDong = async () => {
             }
         }
 
+        let maHD = hoiDong.value.maHoiDong || (localStorage.getItem('user_name') + '-' + madot.value + '-' + hoiDong.value.thoiGian);
+        let maDot = madot.value;
+        let maDotXuat = maDotDotXuat.value;
 
-        let maHD = localStorage.getItem('user_name') + '-' + maDotDotXuat.value
-        console.log(maHD);
-        let maDot = madot.value
-        let maDotXuat = maDotDotXuat.value
-        formData.append('maHoiDong', maHD); // Include maHoiDong if exists
-        formData.append('maDot', maDot); // Include madot if exists
-        formData.append('maDotXuat', maDotXuat); // Include madot if exists
+        formData.append('maHoiDong', maHD);
+        formData.append('maDot', maDot);
+        formData.append('maDotXuat', maDotXuat);
+        formData.append('dotXuat', true);
 
-        // API call to save Hội đồng information
-        const add = await axios.post('/api/hoidong/add', formData, {
+        // API call to save/update
+        const url = isEditing.value ? '/api/hoidong/add' : '/api/hoidong/add';
+        const response = await axios.post(url, formData, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('api_token')}`,
                 'Content-Type': 'multipart/form-data'
             }
         });
 
-        if (add.status === 200) {
-            toastSuccess('Lưu thông tin hội đồng thành công!');
-            // Optionally, reset the form or redirect
+        if (response.status === 200) {
+            toastSuccess(isEditing.value
+                ? 'Cập nhật thông tin hội đồng thành công!'
+                : 'Tạo hội đồng mới thành công!');
+
+            // Close modal
+            // bootstrap.Modal.getInstance(document.getElementById('hoiDongModal')).hide();
+
+            // Refresh list
+            fetchDanhSachHoiDong();
         } else {
             toastError('Có lỗi xảy ra khi lưu thông tin hội đồng!');
         }
-
     } catch (error) {
+        console.error('Lỗi lưu hội đồng:', error);
         toastError('Có lỗi xảy ra khi lưu thông tin hội đồng!');
     }
 };
 
+// Save đề xuất status
 const saveDeXuat = async () => {
     try {
-        // Validate before saving
+        // Validate data
         for (const deXuat of danhSachDeXuatCaNhan.value) {
             if (deXuat.so_nguoi_bau > hoiDong.value.soNguoiCoMat) {
-                alert(`Đề xuất cá nhân "${deXuat.danh_hieu}" có số người bầu vượt quá số người có mặt!`);
+                toastError(`Đề xuất cá nhân "${deXuat.danh_hieu}" có số người bầu vượt quá số người có mặt!`);
                 return;
             }
         }
 
         for (const deXuat of danhSachDeXuatDonVi.value) {
             if (deXuat.so_nguoi_bau > hoiDong.value.soNguoiCoMat) {
-                alert(`Đề xuất đơn vị "${deXuat.danh_hieu}" có số người bầu vượt quá số người có mặt!`);
+                toastError(`Đề xuất đơn vị "${deXuat.danh_hieu}" có số người bầu vượt quá số người có mặt!`);
                 return;
             }
         }
 
-        let formData = new FormData();
-        danhSachDeXuatCaNhan.value.forEach(item => {
-            formData.append('deXuat[]', JSON.stringify(item));
+        // Show confirmation based on approval statistics
+        let totalProposals = danhSachDeXuatCaNhan.value.length + danhSachDeXuatDonVi.value.length;
+        let approvedProposals = [
+            ...danhSachDeXuatCaNhan.value,
+            ...danhSachDeXuatDonVi.value
+        ].filter(item => item.trang_thai === '1').length;
+
+        let confirmMessage = `Bạn sẽ duyệt ${approvedProposals}/${totalProposals} đề xuất. Xác nhận lưu?`;
+
+        const confirmResult = await Swal.fire({
+            title: 'Xác nhận xét duyệt đề xuất',
+            html: confirmMessage,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Xác nhận',
+            cancelButtonText: 'Hủy',
+            confirmButtonColor: '#28a745'
         });
-        danhSachDeXuatDonVi.value.forEach(item => {
+
+        if (!confirmResult.isConfirmed) {
+            return;
+        }
+
+        // Prepare data for submission
+        let formData = new FormData();
+
+        // Add individual proposals
+        danhSachDeXuatCaNhan.value.forEach(item => {
+            // const proposalData = {
+            //     ma_de_xuat: item.ma_de_xuat,
+            //     trang_thai: item.trang_thai,
+            //     so_nguoi_bau: item.so_nguoi_bau,
+            //     ty_le: hoiDong.value.soNguoiCoMat > 0 ? 
+            //         ((item.so_nguoi_bau / hoiDong.value.soNguoiCoMat) * 100).toFixed(2) : 0
+            // };
             formData.append('deXuat[]', JSON.stringify(item));
         });
 
-        let maHD = localStorage.getItem('user_name') + '-' + maDotDotXuat.value
-        formData.append('maHoiDong', maHD); // Include maHoiDong if exists
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key}:`, value);
-        }
-        console.log(localStorage);
-        // return
-        const save = await axios.post('/api/dexuat/xetduyetdexuat', formData, {
+        // Add unit proposals
+        danhSachDeXuatDonVi.value.forEach(item => {
+            // const proposalData = {
+            //     ma_de_xuat: item.PK_MaDeXuat,
+            //     trang_thai: item.trang_thai,
+            //     so_nguoi_bau: item.so_nguoi_bau,
+            //     ty_le: hoiDong.value.soNguoiCoMat > 0 ? 
+            //         ((item.so_nguoi_bau / hoiDong.value.soNguoiCoMat) * 100).toFixed(2) : 0
+            // };
+            formData.append('deXuat[]', JSON.stringify(item));
+        });
+
+        // Add additional required data
+        formData.append('maHoiDong', hoiDong.value.maHoiDong);
+        formData.append('soNguoiThamDu', hoiDong.value.soNguoiCoMat);
+
+        // Submit data to server
+        const response = await axios.post('/api/dexuat/xetduyetdexuat', formData, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`,
+                Authorization: `Bearer ${localStorage.getItem('api_token')}`
             }
         });
 
-        if (save.status === 200) {
+        if (response.status === 200) {
             toastSuccess('Lưu danh sách đề xuất thành công!');
-            // Optionally, reset the form or redirect
+        
+        } else {
+            toastError('Có lỗi xảy ra khi lưu đề xuất');
         }
     } catch (error) {
+        console.error('Lỗi xét duyệt đề xuất:', error);
+
         if (error.response) {
             if (error.response.status === 422) {
-                const errors = error.response.data.errors;
-                let errorMessage = Object.values(errors).flat().join('<br>')
-                console.log(errors);
-                toastError(errorMessage)
+                const errors = error.response.data.errors || error.response.data.error;
+                let errorMessage = Object.values(errors).flat().join('<br>');
+                toastError(errorMessage);
             } else {
-                toastError(error.response.data.message)
+                toastError(error.response.data.message || 'Có lỗi xảy ra khi lưu đề xuất');
             }
-        }
-        else {
-            toastError('Có lỗi xảy ra khi lưu danh hiệu')
+        } else {
+            toastError('Có lỗi xảy ra khi lưu danh sách đề xuất');
         }
     }
 };
 
-const getListCaNhan = () => {
-    axios.get('/api/taikhoan/getlistcanhan', {
+// Get đề xuất for a specific hội đồng
+const getDeXuatForHoiDong = (maHoiDong) => {
+    let url = '';
+    if(maHoiDong != null) {
+        url = `/api/dexuat/getlistdexuatxetduyetdotxuat/${maHoiDong}`
+    }
+    else {
+        url = '/api/dexuat/getlistdexuatxetduyetdotxuat'
+    }
+    axios.get(url, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('api_token')}`
         }
     })
         .then(response => {
             if (response.status === 200) {
-                danhSachCanhan.value = response.data.data;
+                const data = response.data.data;
+                console.log(data);
+
+                // Update proposal lists with correct data format
+                danhSachDeXuatCaNhan.value = (data.de_xuat_ca_nhan || []).map(item => ({
+                    ...item,
+                    trang_thai: item.trang_thai?.toString() || '0',
+                    so_nguoi_bau: parseInt(item.so_nguoi_bau || '0')
+                }));
+
+                danhSachDeXuatDonVi.value = (data.de_xuat_don_vi || []).map(item => ({
+                    ...item,
+                    trang_thai: item.trang_thai?.toString() || '0',
+                    so_nguoi_bau: parseInt(item.so_nguoi_bau || '0')
+                }));
+
+                // Apply styling to selections
+                setTimeout(() => applySelectStyling(), 100);
             }
         })
         .catch(error => {
+            console.log(error);
             if (error.response) {
-                if (error.response.status === 422) {
-                    const errors = error.response.data.errors;
-                    let errorMessage = Object.values(errors).flat().join('<br>')
-                    console.log(errors);
-                    toastError(errorMessage)
-                } else {
-                    toastError(error.response.data.message)
-                }
+                toastError(error.response.data.message)
             }
             else {
-                toastError('Có lỗi xảy ra khi lưu danh hiệu')
+                toastError('Có lỗi xảy ra khi tải danh sách đề xuất');
             }
         });
-}
-
-const getListDeXuat = () => {
-    axios.get('/api/dexuat/getlistdexuatxetduyetdotxuat', {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
-        }
-    })
-        .then(response => {
-            if (response.status === 200) {
-                danhSachDeXuatCaNhan.value = response.data.data.de_xuat_ca_nhan;
-                danhSachDeXuatDonVi.value = response.data.data.de_xuat_don_vi || [];
-                let hoiDongInfo = response.data.data.hoi_dong;
-                if (hoiDongInfo !== null) {
-                    hoiDong.value.huongDanSo = hoiDongInfo.sSoHD;
-                    hoiDong.value.thoiGian = hoiDongInfo.dThoiGianHop;
-                    hoiDong.value.diaChi = hoiDongInfo.sDiaChi;
-                    hoiDong.value.tongNguoiTrieuTap = hoiDongInfo.iSoThanhVien;
-                    hoiDong.value.soNguoiCoMat = hoiDongInfo.iSoNguoiThamDu;
-                    hoiDong.value.ghiChu = hoiDongInfo.sGhiChu;
-                    hoiDong.value.chuTichId = hoiDongInfo.FK_ChuTri;
-                    hoiDong.value.phoThuongTrucId = hoiDongInfo.FK_PhoChuTichTT;
-                    hoiDong.value.phoChuTichId = hoiDongInfo.FK_PhoChuTich;
-                    hoiDong.value.thuKyId = hoiDongInfo.FK_ThuKy;
-                    hoiDong.value.tenBienBan = hoiDongInfo.sTenBienBan;
-                    hoiDong.value.tenKiemPhieu = hoiDongInfo.sTenKiemPhieu;
-                }
-
-            }
-        })
-        .catch(error => {
-            if (error.response) {
-                if (error.response.status === 422) {
-                    const errors = error.response.data.errors;
-                    let errorMessage = Object.values(errors).flat().join('<br>')
-                    console.log(errors);
-                    toastError(errorMessage)
-                } else {
-                    toastError(error.response.data.message)
-                }
-            }
-            else {
-                toastError('Có lỗi xảy ra')
-            }
-        });
-}
+};
 
 // Functions to set status for all entries at once
 const setAllCaNhanStatus = (status) => {
@@ -530,26 +928,18 @@ const setAllCaNhanStatus = (status) => {
                 item.trang_thai = status;
             });
 
-            // Update styling after state change
+            // Update styling
             setTimeout(() => applySelectStyling(), 100);
 
-            Swal.fire({
-                title: 'Thành công!',
-                text: status === '1'
-                    ? 'Tất cả đề xuất cá nhân đã được duyệt.'
-                    : 'Tất cả đề xuất cá nhân đã bị từ chối.',
-                icon: 'success',
-                timer: 1500,
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timerProgressBar: true,
-            });
+            toastSuccess(status === '1'
+                ? 'Đã đặt trạng thái Đạt cho tất cả đề xuất cá nhân'
+                : 'Đã đặt trạng thái Không đạt cho tất cả đề xuất cá nhân');
         }
     });
 };
 
 const setAllDonViStatus = (status) => {
+    // Similar to setAllCaNhanStatus but for đơn vị
     if (!danhSachDeXuatDonVi.value.length) return;
 
     Swal.fire({
@@ -571,72 +961,92 @@ const setAllDonViStatus = (status) => {
                 item.trang_thai = status;
             });
 
-            // Update styling after state change
+            // Update styling
             setTimeout(() => applySelectStyling(), 100);
 
-            Swal.fire({
-                title: 'Thành công!',
-                text: status === '1'
-                    ? 'Tất cả đề xuất đơn vị đã được duyệt.'
-                    : 'Tất cả đề xuất đơn vị đã bị từ chối.',
-                icon: 'success',
-                timer: 1500,
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timerProgressBar: true,
-            });
+            toastSuccess(status === '1'
+                ? 'Đã đặt trạng thái Đạt cho tất cả đề xuất đơn vị'
+                : 'Đã đặt trạng thái Không đạt cho tất cả đề xuất đơn vị');
         }
     });
 };
 
-const getDotDotXuat = () => {
-    axios.get('/api/dotthiduakhenthuong/getdotdotxuatactive', {
+// Get all needed data
+const fetchDanhSachHoiDong = () => {
+    isLoading.value = true;
+    axios.get('/api/hoidong/getlisthoidongdotxuat', {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('api_token')}`
         }
     })
         .then(response => {
             if (response.status === 200) {
-                // madot.value = response.data.data.data;
-                maDotDotXuat.value = response.data.data.PK_MaDotXuat;
+                danhSachHoiDong.value = response.data.data || [];
             }
         })
         .catch(error => {
-            toastError('Có lỗi xảy ra');
+            toastError('Có lỗi xảy ra khi tải danh sách hội đồng');
+            console.error('Lỗi tải danh sách hội đồng:', error);
+        })
+        .finally(() => {
+            isLoading.value = false;
         });
-}
+};
 
-// Fetch data when component mounted
-onMounted(async () => {
+const getListCaNhan = () => {
+    axios.get('/api/taikhoan/getlistcanhan', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+        }
+    })
+        .then(response => {
+            if (response.status === 200) {
+                danhSachCanhan.value = response.data.data;
+            }
+        })
+        .catch(error => {
+            toastError('Có lỗi xảy ra khi tải danh sách cá nhân');
+            console.error('Lỗi tải danh sách cá nhân:', error);
+        });
+};
+
+// const getDotDotXuat = () => {
+//     axios.get('/api/dotthiduakhenthuong/getdotdotxuatactive', {
+//         headers: {
+//             Authorization: `Bearer ${localStorage.getItem('api_token')}`
+//         }
+//     })
+//         .then(response => {
+//             if (response.status === 200) {
+//                 maDotDotXuat.value = response.data.data.PK_MaDotXuat;
+//             }
+//         })
+//         .catch(error => {
+//             toastError('Có lỗi xảy ra khi tải thông tin đợt đột xuất');
+//             console.error('Lỗi tải đợt đột xuất:', error);
+//         });
+// };
+
+// Get kiện toàn active status
+const getKienToan = async () => {
     try {
-        madot.value = useGlobalStore().dotActive;
-        getDotDotXuat();
-        // const response = await axios.get('/api/hoi-dong');
-        // hoiDong.value = response.data;
+        const response = await axios.get('/api/kientoan/kientoanactive', {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            }
+        });
 
-        // Fetch danh sách cá nhân
-        // getHoiDongDeXuat();
-        getListCaNhan();
-
-        // Fetch proposals list
-        getListDeXuat();
+        if (response.status === 200 && response.data.data) {
+            let data = response.data.data;
+            hoiDong.value.maKienToan = data.PK_MaKienToan;
+            hoiDong.value.tongNguoiTrieuTap = data.soThanhVien;
+        }
     } catch (error) {
-        console.error('Lỗi khi tải dữ liệu:', error);
+        console.error('Error fetching kiện toàn data:', error);
     }
-});
+};
 
-// Add watchers to apply styling based on selected values
-watch(danhSachDeXuatCaNhan, () => {
-    setTimeout(() => applySelectStyling(), 100);
-}, { deep: true });
-
-// Watch for changes in đơn vị list and apply styling
-watch(danhSachDeXuatDonVi, () => {
-    setTimeout(() => applySelectStyling(), 100);
-}, { deep: true });
-
-// Function to apply styling to select elements based on their value
+// Apply styling to select elements
 const applySelectStyling = () => {
     document.querySelectorAll('.form-select').forEach(select => {
         // Remove existing status classes
@@ -651,16 +1061,33 @@ const applySelectStyling = () => {
     });
 };
 
-// Call this function after mounting and after any data changes
-onMounted(() => {
-    // Existing code...
+// Watch for changes and apply styling
+watch(danhSachDeXuatCaNhan, () => {
+    setTimeout(() => applySelectStyling(), 100);
+}, { deep: true });
 
-    // Add event listener to update styling when selects change
-    document.addEventListener('change', (event) => {
-        if (event.target.classList.contains('form-select')) {
-            applySelectStyling();
-        }
-    });
+watch(danhSachDeXuatDonVi, () => {
+    setTimeout(() => applySelectStyling(), 100);
+}, { deep: true });
+
+// Initialize
+onMounted(async () => {
+    try {
+        madot.value = useGlobalStore().dotActive;
+        // getDotDotXuat();
+        getListCaNhan();
+        fetchDanhSachHoiDong();
+        getKienToan();
+
+        // Add event listener for select styling
+        document.addEventListener('change', (event) => {
+            if (event.target.classList.contains('form-select')) {
+                applySelectStyling();
+            }
+        });
+    } catch (error) {
+        console.error('Lỗi khởi tạo:', error);
+    }
 });
 </script>
 
@@ -704,7 +1131,6 @@ onMounted(() => {
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
-/* Add a watcher in the script to apply these classes dynamically */
 .select-1 {
     border-color: #28a745 !important;
     color: #28a745;

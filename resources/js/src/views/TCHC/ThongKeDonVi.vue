@@ -153,7 +153,6 @@ import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import Button from 'primevue/button';
 import { FilterMatchMode } from '@primevue/core/api';
-import axios from 'axios';
 import Chart from 'chart.js/auto';
 
 // Biến tham chiếu đến các canvas cho biểu đồ
