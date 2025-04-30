@@ -13,15 +13,15 @@ export function toastSuccess(message = 'Thành công') {
     });
 }
 
-export function toastError(message = 'Lỗi') {
+export function toastError(message = 'Lỗi', timer = 3000) {
     Swal.fire({
         toast: true,
         position: 'top-end',
-        timer: 3000,
+        timer: timer,
         timerProgressBar: true,
         icon: 'error',
         // title: 'Lỗi',
-        text: message,
+        html: message,
         showConfirmButton: false
     });
 }

@@ -10,8 +10,7 @@
                         <!-- DataTable với PrimeVue -->
                         <DataTable v-model:filters="filters" :value="accounts" :paginator="true" :rows="itemsPerPage"
                             :rowsPerPageOptions="[5, 10, 25, 50, 100]" responsiveLayout="scroll" stripedRows
-                            class="p-datatable-sm"
-                            :globalFilterFields="['sUsername', 'bTrangThai']">
+                            class="p-datatable-sm" :globalFilterFields="['sUsername', 'bTrangThai']">
                             <template #header>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <IconField>
@@ -20,13 +19,13 @@
                                         </InputIcon>
                                         <InputText v-model="filters['global'].value" placeholder="Tìm kiếm" />
                                     </IconField>
-                                    <button type="button" class="btn btn-primary" @click="openAddModal" data-bs-toggle="modal"
-                                        data-bs-target="#accountModal">
+                                    <button type="button" class="btn btn-primary" @click="openAddModal"
+                                        data-bs-toggle="modal" data-bs-target="#accountModal">
                                         <i class="fas fa-plus"></i> Thêm tài khoản
                                     </button>
                                 </div>
                             </template>
-                            <Column header="STT" bodyStyle="text-align: center" 
+                            <Column header="STT" bodyStyle="text-align: center"
                                 :pt="{ columnHeaderContent: 'justify-content-center' }">
                                 <template #body="slotProps">
                                     {{ slotProps.index + 1 }}
@@ -51,7 +50,8 @@
                                     <button class="btn btn-secondary btn-sm me-2"
                                         :class="slotProps.data.bTrangThai == 0 ? 'bg-blend-color' : 'bg-success'"
                                         @click="toggleAccountStatus(slotProps.data)">
-                                        <i :class="slotProps.data.bTrangThai == 0 ? 'fas fa-lock-open' : 'fas fa-lock'"></i>
+                                        <i
+                                            :class="slotProps.data.bTrangThai == 0 ? 'fas fa-lock-open' : 'fas fa-lock'"></i>
                                     </button>
                                     <button class="btn btn-sm btn-danger" @click="confirmDelete(slotProps.data)"
                                         title="Xóa">
@@ -109,7 +109,7 @@
                                         khẩu</label>
                                 </div>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="role" class="form-label">Vai trò</label>
                                 <select class="form-select" id="role" v-model="currentAccount.FK_MaQuyen" required>
@@ -265,7 +265,7 @@ const openAddModal = () => {
     };
     changePass.value = false;
     vaiTro.value = '';
-    
+
     nextTick(() => {
         const un = document.getElementById("accountModal_username");
         if (un) un.disabled = false;
@@ -394,7 +394,7 @@ const saveAccount = () => {
                         text: 'Lưu thành công',
                         timerProgressBar: true,
                     });
-                    
+
                     // Refresh accounts list
                     fetchAccounts();
                 }
@@ -448,7 +448,7 @@ const saveAccount = () => {
                         text: response.data.message,
                         timerProgressBar: true,
                     });
-                    
+
                     // Add new account to the list
                     if (response.data.taikhoan) {
                         accounts.value.push(response.data.taikhoan);
@@ -456,22 +456,20 @@ const saveAccount = () => {
                         // Refresh the entire list if the response structure doesn't include the new account
                         fetchAccounts();
                     }
+                    document.getElementById("accountModal").querySelector(".btn-close").click();
                 }
             })
             .catch(error => {
-                console.error(error);
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    icon: 'error',
-                    text: 'Có lỗi xảy ra khi thêm tài khoản',
-                    timerProgressBar: true,
-                });
+                if (error.response && error.response.status == 422) {
+                    const errors = error.response.data.error;
+                    let errorMessage = Object.values(errors).flat().join('<br>')
+                    toastError(errorMessage, 7000);
+                } else {
+                    toastError(error.ressponse.data.message);
+                }
             });
     }
-    document.getElementById("accountModal").querySelector(".btn-close").click();
+
 };
 
 const getStatusBadgeClass = (status) => {

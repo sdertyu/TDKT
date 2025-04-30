@@ -8,6 +8,7 @@ use App\Models\CaNhanModel;
 use App\Models\DonViModel;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class TaiKhoanController extends Controller
@@ -17,7 +18,8 @@ class TaiKhoanController extends Controller
         'username.unique' => 'Tên đăng nhập đã tồn tại.',
         'username.max' => 'Tên đăng nhập không được vượt quá 50 ký tự.',
         'password.required' => 'Vui lòng nhập mật khẩu.',
-        'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+        'password.min' => 'Mật khẩu phải có ít nhất 8 ký tự.',
+        'password.regex' => 'Mật khẩu phải chứa ít nhất một chữ cái viết hoa, một chữ cái viết thường, một số và một ký tự đặc biệt.',
         'role.required' => 'Vui lòng chọn vai trò.',
         'role.exists' => 'Vai trò không hợp lệ.',
         'madonvi.exists' => 'Không tìm thấy mã đơn vị',
@@ -27,6 +29,7 @@ class TaiKhoanController extends Controller
         'tencanhan.required' => 'Vui lòng nhập tên cá nhân',
         'myemail.required' => 'Vui lòng nhập email',
         'myemail.email' => 'Email không hợp lệ',
+        'myemail.unique' => 'Email đã tồn tại',
         'tenchucvu.required' => 'Vui lòng nhập tên chức vụ',
         'gioitinh.required' => 'Vui lòng chọn giới tính',
         'id.required' => 'Thiếu mã tài khoản',
@@ -43,83 +46,81 @@ class TaiKhoanController extends Controller
     }
     public function themTaiKhoan(Request $request)
     {
+
         $rules = [
             'username' => 'required|unique:tbltaikhoan,sUsername|max:50',
-            'password' => 'required|min:6',
+            'password' => 'required|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/',
             'role' => 'required|exists:tblQuyen,PK_MaQuyen',
-            'myemail' => 'required|email|Unique:tbltaikhoan,sEmail',
+            'myemail' => 'required|email|unique:tbltaikhoan,sEmail',
         ];
+
         if ($request->role == 2 || $request->role == 3) {
-            $rules = [
-                'username' => 'required|unique:tbltaikhoan,sUsername|max:50',
-                'password' => 'required|min:6',
-                'role'      => 'required|exists:tblQuyen,PK_MaQuyen|Unique:tbltaikhoan,FK_MaQuyen',
-            ];
-        } else if ($request->role == 4) {
-            $rules = [
-                'username' => 'required|unique:tbltaikhoan,sUsername|max:50',
-                'password' => 'required|min:6',
-                'role' => 'required|exists:tblQuyen,PK_MaQuyen',
-                'madonvi' => 'required|unique:tbldonvi,PK_MaDonVi',
-                'tendonvi' => 'required',
-            ];
-        } else if ($request->role == 5) {
-            $rules = [
-                'username' => 'required|unique:tbltaikhoan,sUsername|max:50',
-                'password' => 'required|min:6',
-                'role' => 'required|exists:tblQuyen,PK_MaQuyen',
-                'madonvi' => 'required|exists:tbldonvi,PK_MaDonVi',
-                'macanhan' => 'required|unique:tblcanhan,PK_MaCaNhan',
-                'tencanhan' => 'required',
-                'myemail' => 'required|email',
-                'tenchucvu' => 'required',
-                'gioitinh' => 'required'
-            ];
+            $rules['role'] .= '|unique:tbltaikhoan,FK_MaQuyen';
+        } elseif ($request->role == 4) {
+            $rules['madonvi'] = 'required|unique:tbldonvi,PK_MaDonVi';
+            $rules['tendonvi'] = 'required';
+        } elseif ($request->role == 5) {
+            $rules['madonvi'] = 'required|exists:tbldonvi,PK_MaDonVi';
+            $rules['macanhan'] = 'required|unique:tblcanhan,PK_MaCaNhan';
+            $rules['tencanhan'] = 'required';
+            $rules['myemail'] = 'required|email';
+            $rules['tenchucvu'] = 'required';
+            $rules['gioitinh'] = 'required';
         }
+
         $validator = Validator::make($request->all(), $rules, $this->messages);
 
 
         if ($validator->fails()) {
             return response()->json([
                 'icon' => 'error',
-                'message' => $validator->errors()->all() ? implode(', ', $validator->errors()->all()) : ''
+                'error' => $validator->errors()
             ], 422);
         }
-        $taiKhoanMoi = new AccountModel();
-        $taiKhoanMoi->PK_MaTaiKhoan = 'user' . $request->username;
-        $taiKhoanMoi->sUsername = $request->username;
-        $taiKhoanMoi->sPassword = bcrypt($request->password);
-        $taiKhoanMoi->FK_MaQuyen = $request->role;
-        $taiKhoanMoi->sEmail = $request->myemail;
-        $taiKhoanMoi->bTrangThai = 1;
-        $taiKhoanMoi->save();
 
-        if ($request->role == 4) {
-            $donViMoi = new DonViModel();
+        try {
+            $taiKhoanMoi = new AccountModel();
+            $taiKhoanMoi->PK_MaTaiKhoan = 'user' . $request->username;
+            $taiKhoanMoi->sUsername = $request->username;
+            $taiKhoanMoi->sPassword = bcrypt($request->password);
+            $taiKhoanMoi->FK_MaQuyen = $request->role;
+            $taiKhoanMoi->sEmail = $request->myemail;
+            $taiKhoanMoi->bTrangThai = 1;
+            $taiKhoanMoi->save();
 
-            $donViMoi->PK_MaDonVi = $request->madonvi;
-            $donViMoi->sTenDonVi = $request->tendonvi;
-            $donViMoi->FK_MaTaiKhoan = $taiKhoanMoi->PK_MaTaiKhoan;
+            if ($request->role == 4) {
+                $donViMoi = new DonViModel();
 
-            $donViMoi->save();
-        } else if ($request->role == 5) {
+                $donViMoi->PK_MaDonVi = $request->madonvi;
+                $donViMoi->sTenDonVi = $request->tendonvi;
+                $donViMoi->FK_MaTaiKhoan = $taiKhoanMoi->PK_MaTaiKhoan;
 
-            $caNhanMoi = new CaNhanModel();
+                $donViMoi->save();
+            } else if ($request->role == 5) {
 
-            $caNhanMoi->PK_MaCaNhan = $request->macanhan;
-            $caNhanMoi->FK_MaDonVi = $request->madonvi;
-            $caNhanMoi->sTenCaNhan = $request->tencanhan;
-            $caNhanMoi->sTenChucVu = $request->tenchucvu;
-            $caNhanMoi->bGioiTinh = $request->gioitinh;
-            $caNhanMoi->FK_MaTaiKhoan = $taiKhoanMoi->PK_MaTaiKhoan;
-            $caNhanMoi->save();
+                $caNhanMoi = new CaNhanModel();
+
+                $caNhanMoi->PK_MaCaNhan = $request->macanhan;
+                $caNhanMoi->FK_MaDonVi = $request->madonvi;
+                $caNhanMoi->sTenCaNhan = $request->tencanhan;
+                $caNhanMoi->sTenChucVu = $request->tenchucvu;
+                $caNhanMoi->bGioiTinh = $request->gioitinh;
+                $caNhanMoi->FK_MaTaiKhoan = $taiKhoanMoi->PK_MaTaiKhoan;
+                $caNhanMoi->save();
+            }
+
+            return response()->json([
+                'icon' => "success",
+                'message' => "Thêm thành công",
+                'taikhoan' => $taiKhoanMoi
+            ], 200);
+        } catch (Exception $e) {
+            Log::error('Lỗi khi thêm tài khoản: ' . $e->getMessage());
+            return response()->json([
+                'icon' => 'error',
+                'message' => 'Lỗi khi thêm tài khoản'
+            ], 500);
         }
-
-        return response()->json([
-            'icon' => "success",
-            'message' => "Thêm thành công",
-            'taikhoan' => $taiKhoanMoi
-        ], 200);
     }
 
     public function layThongTinTaiKhoan($id)
@@ -143,7 +144,7 @@ class TaiKhoanController extends Controller
     public function capNhatTaiKhoan(Request $request)
     {
         $rules = [
-            'password' => 'nullable|min:6', // mật khẩu không bắt buộc trừ khi tích ô "Đổi mật khẩu"
+            'password' => 'nullable|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/', // mật khẩu không bắt buộc trừ khi tích ô "Đổi mật khẩu"
             'role' => 'required|exists:tblQuyen,PK_MaQuyen',
             'myemail' => 'required|email|Unique:tbltaikhoan,sEmail,' . $request->id . ',PK_MaTaiKhoan',
         ];
@@ -295,22 +296,21 @@ class TaiKhoanController extends Controller
             $danhSachCaNhan = CaNhanModel::whereHas('taikhoan', function ($query) {
                 $query->where('bTrangThai', 1);
             })
-            ->with(['taikhoan' => function($query) {
-                $query->select('PK_MaTaiKhoan');
-            }])
-            ->get();
-            
+                ->with(['taikhoan' => function ($query) {
+                    $query->select('PK_MaTaiKhoan');
+                }])
+                ->get();
+
             if ($danhSachCaNhan->isEmpty()) {
                 return response()->json([
                     'message' => 'Không tìm thấy cá nhân nào'
                 ], 404);
             }
-            
+
             return response()->json([
                 'message' => 'success',
                 'data' => $danhSachCaNhan
             ], 200);
-            
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Lỗi khi lấy danh sách cá nhân'
