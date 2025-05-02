@@ -52,7 +52,7 @@ class ThongBaoController extends Controller
 
             return response()->json([
                 'message' => 'Thêm thông báo thành công'
-            ], 201);
+            ], 200);
         } catch (\Exception $e) {
             Log::error('Error creating notification: ' . $e->getMessage());
             return response()->json([
@@ -134,6 +134,33 @@ class ThongBaoController extends Controller
             ], 200);
         } catch (\Exception $e) {
             Log::error('Error updating notification: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Lỗi không xác định',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function xoaThongBao($id)
+    {
+        try {
+            $thongBao = ThongBaoModel::find($id);
+            if (!$thongBao) {
+                return response()->json([
+                    'message' => 'Không tìm thấy thông báo'
+                ], 404);
+            }
+
+            $thongBao->thongBaoTaiKhoan()->delete();
+            $thongBao->thongBaoQuyen()->delete();
+
+            $thongBao->delete();
+
+            return response()->json([
+                'message' => 'Xóa thông báo thành công'
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error deleting notification: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Lỗi không xác định',
                 'error' => $e->getMessage()

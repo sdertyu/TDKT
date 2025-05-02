@@ -55,7 +55,8 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="dNgayTao" class="form-label">Dành cho</label>
-                                    <multiselect v-model="formData.quyen" :options="quyenOptions" :multiple="true" track-by="value" label="text" placeholder="Chọn đối tượng"></multiselect>
+                                    <multiselect v-model="formData.quyen" :options="quyenOptions" :multiple="true"
+                                        track-by="value" label="text" placeholder="Chọn đối tượng"></multiselect>
                                 </div>
                             </form>
                         </div>
@@ -93,7 +94,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { toastSuccess, toastError } from '@/utils/toast.js';
-import axios from 'axios';
 import { Modal } from 'bootstrap';
 import Multiselect from 'vue-multiselect';
 
@@ -198,10 +198,10 @@ const saveThongBao = () => {
         }
     }).then(response => {
         if (response.status === 200) {
+            console.log("object");
             thongBaoModal.hide();
             getListThongBao();
             toastSuccess(isEditing.value ? "Cập nhật thông báo thành công" : "Thêm thông báo thành công");
-
         }
     })
         .catch(error => {

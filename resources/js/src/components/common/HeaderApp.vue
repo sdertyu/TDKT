@@ -114,6 +114,9 @@ const goTo = (link) => {
 }
 
 const getAllNotifications = () => {
+    if (localStorage.getItem('role') == 2) {
+        return;
+    }
     axios.get('/api/thongbao/getlisttheoquyen', {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('api_token')}`
@@ -121,11 +124,14 @@ const getAllNotifications = () => {
     }).then(response => {
         if (response.status === 200) {
             listThongBao.value = response.data.data;
+
             listThongBao.value.forEach(item => {
                 if (item.daDoc === 0) {
                     soChuaDoc.value++;
                 }
             });
+
+
         } else {
             toastError("Có lỗi xảy ra khi lấy danh sách thông báo");
         }
@@ -134,7 +140,7 @@ const getAllNotifications = () => {
     });
 }
 
-onMounted( async () => {
+onMounted(async () => {
     await getAllNotifications();
 });
 

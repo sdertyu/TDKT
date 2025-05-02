@@ -17,7 +17,7 @@
                                         <InputIcon>
                                             <i class="pi pi-search" />
                                         </InputIcon>
-                                        <InputText v-model="filters['global'].value" placeholder="Tìm kiếm" />
+                                        <InputText v-model="filters['global'].value" placeholder="Tên đăng nhập" />
                                     </IconField>
                                     <button type="button" class="btn btn-primary" @click="openAddModal"
                                         data-bs-toggle="modal" data-bs-target="#accountModal">
@@ -287,15 +287,15 @@ const openEditModal = (account) => {
             currentAccount.value.FK_MaQuyen = data.FK_MaQuyen;
             currentAccount.value.email = data.sEmail;
             if (data.FK_MaQuyen == 4) {
-                currentAccount.value.PK_MaDonVi = data.don_vi[0].PK_MaDonVi;
-                currentAccount.value.sTenDonVi = data.don_vi[0].sTenDonVi;
+                currentAccount.value.PK_MaDonVi = data.don_vi.PK_MaDonVi;
+                currentAccount.value.sTenDonVi = data.don_vi.sTenDonVi;
             }
             else if (data.FK_MaQuyen == 5) {
-                currentAccount.value.macanhan = data.ca_nhan[0].PK_MaCaNhan;
-                currentAccount.value.tencanhan = data.ca_nhan[0].sTenCaNhan;
-                currentAccount.value.tenchucvu = data.ca_nhan[0].sTenChucVu;
-                currentAccount.value.gioitinh = data.ca_nhan[0].bGioiTinh;
-                currentAccount.value.PK_MaDonVi = data.ca_nhan[0].FK_MaDonVi;
+                currentAccount.value.macanhan = data.ca_nhan.PK_MaCaNhan;
+                currentAccount.value.tencanhan = data.ca_nhan.sTenCaNhan;
+                currentAccount.value.tenchucvu = data.ca_nhan.sTenChucVu;
+                currentAccount.value.gioitinh = data.ca_nhan.bGioiTinh;
+                currentAccount.value.PK_MaDonVi = data.ca_nhan.FK_MaDonVi;
             }
             nextTick(() => {
                 const dv = document.getElementById("accountModal_maDonVi");
@@ -304,6 +304,8 @@ const openEditModal = (account) => {
                 if (un) un.disabled = true;
                 const cn = document.getElementById("accountModal_maCaNhan");
                 if (cn) cn.disabled = true;
+                const vt = document.getElementById("role");
+                if (vt) vt.disabled = true;
             });
         }
     }).catch(error => {

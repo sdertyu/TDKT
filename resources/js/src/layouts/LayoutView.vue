@@ -7,7 +7,7 @@
         <ContentApp v-if="isReady" />
 
         <FooterApp />
-        <LoadingView v-if="loadingStore.loading" />
+        <LoadingView v-if="loadingStore.loading" class="loading" />
     </div>
 </template>
 
@@ -47,3 +47,15 @@ onMounted(async () => {
     isReady.value = true;  // Cho phép render ContentApp
 });
 </script>
+
+<style scoped>
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+}
+</style>

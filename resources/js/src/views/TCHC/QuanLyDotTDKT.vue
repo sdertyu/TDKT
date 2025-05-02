@@ -46,8 +46,7 @@
                 <Column header="Thao tác" bodyStyle="text-align: center"
                     :pt="{ columnHeaderContent: 'justify-content-center' }">
                     <template #body="slotProps">
-                        <router-link :to="`/dotdotxuat/${slotProps.data.PK_MaDot}`"
-                            class="btn btn-primary btn-sm me-2">
+                        <router-link :to="`/dotdotxuat/${slotProps.data.PK_MaDot}`" class="btn btn-primary btn-sm me-2">
                             <i class="fa-solid fa-bolt"></i>
                         </router-link>
                         <button class="btn btn-warning btn-sm me-2" @click="showEditModal(slotProps.data)"
@@ -100,8 +99,7 @@
                             <div class="mb-3">
                                 <label for="namBatDau" class="form-label text">Hạn nộp biển bản phê duyệt cấp hội
                                     đồng</label>
-                                <input type="date" class="form-control"
-                                    v-model="currentDot.dHanBienBanHoiDong">
+                                <input type="date" class="form-control" v-model="currentDot.dHanBienBanHoiDong">
                             </div>
 
                             <div class="modal-footer">
@@ -211,7 +209,70 @@ const showEditModal = (dot) => {
     currentDot.dHanBienBanHoiDong = dot.dHanBienBanHoiDong;
 };
 
+const validateDate = () => {
+    // Convert academic years to Date objects for comparison
+    const startYearDate = new Date(currentDot.iNamBatDau, 9, 1); // September 1st of start year
+    const endYearDate = new Date(currentDot.iNamKetThuc, 7, 31); // July 31st of end year
+    
+    if (currentDot.dHanBienBanDonVi) {
+        const hanBienBanDonViDate = new Date(currentDot.dHanBienBanDonVi);
+        if (hanBienBanDonViDate < startYearDate) {
+            toastError('Hạn nộp biên bản cấp đơn vị không được trước thời gian bắt đầu năm học');
+            return false;
+        }
+        if (hanBienBanDonViDate > endYearDate) {
+            toastError('Hạn nộp biên bản cấp đơn vị không được sau thời gian kết thúc năm học');
+            return false;
+        }
+    }
+    
+    if (currentDot.dHanNopMinhChung) {
+        const hanNopMinhChungDate = new Date(currentDot.dHanNopMinhChung);
+        if (hanNopMinhChungDate < startYearDate) {
+            toastError('Hạn nộp minh chứng không được trước thời gian bắt đầu năm học');
+            return false;
+        }
+        if (hanNopMinhChungDate > endYearDate) {
+            toastError('Hạn nộp minh chứng không được sau thời gian kết thúc năm học');
+            return false;
+        }
+    }
+
+    if (currentDot.dHanBienBanHoiDong) {
+        const hanBienBanHoiDongDate = new Date(currentDot.dHanBienBanHoiDong);
+        if (hanBienBanHoiDongDate < startYearDate) {
+            toastError('Hạn nộp biên bản hội đồng không được trước thời gian bắt đầu năm học');
+            return false;
+        }
+        if (hanBienBanHoiDongDate > endYearDate) {
+            toastError('Hạn nộp biên bản hội đồng không được sau thời gian kết thúc năm học');
+            return false;
+        }
+    }
+    
+    // Additional check: ensure logical sequence of deadlines
+    if (currentDot.dHanBienBanDonVi && currentDot.dHanNopMinhChung) {
+        if (new Date(currentDot.dHanNopMinhChung) < new Date(currentDot.dHanBienBanDonVi)) {
+            toastError('Hạn nộp minh chứng không được trước hạn nộp biên bản cấp đơn vị');
+            return false;
+        }
+    }
+
+    if (currentDot.dHanNopMinhChung && currentDot.dHanBienBanHoiDong) {
+        if (new Date(currentDot.dHanBienBanHoiDong) < new Date(currentDot.dHanNopMinhChung)) {
+            toastError('Hạn nộp biên bản hội đồng không được trước hạn nộp minh chứng');
+            return false;
+        }
+    }
+    
+    return true;
+}
+
 const saveDot = () => {
+    // Validate the date fields
+    if (!validateDate()) {
+        return; // Stop execution if validation fails
+    }
     if (isEditing.value) {
         const update = axios.put(`/api/dotthiduakhenthuong/update`, currentDot,
             {

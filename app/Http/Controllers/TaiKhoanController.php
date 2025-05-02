@@ -188,7 +188,7 @@ class TaiKhoanController extends Controller
             if ($request->myemail != $taiKhoanUpt->sEmail) {
                 $taiKhoanUpt->sEmail = $request->myemail;
             }
-            $taiKhoanUpt->FK_MaQuyen = $request->role;
+            // $taiKhoanUpt->FK_MaQuyen = $request->role;
             $taiKhoanUpt->save();
         }
 
