@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DotTDKTModel;
 use App\Models\DotXuatModel;
 use App\Models\HoiDongModel;
+use App\Models\HoiDongTruongModel;
 use App\Models\ThongBaoModel;
 use App\Models\ThongBaoQuyenModel;
 use App\Models\VBDKModel;
@@ -216,7 +217,7 @@ class DotTDKTController extends Controller
         }
 
         $DotXuat = DotXuatModel::where('FK_MaDot', '=', $id)->exists();
-        $hoiDong = HoiDongModel::where('FK_MaDot', '=', $id)->exists();
+        $hoiDong = HoiDongTruongModel::where('FK_MaDot', '=', $id)->exists();
 
         if ($DotXuat || $hoiDong) {
             return response()->json([

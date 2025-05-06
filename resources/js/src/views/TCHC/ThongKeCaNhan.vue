@@ -3,8 +3,8 @@
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h4 class="card-title mb-0"><i class="bi bi-person-vcard me-2"></i>Báo cáo thống kê theo cá nhân</h4>
             <div>
-                <Button icon="bi bi-file-earmark-excel" label="Xuất Excel" class="p-button-success" />
-                <Button icon="bi bi-printer" label="In báo cáo" class="p-button-info ms-2" />
+                <Button icon="bi bi-file-earmark-excel" label="Xuất Excel" class="p-button-success" @click="exportExcel"/>
+                <!-- <Button icon="bi bi-printer" label="In báo cáo" class="p-button-info ms-2" /> -->
             </div>
         </div>
 
@@ -61,7 +61,7 @@
                                 <h5 class="mb-0">Thống kê danh hiệu theo năm học</h5>
                             </div>
                             <div class="card-body">
-                                <canvas ref="yearlyChartRef" height="260"></canvas>
+                                <canvas ref="yearlyChartRef" id="yearlyChartRef" height="260"></canvas>
                             </div>
                         </div>
                     </div>
@@ -73,7 +73,7 @@
                                 <h5 class="mb-0">Top 10 cá nhân có nhiều danh hiệu</h5>
                             </div>
                             <div class="card-body">
-                                <canvas ref="individualChartRef" height="260"></canvas>
+                                <canvas ref="individualChartRef" id="individualChartRef" height="260"></canvas>
                             </div>
                         </div>
                     </div>
@@ -87,7 +87,7 @@
                                 <h5 class="mb-0">Phân bố theo loại danh hiệu</h5>
                             </div>
                             <div class="card-body d-flex justify-content-center align-items-center">
-                                <canvas ref="awardChartRef" height="230"></canvas>
+                                <canvas ref="awardChartRef" id="awardChartRef" height="230"></canvas>
                             </div>
                         </div>
                     </div>
@@ -99,7 +99,7 @@
                                 <h5 class="mb-0">Phân bố theo đơn vị</h5>
                             </div>
                             <div class="card-body d-flex justify-content-center align-items-center">
-                                <canvas ref="unitChartRef" height="230"></canvas>
+                                <canvas ref="unitChartRef" id="unitChartRef" height="230"></canvas>
                             </div>
                         </div>
                     </div>
@@ -791,6 +791,62 @@ const getCapDanhHieuBadgeClass = (capDanhHieu) => {
             return 'badge bg-danger-subtle text-danger fw-normal px-2 py-1';
         default:
             return 'badge bg-secondary-subtle text-secondary fw-normal px-2 py-1';
+    }
+};
+
+const exportExcel = async () => {
+    if (filteredData.value.length > 0) {
+        try {
+            // Get the charts as base64 images
+            const yearlyChartRef = document.getElementById("yearlyChartRef");
+            const individualChartRef = document.getElementById("individualChartRef");
+            const awardChartRef = document.getElementById("awardChartRef");
+            const unitChartRef = document.getElementById("unitChartRef");
+
+            const yearlyChartImage = yearlyChartRef.toDataURL("image/png");
+            const individualChartImage = individualChartRef.toDataURL("image/png");
+            const awardChartImage = awardChartRef.toDataURL("image/png");
+            const unitChartImage = unitChartRef.toDataURL("image/png");
+
+            // Send data to server for Excel generation
+            const response = await axios.post("/api/baocaothongke/canhanexcel", {
+                data: filteredData.value,
+                yearlyChartImage,
+                individualChartImage,
+                awardChartImage,
+                unitChartImage
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('api_token')}`,
+                    'Content-Type': 'application/json',
+                    Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                },
+                responseType: 'blob'
+            });
+
+            if (response.status === 200) {
+                // Create and trigger download
+                const blob = new Blob([response.data], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'thongke_canhan.xlsx');
+                document.body.appendChild(link);
+                link.click();
+
+                // Clean up
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(link);
+            }
+        } catch (error) {
+            console.error('Error exporting to Excel:', error);
+            // Assuming you have a toast notification system
+            toastError('Xuất Excel thất bại: ' + error.message);
+        }
+    } else {
+        toastError('Không có dữ liệu để xuất');
     }
 };
 

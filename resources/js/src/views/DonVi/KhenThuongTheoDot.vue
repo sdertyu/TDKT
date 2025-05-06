@@ -99,7 +99,7 @@
                             <small class="text-muted">Hỗ trợ file: PDF (tối đa 10MB)</small>
                             <p v-if="formData.tenFile" class="mt-2 fst-italic">
                                 <i class="fas fa-file-alt me-1"></i> File đã tải lên: <strong>{{ formData.tenFile
-                                    }}</strong>
+                                }}</strong>
                             </p>
 
                         </div>
@@ -149,7 +149,7 @@
                                     <td class="text-center fw-bold"
                                         :class="{ 'text-success': (individual.soPhieu / formData.soCoMat * 100) >= 50 }">
                                         {{ formData.soCoMat > 0 ? ((individual.soPhieu / formData.soCoMat) *
-                                        100).toFixed(1) : 0 }}%
+                                            100).toFixed(1) : 0 }}%
                                     </td>
                                 </tr>
                             </tbody>
@@ -195,7 +195,7 @@
                                     <td class="text-center fw-bold"
                                         :class="{ 'text-success': (selectedUnitAwards[index]['soPhieu'] / formData.soCoMat * 100) >= 50 }">
                                         {{ formData.soCoMat > 0 ? ((selectedUnitAwards[index]['soPhieu'] /
-                                        formData.soCoMat) * 100).toFixed(1) : 0 }}%
+                                            formData.soCoMat) * 100).toFixed(1) : 0 }}%
                                     </td>
                                 </tr>
                             </tbody>
@@ -367,7 +367,7 @@ const submitForm = async () => {
         });
 
         if (response.status === 200) {
-            toastSuccess('Lưu thông tin hội đồng thành công');
+            toastSuccess('Cuộc họp đã được tạo thành công');
         }
     } catch (error) {
         if (error.response) {
@@ -415,6 +415,32 @@ const saveProposals = async () => {
                     Swal.fire({
                         icon: 'error',
                         text: `Số phiếu bầu của ${individual.name} không thể nhiều hơn số người có mặt!`,
+                        toast: true,
+                        timer: 5000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        position: 'top-end'
+                    });
+                    return;
+                }
+
+                if (individual.soPhieu < 0) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: `Số phiếu bầu của ${individual.name} không thể nhỏ hơn 0!`,
+                        toast: true,
+                        timer: 5000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        position: 'top-end'
+                    });
+                    return;
+                }
+
+                if (individual.soPhieu === '') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: `Số phiếu bầu của ${individual.name} không được để trống!`,
                         toast: true,
                         timer: 5000,
                         timerProgressBar: true,

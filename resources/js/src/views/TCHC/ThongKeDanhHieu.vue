@@ -3,8 +3,9 @@
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h4 class="card-title mb-0"><i class="bi bi-bar-chart-line me-2"></i>Báo cáo thống kê danh hiệu</h4>
             <div>
-                <Button icon="bi bi-file-earmark-excel" label="Xuất Excel" class="p-button-success" />
-                <Button icon="bi bi-printer" label="In báo cáo" class="p-button-info ms-2" />
+                <Button icon="bi bi-file-earmark-excel" label="Xuất Excel" class="p-button-success"
+                    @click="exportExcel" />
+                <!-- <Button icon="bi bi-printer" label="In báo cáo" class="p-button-info ms-2" /> -->
             </div>
         </div>
 
@@ -62,7 +63,7 @@
                             </div>
                             <div class="card-body">
                                 <!-- Chart.js bar chart -->
-                                <canvas ref="yearlyChartRef" height="300"></canvas>
+                                <canvas ref="yearlyChartRef" id="yearlyChartRef" height="300"></canvas>
                             </div>
                         </div>
                     </div>
@@ -75,7 +76,7 @@
                             </div>
                             <div class="card-body d-flex justify-content-center align-items-center">
                                 <!-- Chart.js pie chart -->
-                                <canvas ref="levelChartRef" height="230"></canvas>
+                                <canvas ref="levelChartRef" id="levelChartRef" height="230"></canvas>
                             </div>
                         </div>
                     </div>
@@ -614,6 +615,56 @@ const getCapDanhHieuBadgeClass = (capDanhHieu) => {
             return 'badge bg-danger-subtle text-danger fw-normal px-2 py-1';
         default:
             return 'badge bg-secondary-subtle text-secondary fw-normal px-2 py-1';
+    }
+};
+
+const exportExcel = async () => {
+    if (filteredData.value.length > 0) {
+        try {
+            // Get the charts as base64 images
+            const yearlyChartCanvas = document.getElementById("yearlyChartRef");
+            const levelChartCanvas = document.getElementById("levelChartRef");
+
+            const yearlyChartImage = yearlyChartCanvas.toDataURL("image/png");
+            const levelChartImage = levelChartCanvas.toDataURL("image/png");
+
+            // Send data to server for Excel generation
+            const response = await axios.post("/api/baocaothongke/danhhieuexcel", {
+                data: filteredData.value,
+                yearlyChartImage: yearlyChartImage,
+                levelChartImage: levelChartImage
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('api_token')}`,
+                    'Content-Type': 'application/json',
+                    Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                },
+                responseType: 'blob'
+            });
+
+            if (response.status === 200) {
+                // Create and trigger download
+                const blob = new Blob([response.data], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'thongke_danhhieu.xlsx');
+                document.body.appendChild(link);
+                link.click();
+
+                // Clean up
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(link);
+            }
+        } catch (error) {
+            console.error('Error exporting to Excel:', error);
+            // Assuming you have a toast notification system
+            toastError('Xuất Excel thất bại: ' + error.message);
+        }
+    } else {
+        toastError('Không có dữ liệu để xuất');
     }
 };
 

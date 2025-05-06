@@ -287,23 +287,29 @@ const saveDanhHieu = async () => {
         }
         if (response.status === 200) {
             if (isEditing.value) {
-                const index = danhSachDanhHieu.value.findIndex(d => d.PK_MaDanhHieu === currentDanhHieu.id)
-                danhSachDanhHieu.value[index] = {
-                    PK_MaDanhHieu: currentDanhHieu.id,
-                    sTenDanhHieu: currentDanhHieu.tendanhhieu,
-                    sTenLoaiDanhHieu: currentDanhHieu.loaidanhhieu,
-                    sTenHinhThuc: currentDanhHieu.hinhthuc
-                }
+                // const index = danhSachDanhHieu.value.findIndex(d => d.PK_MaDanhHieu === currentDanhHieu.id)
+                // danhSachDanhHieu.value[index] = {
+                //     PK_MaDanhHieu: currentDanhHieu.id,
+                //     sTenDanhHieu: currentDanhHieu.tendanhhieu,
+                //     sTenLoaiDanhHieu: currentDanhHieu.loaidanhhieu,
+                //     sTenHinhThuc: currentDanhHieu.hinhthuc
+                // }
+                setTimeout(() => {
+                    loadDanhHieu()
+                }, 3000)
             }
 
             else {
-                console.log(response.data.data);
-                danhSachDanhHieu.value.push({
-                    PK_MaDanhHieu: response.data.data.PK_MaDanhHieu,
-                    sTenDanhHieu: response.data.data.sTenDanhHieu,
-                    sTenLoaiDanhHieu: response.data.data.sTenLoaiDanhHieu,
-                    sTenHinhThuc: response.data.data.sTenHinhThuc
-                })
+                setTimeout(() => {
+                    loadDanhHieu()
+                }, 3000)
+                // console.log(response.data.data);
+                // danhSachDanhHieu.value.push({
+                //     PK_MaDanhHieu: response.data.data.PK_MaDanhHieu,
+                //     sTenDanhHieu: response.data.data.sTenDanhHieu,
+                //     sTenLoaiDanhHieu: response.data.data.sTenLoaiDanhHieu,
+                //     sTenHinhThuc: response.data.data.sTenHinhThuc
+                // })
             }
 
             toastSuccess(isEditing.value ? 'Cập nhật danh hiệu thành công' : 'Thêm danh hiệu thành công')

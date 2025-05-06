@@ -146,6 +146,10 @@ Route::middleware(['auth.api'])->group(function () {
         Route::get('datathongkedanhhieu', [BaoCaoThongKeController::class, 'dataThongKeDanhHieu']);
         Route::get('datathongkecanhan', [BaoCaoThongKeController::class, 'dataThongKeCaNhan']);
         Route::get('datathongkedonvi', [BaoCaoThongKeController::class, 'dataThongKeDonVi']);
+        Route::post('canhanexcel', [BaoCaoThongKeController::class, 'exportExcelCaNhan']);
+        Route::post('donviexcel', [BaoCaoThongKeController::class, 'exportExcelDonVi']);
+        Route::post('danhhieuexcel', [BaoCaoThongKeController::class, 'exportExcelDanhHieu']);
+        // Route::post('saveimage', [BaoCaoThongKeController::class, 'saveImage']);
     });
 
     Route::prefix('kientoan')->group(function () {
