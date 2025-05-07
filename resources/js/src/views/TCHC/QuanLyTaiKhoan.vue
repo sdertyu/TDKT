@@ -276,7 +276,7 @@ const openEditModal = (account) => {
     isEditMode.value = true;
     axios.get('/api/taikhoan/account/' + account.PK_MaTaiKhoan, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     }).then(response => {
         if (response.status == 200) {
@@ -335,7 +335,7 @@ const confirmDelete = (account) => {
         if (result.isConfirmed) {
             const response = await axios.delete(`/api/taikhoan/delete/${account.PK_MaTaiKhoan}`, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                 }
             });
             if (response.status === 200) {
@@ -381,7 +381,7 @@ const saveAccount = () => {
         axios.put('/api/taikhoan/update', data,
             {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                 }
             }
         )
@@ -435,7 +435,7 @@ const saveAccount = () => {
         axios.post('/api/taikhoan/add', data,
             {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                 }
             }
         )
@@ -482,7 +482,7 @@ const fetchDonViList = async () => {
     try {
         const response = await axios.get('/api/taikhoan/donvi', {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         });
 
@@ -517,7 +517,7 @@ const updateAccountStatus = (account) => {
 
     axios.put(`/api/taikhoan/lock/${account.PK_MaTaiKhoan}`, { trangThai: newStatus }, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     })
         .then(response => {
@@ -549,7 +549,7 @@ const updateAccountStatus = (account) => {
 };
 
 const fetchAccounts = () => {
-    const token = localStorage.getItem('api_token');
+    const token = sessionStorage.getItem('api_token');
     axios.get('/api/taikhoan/list', {
         headers: {
             Authorization: `Bearer ${token}`

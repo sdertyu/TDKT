@@ -269,10 +269,10 @@ watch([() => formData.value.soTrieuTap, () => formData.value.soCoMat], () => {
 
 // Lấy danh sách cá nhân trong đơn vị
 const getCaNhanTrongDonVi = async () => {
-    // console.log(localStorage);
-    const response = await axios.get(`api/taikhoan/caNhanTrongDonVi/${localStorage.getItem('maDonVi')}`, {
+    // console.log(sessionStorage);
+    const response = await axios.get(`api/taikhoan/caNhanTrongDonVi/${sessionStorage.getItem('maDonVi')}`, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     });
 
@@ -342,7 +342,7 @@ const submitForm = async () => {
         }
 
         let form = new FormData();
-        form.append('mahoidong', localStorage.getItem('maDonVi') + '-' + madot.value);
+        form.append('mahoidong', sessionStorage.getItem('maDonVi') + '-' + madot.value);
         form.append('madot', madot.value);
         form.append('machutri', formData.value.chuTri);
         form.append('mathuky', formData.value.thuKy);
@@ -361,7 +361,7 @@ const submitForm = async () => {
 
         const response = await axios.post(`api/hoidong/add`, form, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`,
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`,
                 'Content-Type': 'multipart/form-data'
             }
         });
@@ -469,7 +469,7 @@ const saveProposals = async () => {
 
 
         const payload = {
-            mahoidong: localStorage.getItem('maDonVi') + '-' + madot.value,
+            mahoidong: sessionStorage.getItem('maDonVi') + '-' + madot.value,
             madot: madot.value,
             dexuatcanhan: JSON.stringify(selectedIndividuals),
             dexuatdonvi: JSON.stringify(selectedUnitAwards.value)
@@ -477,7 +477,7 @@ const saveProposals = async () => {
 
         const response = await axios.post(`api/dexuat/themdexuattheodot`, payload, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         });
 
@@ -504,7 +504,7 @@ const saveProposals = async () => {
 const getHoiDongDeXuat = async () => {
     const response = await axios.get(`api/hoidong/thongtinhoidong`, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     });
 
@@ -567,7 +567,7 @@ onMounted(() => {
 const getListDanhHieu = async () => {
     const response = await axios.get(`api/danhhieu/listdanhhieutheodot`, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     });
 
@@ -596,7 +596,7 @@ const getListDanhHieu = async () => {
 const getDotActive = async () => {
     const response = await axios.get(`api/dotthiduakhenthuong/dot-active`, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     });
 

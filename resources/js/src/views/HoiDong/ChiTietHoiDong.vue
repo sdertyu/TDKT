@@ -347,7 +347,7 @@ const saveHoiDong = async () => {
         }
 
 
-        let maHD = localStorage.getItem('user_name') + '-' + maDotDotXuat.value
+        let maHD = sessionStorage.getItem('user_name') + '-' + maDotDotXuat.value
         console.log(maHD);
         let maDot = madot.value
         let maDotXuat = maDotDotXuat.value
@@ -358,7 +358,7 @@ const saveHoiDong = async () => {
         // API call to save Hội đồng information
         const add = await axios.post('/api/hoidong/add', formData, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`,
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`,
                 'Content-Type': 'multipart/form-data'
             }
         });
@@ -400,16 +400,16 @@ const saveDeXuat = async () => {
             formData.append('deXuat[]', JSON.stringify(item));
         });
 
-        let maHD = localStorage.getItem('user_name') + '-' + maDotDotXuat.value
+        let maHD = sessionStorage.getItem('user_name') + '-' + maDotDotXuat.value
         formData.append('maHoiDong', maHD); // Include maHoiDong if exists
         for (let [key, value] of formData.entries()) {
             console.log(`${key}:`, value);
         }
-        console.log(localStorage);
+        console.log(sessionStorage);
         // return
         const save = await axios.post('/api/dexuat/xetduyetdexuat', formData, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`,
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`,
             }
         });
 
@@ -437,7 +437,7 @@ const saveDeXuat = async () => {
 const getListCaNhan = () => {
     axios.get('/api/taikhoan/getlistcanhan', {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     })
         .then(response => {
@@ -465,7 +465,7 @@ const getListCaNhan = () => {
 const getListDeXuat = () => {
     axios.get('/api/dexuat/getlistdexuatxetduyetdotxuat', {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     })
         .then(response => {
@@ -593,7 +593,7 @@ const setAllDonViStatus = (status) => {
 const getDotDotXuat = () => {
     axios.get('/api/dotthiduakhenthuong/getdotdotxuatactive', {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     })
         .then(response => {

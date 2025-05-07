@@ -174,7 +174,7 @@ const loadDanhHieu = async () => {
     try {
         const response = await axios.get('/api/danhhieu/list', {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         })
 
@@ -200,7 +200,7 @@ const loadDanhHieu = async () => {
 const getHinhThuc = () => {
     axios.get('/api/hinhthuc/getList', {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     })
         .then(response => {
@@ -217,7 +217,7 @@ const getHinhThuc = () => {
 const getLoaiDanhHieu = () => {
     axios.get('/api/loaidanhhieu/getList', {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     })
         .then(response => {
@@ -234,7 +234,7 @@ const getLoaiDanhHieu = () => {
 const getCapDanhHieu = () => {
     axios.get('/api/capdanhhieu/getList', {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     })
         .then(response => {
@@ -275,13 +275,13 @@ const saveDanhHieu = async () => {
         if (isEditing.value) {
             response = await axios.put(`/api/danhhieu/update`, currentDanhHieu, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                 }
             });
         } else {
             response = await axios.post('/api/danhhieu/add', currentDanhHieu, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                 }
             });
         }
@@ -341,7 +341,7 @@ const changeStatus = async (danhhieu) => {
             trangthai: danhhieu.bTrangThai == 0 ? 1 : 0
         }, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         })
         if (response.status === 200) {
@@ -377,7 +377,7 @@ const confirmDelete = (danhhieu) => {
             try {
                 const response = await axios.delete(`/api/danhhieu/delete/${danhhieu.PK_MaDanhHieu}`, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                        Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                     }
                 })
                 if (response.status === 200) {

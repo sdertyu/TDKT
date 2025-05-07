@@ -73,16 +73,16 @@ const listThongBao = ref([]);
 const soChuaDoc = ref(0);
 
 
-const ten = localStorage.getItem('ten') ? localStorage.getItem('ten') : "Phòng TCHC";
+const ten = sessionStorage.getItem('ten') ? sessionStorage.getItem('ten') : "Phòng TCHC";
 const router = useRouter();
 const logout = () => {
     axios.post('/api/logout', {}, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     }).then(response => {
-        localStorage.removeItem('api_token');
-        localStorage.removeItem('hasShownLoginAlert');
+        sessionStorage.removeItem('api_token');
+        sessionStorage.removeItem('hasShownLoginAlert');
         router.push('/login');
     });
 }
@@ -91,7 +91,7 @@ const checkNotifications = () => {
     if (soChuaDoc.value !== 0) {
         const readNotifications = axios.post('/api/thongbao/markread', {}, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         }).then(response => {
             if (response.status === 200) {
@@ -114,12 +114,12 @@ const goTo = (link) => {
 }
 
 const getAllNotifications = () => {
-    if (localStorage.getItem('role') == 2) {
+    if (sessionStorage.getItem('role') == 2) {
         return;
     }
     axios.get('/api/thongbao/getlisttheoquyen', {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     }).then(response => {
         if (response.status === 200) {

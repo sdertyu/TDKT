@@ -71,7 +71,7 @@ const listVanBanDinhKem = ref([]);
 const getListVanBanDinhKem = () => {
     const listVB = axios.get("/api/dotthiduakhenthuong/list-van-ban-active", {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem("api_token")}`,
+            Authorization: `Bearer ${sessionStorage.getItem("api_token")}`,
         },
     });
 
@@ -135,7 +135,7 @@ const xemVBDK = async (file) => {
     try {
         const response = await axios.get('/api/dotthiduakhenthuong/previewVbdk/' + file.PK_MaVanBan, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             },
             responseType: 'blob'
         })
@@ -158,7 +158,7 @@ const downLoadFile = async (item) => {
             `/api/dotthiduakhenthuong/downloadVbdk/${item.PK_MaVanBan}`,
             {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("api_token")}`,
+                    Authorization: `Bearer ${sessionStorage.getItem("api_token")}`,
                 },
                 responseType: "blob",
             }
@@ -192,7 +192,7 @@ const downloadAllAsZip = async () => {
     try {
         const response = await axios.get(`/api/dotthiduakhenthuong/downloadZip/${madot.value}`, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             },
             responseType: 'blob'
         });

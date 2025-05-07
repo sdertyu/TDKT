@@ -26,7 +26,7 @@ const thongBao = reactive({
 const getThongBao = () => {
     axios.get('/api/thongbao/getthongbao/' + id, {
         headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('api_token')
+            Authorization: 'Bearer ' + sessionStorage.getItem('api_token')
         }
     }).then((response) => {
         if (response.status === 200) {

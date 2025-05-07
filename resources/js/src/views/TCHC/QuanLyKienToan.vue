@@ -242,7 +242,7 @@ const loadKienToan = async () => {
     try {
         const response = await axios.get('/api/kientoan/getlist', {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         })
 
@@ -263,7 +263,7 @@ const loadCaNhan = async () => {
     try {
         const response = await axios.get('/api/taikhoan/getlistcanhan', {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         })
 
@@ -316,7 +316,7 @@ const showEditModal = async (kientoan) => {
     // try {
     //     const response = await axios.get(`/api/kientoan/${kientoan.PK_MaKienToan}/members`, {
     //         headers: {
-    //             Authorization: `Bearer ${localStorage.getItem('api_token')}`
+    //             Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
     //         }
     //     })
 
@@ -401,14 +401,14 @@ const saveKienToan = async () => {
             response = await axios.post('/api/kientoan/update', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${localStorage.getItem('api_token')}`
+                    'Authorization': `Bearer ${sessionStorage.getItem('api_token')}`
                 }
             })
         } else {
             response = await axios.post('/api/kientoan/create', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${localStorage.getItem('api_token')}`
+                    'Authorization': `Bearer ${sessionStorage.getItem('api_token')}`
                 }
             })
         }
@@ -466,7 +466,7 @@ const showMemberList = async (kientoan) => {
     try {
         const response = await axios.get(`/api/kientoan/${kientoan.PK_MaKienToan}/members`, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         })
 
@@ -501,7 +501,7 @@ const changeStatus = (kientoan) => {
             try {
                 const response = await axios.put(`/api/kientoan/updatestatus/${kientoan.PK_MaKienToan}`, null, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                        Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                     }
                 })
 
@@ -544,7 +544,7 @@ const confirmDelete = (kientoan) => {
             try {
                 const response = await axios.delete(`/api/kientoan/delete/${kientoan.PK_MaKienToan}`, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                        Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                     }
                 })
 
@@ -570,7 +570,7 @@ const loadNhiemVu = async () => {
     try {
         const response = await axios.get('/api/kientoan/getlistnhiemvu', {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         })
 

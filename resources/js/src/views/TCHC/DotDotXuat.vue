@@ -175,7 +175,7 @@ const loadDotDotXuat = async () => {
     try {
         const response = await axios.get(`/api/dotthiduakhenthuong/listdotdotxuat/${maDot}`, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         });
 
@@ -219,7 +219,7 @@ const toggleAccountStatus = (dotdotxuat) => {
                 trangThai: newStatus
             }, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                 }
             }).then((response) => {
                 if (response.status === 200) {
@@ -294,14 +294,14 @@ const saveDotDotXuat = async () => {
             console.log(dotDotXuat.value.id);
             response = await axios.put(`/api/dotthiduakhenthuong/updatedotdotxuat/${dotDotXuat.value.id}`, formData, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                 }
             });
         } else {
             // Thêm đợt đột xuất mới
             response = await axios.post('/api/dotthiduakhenthuong/adddotdotxuat', formData, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                 }
             });
         }
@@ -354,7 +354,7 @@ const confirmDelete = (data) => {
             try {
                 const response = await axios.delete(`/api/dotthiduakhenthuong/deletedotdotxuat/${data.PK_MaDotXuat}`, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                        Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                     }
                 });
 

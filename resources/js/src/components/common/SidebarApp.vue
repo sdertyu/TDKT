@@ -5,7 +5,7 @@ import SidebarMenu from '../sidebar/SidebarMenu.vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
-const role = ref(localStorage.getItem('role'));
+const role = ref(sessionStorage.getItem('role'));
 const sidebarMenuItems = ref([]);
 
 // Hàm để thiết lập trạng thái active dựa trên URL hiện tại

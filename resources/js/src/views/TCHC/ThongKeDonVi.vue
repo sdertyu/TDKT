@@ -310,19 +310,19 @@ const fetchData = async () => {
     try {
         const [namHoc, danhHieu, capDanhHieu, donVi, dataThongKe] = await Promise.all([
             axios.get('/api/baocaothongke/danhsachnamhoc', {
-                headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` }
+                headers: { Authorization: `Bearer ${sessionStorage.getItem('api_token')}` }
             }),
             axios.get('/api/baocaothongke/danhsachdanhhieu', {
-                headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` }
+                headers: { Authorization: `Bearer ${sessionStorage.getItem('api_token')}` }
             }),
             axios.get('/api/baocaothongke/danhsachcapdanhhieu', {
-                headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` }
+                headers: { Authorization: `Bearer ${sessionStorage.getItem('api_token')}` }
             }),
             axios.get('/api/baocaothongke/danhsachdonvi', {
-                headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` }
+                headers: { Authorization: `Bearer ${sessionStorage.getItem('api_token')}` }
             }),
             axios.get('/api/baocaothongke/datathongkedonvi', {
-                headers: { Authorization: `Bearer ${localStorage.getItem('api_token')}` }
+                headers: { Authorization: `Bearer ${sessionStorage.getItem('api_token')}` }
             })
         ]);
 
@@ -608,7 +608,7 @@ const exportExcel = async () => {
                 typeChartImage,
             }, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`,
+                    Authorization: `Bearer ${sessionStorage.getItem('api_token')}`,
                     'Content-Type': 'application/json',
                     Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 },

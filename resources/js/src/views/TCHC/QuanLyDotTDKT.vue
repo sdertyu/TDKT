@@ -170,7 +170,7 @@ const pageSizes = ref([5, 10, 20, 50, 100]);
 const loadDotList = () => {
     axios.get('/api/dotthiduakhenthuong/list', {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     }).then(response => {
         if (response.status == 200) {
@@ -277,7 +277,7 @@ const saveDot = () => {
         const update = axios.put(`/api/dotthiduakhenthuong/update`, currentDot,
             {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                 }
             });
 
@@ -310,7 +310,7 @@ const saveDot = () => {
         const add = axios.post('/api/dotthiduakhenthuong/add', currentDot,
             {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                 }
             })
 
@@ -348,7 +348,7 @@ const trangThaiDot = (item) => {
         if (result.isConfirmed) {
             const thayDoiTrangThai = axios.put(`/api/dotthiduakhenthuong/update-trang-thai`, data, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                 }
             })
 
@@ -382,7 +382,7 @@ const confirmDelete = (dot) => {
         if (result.isConfirmed) {
             const response = axios.delete(`/api/dotthiduakhenthuong/delete/${dot.PK_MaDot}`, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                 }
             })
 

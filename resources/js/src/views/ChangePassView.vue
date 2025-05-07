@@ -168,12 +168,12 @@ const changePassword = async () => {
 
     // Simulate API call
     await axios.put('/api/doi-mat-khau', {
-        username: localStorage.getItem('user_name'),
+        username: sessionStorage.getItem('user_name'),
         old_password: currentPassword.value,
         new_password: newPassword.value
     }, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     }).then(response => {
         // if(response.status == 200) {

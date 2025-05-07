@@ -124,7 +124,7 @@ onMounted(() => {
 const getListThongBao = () => {
     axios.get('/api/thongbao/getlisttheoquyen', {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     })
         .then(response => {
@@ -194,7 +194,7 @@ const saveThongBao = () => {
         quyen: JSON.stringify(formData.value.quyen)
     }, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     }).then(response => {
         if (response.status === 200) {
@@ -217,7 +217,7 @@ const confirmDelete = (item) => {
 const deleteThongBao = () => {
     axios.delete(`/api/thongbao/delete/${selectedItem.value.id}`, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     })
         .then(response => {

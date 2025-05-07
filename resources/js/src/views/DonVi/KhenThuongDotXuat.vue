@@ -389,7 +389,7 @@ const handleResetUnit = () => {
 const getListDanhHieuDotXuat = async () => {
     const list = await axios.get('/api/danhhieu/listdanhhieudotxuat', {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     });
 
@@ -408,10 +408,10 @@ const getListDanhHieuDotXuat = async () => {
 }
 
 const getCaNhanTrongDonVi = async () => {
-    // console.log(localStorage);
-    const response = await axios.get(`api/taikhoan/caNhanTrongDonVi/${localStorage.getItem('maDonVi')}`, {
+    // console.log(sessionStorage);
+    const response = await axios.get(`api/taikhoan/caNhanTrongDonVi/${sessionStorage.getItem('maDonVi')}`, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     });
 
@@ -482,7 +482,7 @@ const handleSubmitAll = async () => {
                 donVi: selectedUnitAwards.value,
             }, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                    Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                 }
             });
 
@@ -533,7 +533,7 @@ const fetchProposals = async () => {
     try {
         const response = await axios.get('/api/dexuat/thongtindexuatdotxuat', {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         });
 
@@ -600,7 +600,7 @@ const saveEditedProposal = async () => {
 
         const response = await axios.put('/api/dexuat/capnhatdexuatdotxuat', payload, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         });
 
@@ -634,7 +634,7 @@ const deleteProposal = async (proposal) => {
             try {
                 const response = await axios.delete(`/api/dexuat/xoadexuatdotxuat/${proposal.PK_MaDeXuat}`, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                        Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                     }
                 });
 

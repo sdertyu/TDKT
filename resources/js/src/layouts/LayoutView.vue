@@ -29,7 +29,7 @@ const getDotActive = async () => {
     try {
         const response = await axios.get(`api/dotthiduakhenthuong/dot-active`, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         });
 

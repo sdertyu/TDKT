@@ -132,25 +132,25 @@ const submitLogin = () => {
         .then(response => {
             if (response.data.message === 'success') {
                 console.log(response.data);
-                localStorage.setItem('api_token', response.data.user.api_token);
-                localStorage.setItem('role', response.data.user.FK_MaQuyen);
-                localStorage.setItem('user_name', response.data.user.sUsername);
+                sessionStorage.setItem('api_token', response.data.user.api_token);
+                sessionStorage.setItem('role', response.data.user.FK_MaQuyen);
+                sessionStorage.setItem('user_name', response.data.user.sUsername);
                 switch (response.data.user.FK_MaQuyen) {
                     case 2:
-                        localStorage.setItem('ten', "Phòng TCHC");
+                        sessionStorage.setItem('ten', "Phòng TCHC");
                         break;
                     case 3:
-                        localStorage.setItem('ten', "Hội đồng TĐKT");
+                        sessionStorage.setItem('ten', "Hội đồng TĐKT");
                         break;
                     case 4:
-                        localStorage.setItem('ten', response.data.user.don_vi.sTenDonVi);
-                        localStorage.setItem('maDonVi', response.data.user.don_vi.PK_MaDonVi);
+                        sessionStorage.setItem('ten', response.data.user.don_vi.sTenDonVi);
+                        sessionStorage.setItem('maDonVi', response.data.user.don_vi.PK_MaDonVi);
                         break;
                     case 5:
-                        localStorage.setItem('ten', response.data.user.ca_nhan.sTenCaNhan);
+                        sessionStorage.setItem('ten', response.data.user.ca_nhan.sTenCaNhan);
                         break;
                     default:
-                        localStorage.setItem('ten', 'Unknown');
+                        sessionStorage.setItem('ten', 'Unknown');
                         break;
                 }
                 window.location.href = '/';

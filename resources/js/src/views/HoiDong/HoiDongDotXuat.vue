@@ -546,7 +546,7 @@ const openAddModal = () => {
     getDeXuatForHoiDong(null)
 
     // Initialize new ID
-    // hoiDong.value.maHoiDong = localStorage.getItem('user_name') + '-' + maDotDotXuat.value;
+    // hoiDong.value.maHoiDong = sessionStorage.getItem('user_name') + '-' + maDotDotXuat.value;
 
     // Open modal
     const modal = new bootstrap.Modal(document.getElementById('hoiDongModal'));
@@ -600,7 +600,7 @@ const deleteHoiDong = (item) => {
             try {
                 const response = await axios.delete(`/api/hoidong/delete/${item.PK_MaHoiDong}`, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                        Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                     }
                 });
 
@@ -719,7 +719,7 @@ const saveHoiDong = async () => {
             }
         }
 
-        let maHD = hoiDong.value.maHoiDong || (localStorage.getItem('user_name') + '-' + madot.value + '-' + hoiDong.value.thoiGian);
+        let maHD = hoiDong.value.maHoiDong || (sessionStorage.getItem('user_name') + '-' + madot.value + '-' + hoiDong.value.thoiGian);
         let maDot = madot.value;
         let maDotXuat = maDotDotXuat.value;
 
@@ -732,7 +732,7 @@ const saveHoiDong = async () => {
         const url = isEditing.value ? '/api/hoidong/add' : '/api/hoidong/add';
         const response = await axios.post(url, formData, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`,
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`,
                 'Content-Type': 'multipart/form-data'
             }
         });
@@ -831,7 +831,7 @@ const saveDeXuat = async () => {
         // Submit data to server
         const response = await axios.post('/api/dexuat/xetduyetdexuat', formData, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         });
 
@@ -869,7 +869,7 @@ const getDeXuatForHoiDong = (maHoiDong) => {
     }
     axios.get(url, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     })
         .then(response => {
@@ -976,7 +976,7 @@ const fetchDanhSachHoiDong = () => {
     isLoading.value = true;
     axios.get('/api/hoidong/getlisthoidongdotxuat', {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     })
         .then(response => {
@@ -996,7 +996,7 @@ const fetchDanhSachHoiDong = () => {
 const getListCaNhan = () => {
     axios.get('/api/taikhoan/getlistcanhan', {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     })
         .then(response => {
@@ -1013,7 +1013,7 @@ const getListCaNhan = () => {
 // const getDotDotXuat = () => {
 //     axios.get('/api/dotthiduakhenthuong/getdotdotxuatactive', {
 //         headers: {
-//             Authorization: `Bearer ${localStorage.getItem('api_token')}`
+//             Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
 //         }
 //     })
 //         .then(response => {
@@ -1032,7 +1032,7 @@ const getKienToan = async () => {
     try {
         const response = await axios.get('/api/kientoan/kientoanactive', {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         });
 

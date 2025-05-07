@@ -102,7 +102,7 @@ const getAllDeXuat = () => {
     axios
         .get("/api/dexuat/getalldexuattheodot", {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("api_token")}`,
+                Authorization: `Bearer ${sessionStorage.getItem("api_token")}`,
             },
         })
         .then((response) => {

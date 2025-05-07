@@ -7,9 +7,11 @@
                     <h4 class="mb-0">
                         <i class="bi bi-cloud-upload me-2"></i>Upload Minh Chứng
                     </h4>
-                    <button v-if="!role" class="btn btn-sm btn-primary" @click="showUploadModal = true">
+                    <button v-if="checkKetQua === false && !role" class="btn btn-sm btn-primary" @click="showUploadModal = true">
                         <i class="bi bi-plus-lg me-1"></i>Thêm mới
                     </button>
+                    <!-- {{ role }}
+                    {{ checkKetQua }} -->
                 </div>
 
             </div>
@@ -58,7 +60,7 @@
                                                 @click.stop="downloadFile(file)">
                                                 <i class="bi bi-download"></i>
                                             </button>
-                                            <button v-if="!role" class="btn btn-sm btn-outline-danger"
+                                            <button v-if="checkKetQua === false && !role" class="btn btn-sm btn-outline-danger"
                                                 @click.stop="removeFile(file)" title="Xóa file">
                                                 <i class="bi bi-trash"></i>
                                             </button>
@@ -159,7 +161,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
@@ -176,8 +177,9 @@ const isDragging = ref(false);
 const showUploadModal = ref(false);
 const showToast = ref(true);
 const maDeXuat = useRoute().params.id;
-const role = ref([2, 3].includes(Number(localStorage.getItem('role'))));
+const role = ref([2, 3].includes(Number(sessionStorage.getItem('role'))));
 const pdfUrl = ref('')
+const checkKetQua = ref(false);
 
 onMounted(async () => {
     await checkDeXuatTaiKhoan();
@@ -188,12 +190,12 @@ const checkDeXuatTaiKhoan = async () => {
     try {
         const response = await axios.get(`/api/dexuat/checkchinhchu/${maDeXuat}`, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         });
         if (response.status === 200) {
-            console.log(response.data.data);
-        }
+            checkKetQua.value = response.data.data;
+        } 
     } catch (error) {
         if (error.response) {
             router.push('/403');
@@ -206,7 +208,7 @@ const checkDeXuatTaiKhoan = async () => {
 const getListMinhChung = () => {
     axios.get(`/api/minhchung/getlist/${maDeXuat}`, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     })
         .then(response => {
@@ -237,7 +239,7 @@ const onFileChange = async (event) => {
         showUploadModal.value = false;
         const response = await axios.post('/api/minhchung/upload', formData, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`,
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`,
             },
             onUploadProgress: (progressEvent) => {
                 const percent = Math.round((progressEvent.loaded / progressEvent.total) * 100);
@@ -272,7 +274,7 @@ const previewFile = async (file) => {
     try {
         const response = await axios.get('/api/minhchung/preview/' + file.PK_MaMinhChung, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             },
             responseType: 'blob'
         })
@@ -294,7 +296,7 @@ const previewFile = async (file) => {
 const downloadFile = (file) => {
     axios.get('/api/minhchung/download/' + file.PK_MaMinhChung, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         },
         responseType: 'blob' // bắt buộc để nhận file binary
     })
@@ -326,7 +328,7 @@ const removeFile = (file) => {
 
         axios.post(`/api/minhchung/delete/${file.PK_MaMinhChung}`, null, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         })
             .then((response) => {

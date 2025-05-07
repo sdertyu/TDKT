@@ -144,7 +144,7 @@ const checkDot = (dot) => {
     if (dot) {
         const check = axios.get(`/api/dotthiduakhenthuong/thong-tin-dot/${dot}`, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         });
         check.then(res => {
@@ -165,7 +165,7 @@ const checkDot = (dot) => {
 const getListFile = (dot) => {
     const list = axios.get(`/api/dotthiduakhenthuong/list-van-ban/${dot}`, {
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
         }
     });
 
@@ -257,7 +257,7 @@ const saveChangeFiles = () => {
         const themVBDK = axios.post('/api/dotthiduakhenthuong/them-van-ban', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         });
 
@@ -355,7 +355,7 @@ const saveChangeFiles = () => {
         const suaVBDK = axios.post('/api/dotthiduakhenthuong/update-van-ban', formData2, {
             headers: {
                 'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         });
 
@@ -393,7 +393,7 @@ const xoaVanBanDinhKem = (vb) => {
                     // Xóa văn bản đính kèm
                     const xoaVB = axios.delete(`/api/dotthiduakhenthuong/xoa-van-ban/${vb.PK_MaVanBan}`, {
                         headers: {
-                            Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                            Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
                         }
                     });
 

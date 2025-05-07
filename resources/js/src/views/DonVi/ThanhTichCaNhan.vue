@@ -159,7 +159,7 @@ const getThanhTichCaNhan = async () => {
     try {
         const response = await axios.get('/api/baocaothongke/thanhtichcanhantrongdonvi', {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         });
         if (response.status === 200) {

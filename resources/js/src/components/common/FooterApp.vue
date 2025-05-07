@@ -13,7 +13,7 @@ import { onMounted } from 'vue';
 import Swal from 'sweetalert2';
 
 onMounted(async () => {
-    const hasShownAlert = localStorage.getItem('hasShownLoginAlert');
+    const hasShownAlert = sessionStorage.getItem('hasShownLoginAlert');
 
     if (!hasShownAlert) {
         await Swal.fire({
@@ -25,7 +25,7 @@ onMounted(async () => {
             text: 'Đăng nhập thành công',
             timerProgressBar: true,
         });
-        localStorage.setItem('hasShownLoginAlert', 'true');
+        sessionStorage.setItem('hasShownLoginAlert', 'true');
     }
 });
 </script>

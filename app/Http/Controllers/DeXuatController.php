@@ -1087,13 +1087,19 @@ class DeXuatController extends Controller
         }
 
         $user = auth()->user();
-        if ($deXuat->FK_User !== $user->PK_MaTaiKhoan) {
-            return response()->json([
-                'message' => 'Bạn không có quyền kiểm tra đề xuất này'
-            ], 403);
+        if ($user->FK_MaQuyen !== 3 && $user->FK_MaQuyen !== 2) {
+            if ($deXuat->FK_User !== $user->PK_MaTaiKhoan) {
+                return response()->json([
+                    'message' => 'Bạn không có quyền kiểm tra đề xuất này'
+                ], 403);
+            }
         }
+
+
+        $deXuatKetQua = $deXuat->ketQua === null ? false : true;
         return response()->json([
             'message' => 'Đề xuất hợp lệ',
+            'data' => $deXuatKetQua,
         ], 200);
     }
 }

@@ -71,7 +71,7 @@ const getDanhHieuDeXuat = async () => {
     try {
         const response = await axios.get('/api/dexuat/getlisttheodotdotxuat', {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('api_token')}`
+                Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
             }
         });
 
