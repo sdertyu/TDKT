@@ -1,0 +1,1653 @@
+{
+  "info": {
+    "name": "TDKT API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"\",\n  \"password\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/logout",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get User Info",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/info",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "url": "http://127.0.0.1:8000/api/doi-mat-khau",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"old_password\": \"\",\n  \"new_password\": \"\",\n  \"confirm_password\": \"\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tài Khoản",
+      "item": [
+        {
+          "name": "Danh Sách Tài Khoản",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/taikhoan/list",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Thông Tin Tài Khoản",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/taikhoan/account/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Thêm Tài Khoản",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/taikhoan/add",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"\",\n  \"password\": \"\",\n  \"email\": \"\",\n  \"role\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Cập Nhật Tài Khoản",
+          "request": {
+            "method": "PUT",
+            "url": "http://127.0.0.1:8000/api/taikhoan/update",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"\",\n  \"email\": \"\",\n  \"role\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Khóa Tài Khoản",
+          "request": {
+            "method": "PUT",
+            "url": "http://127.0.0.1:8000/api/taikhoan/lock/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Xóa Tài Khoản",
+          "request": {
+            "method": "DELETE",
+            "url": "http://127.0.0.1:8000/api/taikhoan/delete/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Đơn Vị",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/taikhoan/donvi",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Cá Nhân Trong Đơn Vị",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/taikhoan/caNhanTrongDonVi/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Toàn Bộ Cá Nhân",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/taikhoan/getlistcanhan",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Đợt Thi Đua Khen Thưởng",
+      "item": [
+        {
+          "name": "Danh Sách Đợt TĐKT",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/list",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Thêm Đợt TĐKT",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/add",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ten_dot_thi_dua\": \"\",\n  \"ngay_bat_dau\": \"\",\n  \"ngay_ket_thuc\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Sửa Đợt TĐKT",
+          "request": {
+            "method": "PUT",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/update",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"\",\n  \"ten_dot_thi_dua\": \"\",\n  \"ngay_bat_dau\": \"\",\n  \"ngay_ket_thuc\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Xóa Đợt TĐKT",
+          "request": {
+            "method": "DELETE",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/delete/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Cập Nhật Trạng Thái Đợt",
+          "request": {
+            "method": "PUT",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/update-trang-thai",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"\",\n  \"trang_thai\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Thông Tin Đợt",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/thong-tin-dot/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Đợt Active",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/dot-active",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Thêm Văn Bản Đính Kèm",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/them-van-ban",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "dot_id",
+                  "value": ""
+                },
+                {
+                  "key": "ten_van_ban",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Sửa Văn Bản Đính Kèm",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/update-van-ban",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "id",
+                  "value": ""
+                },
+                {
+                  "key": "ten_van_ban",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Xóa Văn Bản Đính Kèm",
+          "request": {
+            "method": "DELETE",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/xoa-van-ban/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Văn Bản Đính Kèm",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/list-van-ban/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Văn Bản Đính Kèm Active",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/list-van-ban-active",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Preview Văn Bản Đính Kèm",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/previewVbdk/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Download Văn Bản Đính Kèm",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/downloadVbdk/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Download Zip Văn Bản",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/downloadZip/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Đợt Đột Xuất",
+      "item": [
+        {
+          "name": "Thông Tin Đợt Đột Xuất Active",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/getdotdotxuatactive",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Đợt Đột Xuất",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/listdotdotxuat/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Thêm Đợt Đột Xuất",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/adddotdotxuat",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ten_dot\": \"\",\n  \"ngay_bat_dau\": \"\",\n  \"ngay_ket_thuc\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Sửa Đợt Đột Xuất",
+          "request": {
+            "method": "PUT",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/updatedotdotxuat/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ten_dot\": \"\",\n  \"ngay_bat_dau\": \"\",\n  \"ngay_ket_thuc\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Xóa Đợt Đột Xuất",
+          "request": {
+            "method": "DELETE",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/deletedotdotxuat/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Cập Nhật Trạng Thái Đợt Đột Xuất",
+          "request": {
+            "method": "PUT",
+            "url": "http://127.0.0.1:8000/api/dotthiduakhenthuong/updatetrangthaidotdotxuat/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trang_thai\": \"\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Hội Đồng",
+      "item": [
+        {
+          "name": "Danh Sách Hội Đồng",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/hoidong/list",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Thêm Hội Đồng",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/hoidong/add",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ten_hoi_dong\": \"\",\n  \"ma_hinh_thuc\": \"\",\n  \"ma_loai_hoi_dong\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Danh Sách Hình Thức Hội Đồng",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/hoidong/list-hinh-thuc",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Loại Hội Đồng",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/hoidong/list-loai-hoi-dong",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Cập Nhật Hội Đồng",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/hoidong/cap-nhat-hoi-dong",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"\",\n  \"ten_hoi_dong\": \"\",\n  \"ma_hinh_thuc\": \"\",\n  \"ma_loai_hoi_dong\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Thông Tin Hội Đồng",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/hoidong/thongtinhoidong",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Hội Đồng Đột Xuất",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/hoidong/getlisthoidongdotxuat",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Đơn Vị",
+      "item": [
+        {
+          "name": "Danh Sách Cá Nhân Trong Đơn Vị",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/donvi/list-ca-nhan/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Danh Hiệu",
+      "item": [
+        {
+          "name": "Danh Sách Danh Hiệu",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/danhhieu/list",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Danh Hiệu Theo Đợt",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/danhhieu/listdanhhieutheodot",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "params": [
+              {
+                "key": "dot_id",
+                "value": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Thêm Danh Hiệu",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/danhhieu/add",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ten_danh_hieu\": \"\",\n  \"ma_loai\": \"\",\n  \"ma_cap\": \"\",\n  \"dot_thi_dua_id\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Sửa Danh Hiệu",
+          "request": {
+            "method": "PUT",
+            "url": "http://127.0.0.1:8000/api/danhhieu/update",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"\",\n  \"ten_danh_hieu\": \"\",\n  \"ma_loai\": \"\",\n  \"ma_cap\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Sửa Trạng Thái Danh Hiệu",
+          "request": {
+            "method": "PUT",
+            "url": "http://127.0.0.1:8000/api/danhhieu/updatestatus/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Xóa Danh Hiệu",
+          "request": {
+            "method": "DELETE",
+            "url": "http://127.0.0.1:8000/api/danhhieu/delete/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Danh Hiệu Đột Xuất",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/danhhieu/listdanhhieudotxuat",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Loại Danh Hiệu",
+      "item": [
+        {
+          "name": "Danh Sách Loại Danh Hiệu",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/loaidanhhieu/getList",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cấp Danh Hiệu",
+      "item": [
+        {
+          "name": "Danh Sách Cấp Danh Hiệu",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/capdanhhieu/getList",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Hình Thức",
+      "item": [
+        {
+          "name": "Danh Sách Hình Thức",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/hinhthuc/getList",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Thông Báo",
+      "item": [
+        {
+          "name": "Tạo Thông Báo",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/thongbao/create",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tieu_de\": \"\",\n  \"noi_dung\": \"\",\n  \"doi_tuong\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Sửa Thông Báo",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/thongbao/update/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tieu_de\": \"\",\n  \"noi_dung\": \"\",\n  \"doi_tuong\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Xóa Thông Báo",
+          "request": {
+            "method": "DELETE",
+            "url": "http://127.0.0.1:8000/api/thongbao/delete/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Thông Báo Theo Quyền",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/thongbao/getlisttheoquyen",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Đánh Dấu Đã Đọc",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/thongbao/markread",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Chi Tiết Thông Báo",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/thongbao/getthongbao/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Đề Xuất",
+      "item": [
+        {
+          "name": "Thêm Đề Xuất Theo Đợt",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/dexuat/themdexuattheodot",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dot_id\": \"\",\n  \"danh_hieu_id\": \"\",\n  \"nguoi_de_xuat\": \"\",\n  \"ly_do\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Danh Sách Đề Xuất Theo Đợt",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dexuat/getlisttheodot",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "params": [
+              {
+                "key": "dot_id",
+                "value": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Tất Cả Đề Xuất Theo Đợt",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dexuat/getalldexuattheodot",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "params": [
+              {
+                "key": "dot_id",
+                "value": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Tất Cả Đề Xuất Theo Đợt Đột Xuất",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dexuat/getalldexuatdotxuat",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Đề Xuất Xét Duyệt",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dexuat/getlistdexuatxetduyet",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Đề Xuất Xét Duyệt Đột Xuất",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dexuat/getlistdexuatxetduyetdotxuat",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Đề Xuất Xét Duyệt Đột Xuất Theo Mã",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dexuat/getlistdexuatxetduyetdotxuat/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Đề Xuất Theo Đợt Đột Xuất",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dexuat/getlisttheodotdotxuat",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Xét Duyệt Đề Xuất",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/dexuat/xetduyetdexuat",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"\",\n  \"trang_thai\": \"\",\n  \"ly_do_tu_choi\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Thêm Đề Xuất Đột Xuất",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/dexuat/themdexuatdotxuat",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nguoi_duoc_de_xuat\": \"\",\n  \"danh_hieu_id\": \"\",\n  \"ly_do\": \"\",\n  \"dot_id\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Thông Tin Đề Xuất Đột Xuất",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dexuat/thongtindexuatdotxuat",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "params": [
+              {
+                "key": "id",
+                "value": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Cập Nhật Đề Xuất Đột Xuất",
+          "request": {
+            "method": "PUT",
+            "url": "http://127.0.0.1:8000/api/dexuat/capnhatdexuatdotxuat",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"\",\n  \"nguoi_duoc_de_xuat\": \"\",\n  \"danh_hieu_id\": \"\",\n  \"ly_do\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Xóa Đề Xuất Đột Xuất",
+          "request": {
+            "method": "DELETE",
+            "url": "http://127.0.0.1:8000/api/dexuat/xoadexuatdotxuat/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Kiểm Tra Chính Chủ",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/dexuat/checkchinhchu/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Minh Chứng",
+      "item": [
+        {
+          "name": "Danh Sách Minh Chứng",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/minhchung/getlist/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Upload Minh Chứng",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/minhchung/upload",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "de_xuat_id",
+                  "value": ""
+                },
+                {
+                  "key": "ten_minh_chung",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Download Minh Chứng",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/minhchung/download/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Xóa Minh Chứng",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/minhchung/delete/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Xem Minh Chứng",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/minhchung/preview/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Báo Cáo Thống Kê",
+      "item": [
+        {
+          "name": "Thành Tích Của Tôi",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/baocaothongke/thanhtichcuatoi",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Thành Tích Cá Nhân Trong Đơn Vị",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/baocaothongke/thanhtichcanhantrongdonvi",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Năm Học",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/baocaothongke/danhsachnamhoc",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Danh Hiệu",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/baocaothongke/danhsachdanhhieu",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Cấp Danh Hiệu",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/baocaothongke/danhsachcapdanhhieu",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Đơn Vị",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/baocaothongke/danhsachdonvi",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Data Thống Kê Danh Hiệu",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/baocaothongke/datathongkedanhhieu",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "params": [
+              {
+                "key": "nam_hoc",
+                "value": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Data Thống Kê Cá Nhân",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/baocaothongke/datathongkecanhan",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "params": [
+              {
+                "key": "nam_hoc",
+                "value": ""
+              },
+              {
+                "key": "danh_hieu_id",
+                "value": ""
+              },
+              {
+                "key": "cap_danh_hieu_id",
+                "value": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Data Thống Kê Đơn Vị",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/baocaothongke/datathongkedonvi",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "params": [
+              {
+                "key": "nam_hoc",
+                "value": ""
+              },
+              {
+                "key": "danh_hieu_id",
+                "value": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "Export Excel Cá Nhân",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/baocaothongke/canhanexcel",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nam_hoc\": \"\",\n  \"danh_hieu_id\": \"\",\n  \"cap_danh_hieu_id\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Export Excel Đơn Vị",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/baocaothongke/donviexcel",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nam_hoc\": \"\",\n  \"danh_hieu_id\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Export Excel Danh Hiệu",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/baocaothongke/danhhieuexcel",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nam_hoc\": \"\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Kiện Toàn",
+      "item": [
+        {
+          "name": "Danh Sách Kiện Toàn",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/kientoan/getlist",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Cập Nhật Trạng Thái Kiện Toàn",
+          "request": {
+            "method": "PUT",
+            "url": "http://127.0.0.1:8000/api/kientoan/updatestatus/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Danh Sách Nhiệm Vụ",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/kientoan/getlistnhiemvu",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Tạo Kiện Toàn",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/kientoan/create",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ten_kien_toan\": \"\",\n  \"nguoi_thuc_hien\": [],\n  \"nhiem_vu\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Sửa Kiện Toàn",
+          "request": {
+            "method": "POST",
+            "url": "http://127.0.0.1:8000/api/kientoan/update",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"\",\n  \"ten_kien_toan\": \"\",\n  \"nguoi_thuc_hien\": [],\n  \"nhiem_vu\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Xóa Kiện Toàn",
+          "request": {
+            "method": "DELETE",
+            "url": "http://127.0.0.1:8000/api/kientoan/delete/:id",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Kiện Toàn Active",
+          "request": {
+            "method": "GET",
+            "url": "http://127.0.0.1:8000/api/kientoan/kientoanactive",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost"
+    },
+    {
+      "key": "token",
+      "value": "your-token-here"
+    }
+  ]
+}
