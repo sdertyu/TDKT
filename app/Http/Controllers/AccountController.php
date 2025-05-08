@@ -63,9 +63,13 @@ class AccountController extends Controller
         }
         // $user = $user->FK_MaQuyen == 4 ? AccountModel::where('PK_MaTaiKhoan', $user->PK_MaTaiKhoan)->with('caNhan')->first() : AccountModel::where('PK_MaTaiKhoan', $user->PK_MaTaiKhoan)->with('donVi')->first();
         $user->makeHidden(['sPassword']);
-        $user->api_token = Str::random(60);
+        $plainToken = Str::random(60);
+        $user->api_token = hash('sha256', $plainToken);
         // $user->ten =
         $user->save();
+
+        //trả về token cho client
+        $user->api_token = $plainToken;
 
         Auth::login($user);
 

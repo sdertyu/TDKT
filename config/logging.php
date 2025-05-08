@@ -89,7 +89,7 @@ return [
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
+                'connectionString' => 'tls://' . env('PAPERTRAIL_URL') . ':' . env('PAPERTRAIL_PORT'),
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],
@@ -125,6 +125,14 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+        'changedb' => [
+            'driver' => 'daily', // Dùng driver 'daily' để tạo file log theo ngày
+            'path' => storage_path(path: 'logs/change_database/' . 'change.log'), // Tên file theo ngày tháng
+            'level' => 'debug',
+            'days' => 30, // Giới hạn số ngày giữ lại các log cũ
+
         ],
     ],
 

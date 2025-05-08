@@ -17,7 +17,10 @@ class AuthenticateWithToken
     public function handle(Request $request, Closure $next): Response
     {
         $token = $request->bearerToken();
-        if (!$token || !($user = AccountModel::where('api_token', $token)->first())) {
+        $hashToken = hash('sha256', $token);
+        // Log:info('Token: ' . $hashToken);
+
+        if (!$hashToken || !($user = AccountModel::where('api_token', $hashToken)->first())) {
             return response()->json(['message' => 'Chưa đăng nhập'], 401);
         }
         auth()->setUser($user);
