@@ -327,6 +327,49 @@ class HoiDongController extends Controller
         ]);
     }
 
+    public function xoaHoiDong($id)
+    {
+        $validation = Validator::make(['id' => $id], [
+            'id' => 'required|exists:tblhoidongtruong,PK_MaHoiDong'
+        ]);
+
+        if ($validation->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validation->errors()
+            ], 422);
+        }
+
+        try {
+            $hoidong = HoiDongTruongModel::where('PK_MaHoiDong', $id)->with('ketQua')->first();
+            if (!$hoidong) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không tìm thấy hội đồng'
+                ], 404);
+            }
+
+            Log::info($hoidong);
+            Log::info($hoidong['ketQua']);
+
+            if ($hoidong->ketQua) {
+                // Log
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['Không thể xóa hội đồng đã có kết quả']
+                ], 422);
+            }
+
+            $hoidong->delete();
+        } catch (\Exception $e) {
+            Log::error('Error deleting committee: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi khi xóa hội đồng'
+            ], 500);
+        }
+    }
+
     public function layDanhSachHinhThucHD()
     {
         $listHinhThuc = HinhThucModel::all();
@@ -413,7 +456,8 @@ class HoiDongController extends Controller
                 ->with([
                     'kienToan' => function ($query) {
                         $query->withCount('thanhVienHoiDong');
-                    }
+                    },
+                    'ketQua'
                 ])
                 ->get();
 
@@ -429,6 +473,36 @@ class HoiDongController extends Controller
                 'success' => true,
                 'data' => $hoidong
             ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error fetching committee list: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi khi lấy danh sách hội đồng'
+            ], 500);
+        }
+    }
+
+    public function checkThemHoiDongTheoDotXuat()
+    {
+        try {
+            $dotActive = DotTDKTModel::where('bTrangThai', 1)->first();
+            $deXuat = DeXuatModel::where('FK_MaDot', $dotActive->PK_MaDot)
+                ->whereHas('danhHieu', function ($query) {
+                    $query->where('FK_MaLoaiDanhHieu', 2);
+                })
+                ->whereDoesntHave('ketQua')
+                ->get();
+
+            if ($deXuat) {
+                return response()->json([
+                    'check' => true,
+                    'data' => $deXuat
+                ], 200);
+            } else {
+                return response()->json([
+                    'check' => false,
+                ], 200);
+            }
         } catch (\Exception $e) {
             Log::error('Error fetching committee list: ' . $e->getMessage());
             return response()->json([

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CaNhanModel;
 use App\Models\CapDanhHieuModel;
 use App\Models\ChiTietDHModel;
 use App\Models\ChiTietHDModel;
@@ -9,6 +10,7 @@ use App\Models\DanhHieuModel;
 use App\Models\DeXuatModel;
 use App\Models\DonViModel;
 use App\Models\DotTDKTModel;
+use App\Models\HinhThucModel;
 use App\Models\KetQuaModel;
 use App\Models\LoaiDanhHieuModel;
 use Illuminate\Http\Request;
@@ -308,6 +310,23 @@ class BaoCaoThongKeController extends Controller
         }
     }
 
+    public function danhSachHinhThuc()
+    {
+        try {
+            $hinhThuc = HinhThucModel::select('PK_MaHinhThuc as maHinhThuc', 'sTenHinhThuc as tenHinhThuc')
+                ->orderBy('sTenHinhThuc', 'asc')
+                ->get();
+            return response()->json([
+                'data' => $hinhThuc
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi lấy danh sách đơn vị: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Có lỗi xảy ra khi lấy danh sách đơn vị'
+            ], 500);
+        }
+    }
+
     public function exportExcelCaNhan(Request $request)
     {
         // Get data from request
@@ -483,7 +502,8 @@ class BaoCaoThongKeController extends Controller
         // Return Excel file for download
         return response()->download($excelPath, 'thongke_danhhieu.xlsx')->deleteFileAfterSend(true);
     }
-    public function exportExcelDonVi(Request $request) {
+    public function exportExcelDonVi(Request $request)
+    {
         // Get data from request
         $data = $request->input('data');
         Log::info($data);
@@ -612,7 +632,7 @@ class BaoCaoThongKeController extends Controller
         // Return Excel file for download
         return response()->download($excelPath, 'thongke_danhhieu.xlsx')->deleteFileAfterSend(true);
     }
-    
+
 
     public function exportExcelDanhHieu(Request $request)
     {
@@ -740,5 +760,37 @@ class BaoCaoThongKeController extends Controller
 
         // Return Excel file for download
         return response()->download($excelPath, 'thongke_danhhieu.xlsx')->deleteFileAfterSend(true);
+    }
+
+    public function layDanhSachCaNhanTheoDonVi(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'donVi' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $donVi = $request->input('donVi');
+
+        try {
+            $caNhan = CaNhanModel::whereIn('FK_MaDonVi', $donVi)
+                ->select('PK_MaCaNhan as maCaNhan', 'sTenCaNhan as tenCaNhan')
+                ->orderBy('sTenCaNhan', 'asc')
+                ->get();
+
+            return response()->json([
+                'data' => $caNhan,
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi lấy danh sách cá nhân theo đơn vị: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Có lỗi xảy ra khi lấy danh sách cá nhân theo đơn vị'
+            ], 500);
+        }
     }
 }

@@ -71,11 +71,13 @@ Route::middleware(['auth.api'])->group(function () {
     Route::prefix('hoidong')->group(function () {
         Route::get('/list', [HoiDongController::class, 'index']);
         Route::post('/add', [HoiDongController::class, 'themHoiDong']);
+        Route::delete('/delete/{id}', [HoiDongController::class, 'xoaHoiDong']);
         Route::get('/list-hinh-thuc', [HoiDongController::class, 'layDanhSachHinhThucHD']);
         Route::get('/list-loai-hoi-dong', [HoiDongController::class, 'layDanhSachLoaiHD']);
         Route::post('/cap-nhat-hoi-dong', [HoiDongController::class, 'capNhatHoiDong']);
         Route::get('/thongtinhoidong', [HoiDongController::class, 'layThongTinHoiDong']);
         Route::get('getlisthoidongdotxuat', [HoiDongController::class, 'layDanhSachHoiDongTheoDotXuat']);
+        Route::get('checkthemhoidongdotxuat', [HoiDongController::class, 'checkThemHoiDongTheoDotXuat']);
     });
 
     Route::prefix('donvi')->group(function () {
@@ -143,12 +145,14 @@ Route::middleware(['auth.api'])->group(function () {
         Route::get('danhsachdanhhieu', [BaoCaoThongKeController::class, 'danhSachDanhHieu']);
         Route::get('danhsachcapdanhhieu', [BaoCaoThongKeController::class, 'danhSachCapDanhHieu']);
         Route::get('danhsachdonvi', [BaoCaoThongKeController::class, 'danhSachDonVi']);
+        Route::get('danhsachhinhthuc', [BaoCaoThongKeController::class, 'danhSachHinhThuc']);
         Route::get('datathongkedanhhieu', [BaoCaoThongKeController::class, 'dataThongKeDanhHieu']);
         Route::get('datathongkecanhan', [BaoCaoThongKeController::class, 'dataThongKeCaNhan']);
         Route::get('datathongkedonvi', [BaoCaoThongKeController::class, 'dataThongKeDonVi']);
         Route::post('canhanexcel', [BaoCaoThongKeController::class, 'exportExcelCaNhan']);
         Route::post('donviexcel', [BaoCaoThongKeController::class, 'exportExcelDonVi']);
         Route::post('danhhieuexcel', [BaoCaoThongKeController::class, 'exportExcelDanhHieu']);
+        Route::get('danhsachcanhan', [BaoCaoThongKeController::class, 'layDanhSachCaNhanTheoDonVi']);
         // Route::post('saveimage', [BaoCaoThongKeController::class, 'saveImage']);
     });
 
@@ -161,5 +165,4 @@ Route::middleware(['auth.api'])->group(function () {
         Route::delete('/delete/{id}', [KienToanController::class, 'xoaKienToan']);
         Route::get('/kientoanactive', [KienToanController::class, 'layKienToanActive']);
     });
-
 });

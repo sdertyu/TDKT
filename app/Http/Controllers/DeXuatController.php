@@ -61,6 +61,8 @@ class DeXuatController extends Controller
                     $dexuat->iSoNguoiBau = $value['soPhieu'];
                     $dexuat->dNgayTao = now();
                     $dexuat->FK_MaDanhHieu = $key;
+                    $dexuat->FK_MaDot = $dotActive->PK_MaDot;
+                    $dexuat->FK_NguoiTao = $currentUser->PK_MaTaiKhoan;
                     $dexuat->save();
                 }
             }
@@ -73,6 +75,8 @@ class DeXuatController extends Controller
                 $dexuat->iSoNguoiBau = $dv['soPhieu'];
                 $dexuat->dNgayTao = now();
                 $dexuat->FK_MaDanhHieu = $dv['id'];
+                $dexuat->FK_MaDot = $dotActive->PK_MaDot;
+                $dexuat->FK_NguoiTao = $currentUser->PK_MaTaiKhoan;
                 $dexuat->save();
             }
         } catch (\Exception $e) {
@@ -1035,6 +1039,11 @@ class DeXuatController extends Controller
             if ($deXuat->FK_NguoiTao !== $user->PK_MaTaiKhoan) {
                 return response()->json([
                     'message' => 'Bạn không có quyền xóa đề xuất này'
+                ], 403);
+            }
+            if ($deXuat->ketQua) {
+                return response()->json([
+                    'message' => 'Đề xuất đã được duyệt, không thể xóa'
                 ], 403);
             }
             $deXuat->delete();

@@ -449,6 +449,19 @@ const saveProposals = async () => {
                     });
                     return;
                 }
+
+                if ((individual.soPhieu / formData.value.tongSoNguoi * 100) < 80) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: `Tỷ lệ phiếu bầu của ${individual.name} không được dưới 80%!`,
+                        toast: true,
+                        timer: 5000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        position: 'top-end'
+                    });
+                    return;
+                }
             }
         }
 

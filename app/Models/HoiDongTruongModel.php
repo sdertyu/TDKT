@@ -30,12 +30,18 @@ class HoiDongTruongModel extends Model
         return $this->belongsTo(DotTDKTModel::class, 'FK_MaDot', 'PK_MaDot');
     }
 
-    public function dotXuat() {
+    public function dotXuat()
+    {
         return $this->belongsTo(DotTDKTModel::class, 'FK_MaDotXuat', 'PK_MaDotXuat');
     }
 
     public function kienToan()
     {
         return $this->hasOne(KienToanModel::class, 'PK_MaKienToan', 'FK_MaKienToan');
+    }
+
+    public function ketQua()
+    {
+        return $this->hasMany(KetQuaModel::class, 'FK_MaHoiDong', 'PK_MaHoiDong');
     }
 }
