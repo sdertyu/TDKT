@@ -93,6 +93,16 @@ class DanhHieuController extends Controller
         }
 
         try {
+            if (DanhHieuModel::where('sTenDanhHieu', $request->tendanhhieu)
+                ->where('FK_MaLoaiDanhHieu', $request->loaidanhhieu)
+                ->where('FK_MaHinhThuc', $request->hinhthuc)
+                ->where('FK_MaCap', $request->capdanhhieu)
+                ->exists()
+            ) {
+                return response()->json([
+                    'message' => "Danh hiệu này đã tồn tại"
+                ], 409);
+            }
             $danhHieu = new DanhHieuModel();
             $danhHieu->sTenDanhHieu = $request->tendanhhieu;
             $danhHieu->FK_MaLoaiDanhHieu = $request->loaidanhhieu;
@@ -128,10 +138,34 @@ class DanhHieuController extends Controller
         }
 
         $danhHieu = DanhHieuModel::find($request->id);
-        $danhHieu->sTenDanhHieu = $request->tendanhhieu;
-        $danhHieu->FK_MaLoaiDanhHieu = $request->loaidanhhieu;
-        $danhHieu->FK_MaHinhThuc = $request->hinhthuc;
-        $danhHieu->save();
+        if ($danhHieu) {
+            if (DanhHieuModel::where('sTenDanhHieu', $request->tendanhhieu)
+                ->where('FK_MaLoaiDanhHieu', $request->loaidanhhieu)
+                ->where('FK_MaHinhThuc', $request->hinhthuc)
+                ->where('FK_MaCap', $request->capdanhhieu)
+                ->exists()
+            ) {
+                return response()->json([
+                    'message' => "Danh hiệu này đã tồn tại"
+                ], 409);
+            }
+            $deXuat = DeXuatModel::where('FK_MaDanhHieu', $danhHieu->PK_MaDanhHieu)->exists();
+            if ($deXuat) {
+                return response()->json([
+                    'message' => "Danh hiệu này đã được dùng không thể chỉnh sửa",
+                ], 409);
+            }
+            $danhHieu->sTenDanhHieu = $request->tendanhhieu;
+            $danhHieu->FK_MaLoaiDanhHieu = $request->loaidanhhieu;
+            $danhHieu->FK_MaHinhThuc = $request->hinhthuc;
+            $danhHieu->FK_MaCap = $request->capdanhhieu;
+            $danhHieu->save();
+        } else {
+            return response()->json([
+                'message' => "Không tìm thấy danh hiệu"
+            ], 404);
+        }
+
 
         return response()->json([
             'message' => 'Sửa thành công',

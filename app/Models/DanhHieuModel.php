@@ -33,5 +33,9 @@ class DanhHieuModel extends Model
         return $this->belongsTo(HinhThucModel::class, 'FK_MaHinhThuc', 'PK_MaHinhThuc');
     }
 
+    public function deXuat() {
+        return $this->hasMany(DeXuatModel::class, 'FK_MaDanhHieu', 'PK_MaDanhHieu');
+    }
+
 
 }
