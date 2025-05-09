@@ -213,7 +213,7 @@ const validateDate = () => {
     // Convert academic years to Date objects for comparison
     const startYearDate = new Date(currentDot.iNamBatDau, 9, 1); // September 1st of start year
     const endYearDate = new Date(currentDot.iNamKetThuc, 7, 31); // July 31st of end year
-    
+
     if (currentDot.dHanBienBanDonVi) {
         const hanBienBanDonViDate = new Date(currentDot.dHanBienBanDonVi);
         if (hanBienBanDonViDate < startYearDate) {
@@ -225,7 +225,7 @@ const validateDate = () => {
             return false;
         }
     }
-    
+
     if (currentDot.dHanNopMinhChung) {
         const hanNopMinhChungDate = new Date(currentDot.dHanNopMinhChung);
         if (hanNopMinhChungDate < startYearDate) {
@@ -249,7 +249,7 @@ const validateDate = () => {
             return false;
         }
     }
-    
+
     // Additional check: ensure logical sequence of deadlines
     if (currentDot.dHanBienBanDonVi && currentDot.dHanNopMinhChung) {
         if (new Date(currentDot.dHanNopMinhChung) < new Date(currentDot.dHanBienBanDonVi)) {
@@ -264,7 +264,7 @@ const validateDate = () => {
             return false;
         }
     }
-    
+
     return true;
 }
 
@@ -360,6 +360,7 @@ const trangThaiDot = (item) => {
                             dot.bTrangThai = 0
                         }
                     })
+                    // getDotActive();
                     toastSuccess('Thay đổi trạng thái đợt thành công');
                 }
             }).catch(error => {
@@ -369,6 +370,22 @@ const trangThaiDot = (item) => {
         }
     })
 }
+
+// const getDotActive = async () => {
+//     try {
+//         const response = await axios.get(`api/dotthiduakhenthuong/dot-active`, {
+//             headers: {
+//                 Authorization: `Bearer ${sessionStorage.getItem('api_token')}`
+//             }
+//         });
+
+//         if (response.status === 200 && response.data.data) {
+//             useGlobalStore().setDot(response.data.data.PK_MaDot);
+//         }
+//     } catch (err) {
+//         console.error('Lỗi khi lấy đợt:', err);
+//     }
+// }
 
 const confirmDelete = (dot) => {
     Swal.fire({

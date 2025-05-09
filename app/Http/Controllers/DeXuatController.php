@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AccountModel;
 use App\Models\DeXuatModel;
 use App\Models\DotTDKTModel;
 use App\Models\DotXuatModel;
@@ -9,6 +10,8 @@ use App\Models\HoiDongDonViModel;
 use App\Models\HoiDongModel;
 use App\Models\HoiDongTruongModel;
 use App\Models\KetQuaModel;
+use App\Models\ThongBaoModel;
+use App\Models\ThongBaoTaiKhoanModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -819,6 +822,31 @@ class DeXuatController extends Controller
                         'iSoNguoiBau' => $itemData['so_nguoi_bau'], // Lưu ý là có thể thiếu 'so_nguoi_bau' trong dữ liệu, bạn cần kiểm tra
                     ]);
                 }
+            }
+
+            $thongBao = ThongBaoModel::create([
+                'sTieuDe' => 'Thông báo kết quả xét duyệt đề xuất',
+                'sNoiDung' => 'Hội đồng thi đua khen thưởng đã xét duyệt đề xuất thi đua khen thưởng.',
+                'dNgayTao' => getDateNow(),
+                'FK_NguoiTao' => auth()->user()->PK_MaTaiKhoan,
+            ]);
+
+            $thongBao->thongBaoQuyen()->createMany([
+                ['FK_MaQuyen' => 4],
+                ['FK_MaQuyen' => 5],
+            ]);
+
+            $dsMaQuyen = [4, 5];
+
+            $taiKhoan = AccountModel::whereIn('FK_MaQuyen', $dsMaQuyen)->get();
+
+            foreach ($taiKhoan as $tk) {
+                // log::info('TaiKhoan: ' . $tk);
+                ThongBaoTaiKhoanModel::create([
+                    'FK_MaThongBao' => $thongBao->PK_MaThongBao,
+                    'FK_MaTaiKhoan' => $tk->PK_MaTaiKhoan,
+                    'bTrangThai' => 0
+                ]);
             }
 
             return response()->json([
