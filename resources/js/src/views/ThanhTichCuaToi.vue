@@ -17,7 +17,7 @@
                             </InputIcon>
                             <InputText v-model="filters['global'].value" placeholder="Tìm kiếm" class="w-100" />
                         </IconField>
-                        <Button icon="bi bi-file-earmark-excel" label="Xuất Excel" class="p-button-success" />
+                        <!-- <Button icon="bi bi-file-earmark-excel" label="Xuất Excel" class="p-button-success" /> -->
                     </div>
                 </template>
                 <Column header="STT" bodyStyle="text-align: center; width: 70px;"

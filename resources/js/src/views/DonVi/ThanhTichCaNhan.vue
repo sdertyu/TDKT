@@ -8,7 +8,7 @@
             <DataTable v-model:filters="filters" :value="listThanhTich" class="p-datatable-sm"
                 :globalFilterFields="['tenCaNhan', 'maCaNhan', 'tenDanhHieu', 'dot', 'hinhThuc', 'capDanhHieu']"
                 responsiveLayout="scroll" stripedRows rowHover paginator :rows="10"
-                :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 100%">
+                :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 100%" filterDisplay="menu">
                 <template #header>
                     <div class="d-flex flex-column gap-2">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -18,24 +18,26 @@
                                 </InputIcon>
                                 <InputText v-model="filters['global'].value" placeholder="Tìm kiếm" class="w-100" />
                             </IconField>
-                            <Button icon="bi bi-file-earmark-excel" label="Xuất Excel" class="p-button-success" />
+                            <!-- <Button icon="bi bi-file-earmark-excel" label="Xuất Excel" class="p-button-success" /> -->
                         </div>
-                        
+
                         <div class="d-flex flex-wrap gap-3">
                             <div class="flex-grow-1 min-width-200">
                                 <label class="form-label mb-1">Năm học</label>
-                                <Dropdown v-model="filters['dot'].value" :options="uniqueDotOptions" optionLabel="label" 
-                                    placeholder="Tất cả năm học" class="w-100" />
+                                <Dropdown v-model="selectedDot" :options="uniqueDotOptions" optionLabel="label"
+                                    placeholder="Tất cả năm học" class="w-100" @change="onDotChange" />
                             </div>
                             <div class="flex-grow-1 min-width-200">
                                 <label class="form-label mb-1">Cấp danh hiệu</label>
-                                <MultiSelect v-model="filters['capDanhHieu'].value" :options="uniqueCapDanhHieuOptions" 
-                                    optionLabel="label" placeholder="Tất cả cấp danh hiệu" class="w-100" />
+                                <MultiSelect v-model="selectedCapDanhHieu" :options="uniqueCapDanhHieuOptions"
+                                    optionLabel="label" placeholder="Tất cả cấp danh hiệu" class="w-100"
+                                    @change="onCapDanhHieuChange" />
                             </div>
                             <div class="flex-grow-1 min-width-200">
                                 <label class="form-label mb-1">Hình thức</label>
-                                <MultiSelect v-model="filters['hinhThuc'].value" :options="uniqueHinhThucOptions" 
-                                    optionLabel="label" placeholder="Tất cả hình thức" class="w-100" />
+                                <MultiSelect v-model="selectedHinhThuc" :options="uniqueHinhThucOptions"
+                                    optionLabel="label" placeholder="Tất cả hình thức" class="w-100"
+                                    @change="onHinhThucChange" />
                             </div>
                         </div>
                     </div>
@@ -108,8 +110,14 @@ import Button from 'primevue/button';
 import MultiSelect from 'primevue/multiselect';
 import Dropdown from 'primevue/dropdown';
 import { FilterMatchMode } from '@primevue/core/api';
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 
+// Separate refs for the UI selection and the actual filters
+const selectedCapDanhHieu = ref(null);
+const selectedHinhThuc = ref(null);
+const selectedDot = ref(null);
+
+// Define filters with proper match modes
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     capDanhHieu: { value: null, matchMode: FilterMatchMode.IN },
@@ -155,6 +163,50 @@ const uniqueDotOptions = computed(() => {
         .map(dot => ({ label: dot, value: dot }));
 });
 
+// Update the template to use the new refs
+const updateTemplateCode = () => {
+    // This function exists to indicate the changes needed in the template
+    // The actual changes should be made in the <template> section
+    /*
+    <div class="flex-grow-1 min-width-200">
+        <label class="form-label mb-1">Năm học</label>
+        <Dropdown v-model="selectedDot" :options="uniqueDotOptions" optionLabel="label"
+            placeholder="Tất cả năm học" class="w-100" @change="onDotChange" />
+    </div>
+    <div class="flex-grow-1 min-width-200">
+        <label class="form-label mb-1">Cấp danh hiệu</label>
+        <MultiSelect v-model="selectedCapDanhHieu" :options="uniqueCapDanhHieuOptions"
+            optionLabel="label" placeholder="Tất cả cấp danh hiệu" class="w-100" @change="onCapDanhHieuChange" />
+    </div>
+    <div class="flex-grow-1 min-width-200">
+        <label class="form-label mb-1">Hình thức</label>
+        <MultiSelect v-model="selectedHinhThuc" :options="uniqueHinhThucOptions"
+            optionLabel="label" placeholder="Tất cả hình thức" class="w-100" @change="onHinhThucChange" />
+    </div>
+    */
+};
+
+// Methods to handle filter changes
+const onCapDanhHieuChange = () => {
+    if (!selectedCapDanhHieu.value || selectedCapDanhHieu.value.length === 0) {
+        filters.value.capDanhHieu.value = null;
+    } else {
+        filters.value.capDanhHieu.value = selectedCapDanhHieu.value.map(item => item.value);
+    }
+};
+
+const onHinhThucChange = () => {
+    if (!selectedHinhThuc.value || selectedHinhThuc.value.length === 0) {
+        filters.value.hinhThuc.value = null;
+    } else {
+        filters.value.hinhThuc.value = selectedHinhThuc.value.map(item => item.value);
+    }
+};
+
+const onDotChange = () => {
+    filters.value.dot.value = selectedDot.value ? selectedDot.value.value : null;
+};
+
 const getThanhTichCaNhan = async () => {
     try {
         const response = await axios.get('/api/baocaothongke/thanhtichcanhantrongdonvi', {
@@ -169,7 +221,6 @@ const getThanhTichCaNhan = async () => {
         }
     } catch (error) {
         console.error('Error fetching data:', error);
-        
     }
 };
 
